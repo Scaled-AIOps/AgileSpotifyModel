@@ -122,6 +122,17 @@ All endpoints require `Authorization: Bearer <token>` except `POST /auth/login` 
 
 `POST /auth/login` and `POST /auth/register` are additionally rate-limited to 20 requests per 15 minutes per IP to deter brute-force attacks.
 
+### System endpoints (top-level, public, no `/api/v1` prefix)
+
+| Method | Path | Description |
+|---|---|---|
+| `GET` | `/health` | Overall liveness — always returns `{ status: "ok" }` |
+| `GET` | `/health/liveness` | Process is up (cheap, no external calls) — for k8s liveness probe |
+| `GET` | `/health/readiness` | Pings Redis; 200 `{ status: "ok", redis: "ok" }` or 503 if Redis is down — for k8s readiness probe |
+| `GET` | `/info` | Build metadata: `{ name, version, commitId, branch, buildTime }` |
+
+`/info` reads `dist/package.json`, which webpack's `BuildInfoPlugin` emits on each `npm run build`. The plugin captures `commitId` / `branch` from `git rev-parse` at build time; CI environments with a detached worktree can override via `GIT_COMMIT` / `GIT_BRANCH` env vars before the build runs. In dev (`npm run dev`) `/info` falls back to `backend/package.json` (so commitId / branch / buildTime are blank).
+
 ### Roles
 
 The role hierarchy used by `authorize()`:
