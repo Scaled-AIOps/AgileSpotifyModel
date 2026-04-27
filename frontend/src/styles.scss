@@ -178,7 +178,3 @@ textarea.value-input { resize: vertical; min-height: 80px; }
   }
 }
 
-/* ===== CDK drag-drop overrides ===== */
-.cdk-drag-preview  { box-shadow: var(--shadow); border-radius: var(--radius-sm); }
-.cdk-drag-placeholder { opacity: 0.35; }
-.cdk-drop-list-dragging .drag-card:not(.cdk-drag-placeholder) { transition: transform 250ms cubic-bezier(0, 0, 0.2, 1); }
