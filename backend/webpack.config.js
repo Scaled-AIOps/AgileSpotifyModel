@@ -13,7 +13,50 @@
  *          terser keep_classnames so the audit log's class names stay readable.
  */
 const path = require('path');
+const fs = require('fs');
+const { execSync } = require('child_process');
 const nodeExternals = require('webpack-node-externals');
+
+/**
+ * Webpack plugin that emits dist/package.json with build-time metadata
+ * (name, version, commitId, branch, buildTime). Read at runtime by the
+ * /info endpoint.
+ */
+class BuildInfoPlugin {
+  apply(compiler) {
+    compiler.hooks.thisCompilation.tap('BuildInfoPlugin', (compilation) => {
+      compilation.hooks.processAssets.tap(
+        {
+          name: 'BuildInfoPlugin',
+          stage: compiler.webpack.Compilation.PROCESS_ASSETS_STAGE_ADDITIONAL,
+        },
+        () => {
+          const pkg = JSON.parse(
+            fs.readFileSync(path.resolve(__dirname, 'package.json'), 'utf8'),
+          );
+          const safe = (cmd) => {
+            try { return execSync(cmd, { cwd: __dirname, stdio: ['ignore', 'pipe', 'ignore'] }).toString().trim(); }
+            catch { return ''; }
+          };
+          const commitId = process.env.GIT_COMMIT || safe('git rev-parse HEAD');
+          const branch   = process.env.GIT_BRANCH || safe('git rev-parse --abbrev-ref HEAD');
+          const info = {
+            name: pkg.name,
+            version: pkg.version,
+            commitId,
+            branch,
+            buildTime: new Date().toISOString(),
+          };
+          const json = JSON.stringify(info, null, 2) + '\n';
+          compilation.emitAsset(
+            'package.json',
+            new compiler.webpack.sources.RawSource(json),
+          );
+        },
+      );
+    });
+  }
+}
 
 module.exports = (_env, argv) => {
   const isProd = argv.mode === 'production';
@@ -40,6 +83,7 @@ module.exports = (_env, argv) => {
       ],
     },
     externals: [nodeExternals()],
+    plugins: [new BuildInfoPlugin()],
     optimization: {
       minimize: false,
     },
