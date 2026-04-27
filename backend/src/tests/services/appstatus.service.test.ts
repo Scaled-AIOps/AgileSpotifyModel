@@ -28,6 +28,7 @@ const deployEvent = {
   state:      'success' as const,
   deployedAt: '2024-06-01T12:00:00.000Z',
   notes:      'Release 1.0',
+  xray:       'https://xray.example.com/report',
   changeRequest: 'CHG-001',
 };
 

@@ -16,13 +16,7 @@ import * as tribeService from '../src/services/tribe.service';
 import * as squadService from '../src/services/squad.service';
 import * as chapterService from '../src/services/chapter.service';
 import * as guildService from '../src/services/guild.service';
-import * as backlogService from '../src/services/backlog.service';
-import * as sprintService from '../src/services/sprint.service';
 import * as appService from '../src/services/app.service';
-
-function daysFromNow(days: number) {
-  return new Date(Date.now() + days * 86_400_000).toISOString();
-}
 
 async function seed() {
   await connectRedis();
@@ -201,68 +195,6 @@ async function seed() {
   await guildService.addMember(agileGuild.id, uAlice.memberId);
   await guildService.addMember(agileGuild.id, uEva.memberId);
 
-  // ── Backlog: Search ────────────────────────────────────────────────────
-  const r1 = await backlogService.create(searchSquad.id, { title: 'Implement BM25 ranking algorithm',       type: 'Story', priority: 100, storyPoints: 8 });
-  const r2 = await backlogService.create(searchSquad.id, { title: 'Add query spell-check & autocorrect',    type: 'Story', priority: 200, storyPoints: 5 });
-  const r3 = await backlogService.create(searchSquad.id, { title: 'Fix index lag bug in real-time updates', type: 'Bug',   priority: 50,  storyPoints: 3 });
-  const r4 = await backlogService.create(searchSquad.id, { title: 'A/B test new ranking model',             type: 'Task',  priority: 300, storyPoints: 5 });
-  const r5 = await backlogService.create(searchSquad.id, { title: 'Migrate search cluster to v8',           type: 'Epic',  priority: 400, storyPoints: 13 });
-  const r6 = await backlogService.create(searchSquad.id, { title: 'Reduce p95 latency below 120ms',         type: 'Story', priority: 500, storyPoints: 8 });
-
-  const sprint1 = await sprintService.create(searchSquad.id, { name: 'Sprint 3', goal: 'Ship BM25 ranking and reduce index lag', startDate: daysFromNow(-7), endDate: daysFromNow(7) });
-  await sprintService.start(searchSquad.id, sprint1.id);
-  await sprintService.addItem(sprint1.id, r1.id);
-  await sprintService.addItem(sprint1.id, r3.id);
-  await sprintService.addItem(sprint1.id, r4.id);
-  await backlogService.updateStatus(r3.id, 'Done');
-  await backlogService.updateStatus(r4.id, 'Review');
-  await backlogService.updateStatus(r1.id, 'InProgress');
-
-  // ── Backlog: Data Platform ─────────────────────────────────────────────
-  const p1 = await backlogService.create(dataPlatSquad.id, { title: 'Migrate ingestion layer to Kafka Streams', type: 'Epic',  priority: 100, storyPoints: 21 });
-  const p2 = await backlogService.create(dataPlatSquad.id, { title: 'Add dead-letter queue for failed events',  type: 'Story', priority: 200, storyPoints: 5 });
-  const p3 = await backlogService.create(dataPlatSquad.id, { title: 'Fix duplicate event processing bug',       type: 'Bug',   priority: 50,  storyPoints: 3 });
-  const p4 = await backlogService.create(dataPlatSquad.id, { title: 'Schema registry integration',              type: 'Story', priority: 300, storyPoints: 8 });
-  const p5 = await backlogService.create(dataPlatSquad.id, { title: 'Set up pipeline monitoring dashboards',    type: 'Task',  priority: 400, storyPoints: 3 });
-
-  const sprint2 = await sprintService.create(dataPlatSquad.id, { name: 'Sprint 1', goal: 'Fix duplicate processing and start Kafka migration', startDate: daysFromNow(-10), endDate: daysFromNow(4) });
-  await sprintService.start(dataPlatSquad.id, sprint2.id);
-  await sprintService.addItem(sprint2.id, p3.id);
-  await sprintService.addItem(sprint2.id, p1.id);
-  await sprintService.addItem(sprint2.id, p5.id);
-  await backlogService.updateStatus(p3.id, 'Done');
-  await backlogService.updateStatus(p5.id, 'Done');
-  await backlogService.updateStatus(p1.id, 'Review');
-
-  // ── Backlog: Analytics ─────────────────────────────────────────────────
-  const a1 = await backlogService.create(analyticsSquad.id, { title: 'Build self-serve dashboard builder',  type: 'Epic',  priority: 100, storyPoints: 21 });
-  const a2 = await backlogService.create(analyticsSquad.id, { title: 'Add funnel analysis feature',         type: 'Story', priority: 200, storyPoints: 8 });
-  const a3 = await backlogService.create(analyticsSquad.id, { title: 'Fix incorrect cohort calculation',    type: 'Bug',   priority: 50,  storyPoints: 3 });
-  const a4 = await backlogService.create(analyticsSquad.id, { title: 'Integrate with data warehouse',       type: 'Story', priority: 300, storyPoints: 13 });
-
-  const sprint3 = await sprintService.create(analyticsSquad.id, { name: 'Sprint 2', goal: 'Ship funnel analysis and fix cohort bug', startDate: daysFromNow(-5), endDate: daysFromNow(9) });
-  await sprintService.start(analyticsSquad.id, sprint3.id);
-  await sprintService.addItem(sprint3.id, a2.id);
-  await sprintService.addItem(sprint3.id, a3.id);
-  await backlogService.updateStatus(a3.id, 'Done');
-  await backlogService.updateStatus(a2.id, 'InProgress');
-
-  // ── Backlog: Observability ─────────────────────────────────────────────
-  const k1 = await backlogService.create(observSquad.id, { title: 'Upgrade cluster to K8s 1.30',         type: 'Epic',  priority: 100, storyPoints: 13 });
-  const k2 = await backlogService.create(observSquad.id, { title: 'Implement pod autoscaling policies',  type: 'Story', priority: 200, storyPoints: 8 });
-  const k3 = await backlogService.create(observSquad.id, { title: 'Fix OOMKill on batch job pods',       type: 'Bug',   priority: 50,  storyPoints: 3 });
-  const k4 = await backlogService.create(observSquad.id, { title: 'Set up GitOps with Argo CD',          type: 'Story', priority: 300, storyPoints: 8 });
-  const k5 = await backlogService.create(observSquad.id, { title: 'Multi-region failover runbook',       type: 'Task',  priority: 400, storyPoints: 5 });
-
-  const sprint4 = await sprintService.create(observSquad.id, { name: 'Sprint 4', goal: 'Fix OOMKill and deliver GitOps setup', startDate: daysFromNow(-2), endDate: daysFromNow(12) });
-  await sprintService.start(observSquad.id, sprint4.id);
-  await sprintService.addItem(sprint4.id, k3.id);
-  await sprintService.addItem(sprint4.id, k4.id);
-  await sprintService.addItem(sprint4.id, k2.id);
-  await backlogService.updateStatus(k3.id, 'Done');
-  await backlogService.updateStatus(k4.id, 'InProgress');
-  await backlogService.updateStatus(k2.id, 'Review');
-
   // ── Apps ───────────────────────────────────────────────────────────────
   await appService.create({ appId: 'payment-gateway',       gitRepo: 'git@github.com:org/payment-gateway',       squadId: paymentsSquad.id,  squadKey: 'payments',       status: 'active',                      tags: { criticality: 'critical', pillar: 'commerce', sunset: '' },   platforms: { java: '17' }, urls: { prod: 'https://payment-gateway.prod.example.com' }, javaVersion: '17', javaComplianceStatus: 'compliant',     xrayUrl: 'https://xray.example.com/payment-gateway',       artifactoryUrl: 'https://artifactory.example.com/payment-gateway',    splunkUrl: 'https://splunk.example.com/payment-gateway',       probeHealth: '/actuator/health', probeLiveness: '/actuator/liveness', probeReadiness: '/actuator/readiness', probeInfo: '/actuator/info' });
   await appService.create({ appId: 'payment-reconciler',    gitRepo: 'git@github.com:org/payment-reconciler',    squadId: paymentsSquad.id,  squadKey: 'payments',       status: 'active',                      tags: { criticality: 'critical', pillar: 'commerce', sunset: '' },   platforms: { java: '11' }, urls: { prod: 'https://payment-reconciler.prod.example.com' }, javaVersion: '11', javaComplianceStatus: 'non-compliant', xrayUrl: '',                                                        artifactoryUrl: 'https://artifactory.example.com/payment-reconciler', splunkUrl: 'https://splunk.example.com/payment-reconciler',    probeHealth: '/actuator/health', probeLiveness: '/actuator/liveness', probeReadiness: '/actuator/readiness', probeInfo: '/actuator/info' });
@@ -296,8 +228,7 @@ async function seed() {
   await appService.create({ appId: 'config-service',        gitRepo: 'git@github.com:org/config-service',       squadId: platformSquad.id,  squadKey: 'platform',       status: 'active',                      tags: { criticality: 'critical', pillar: 'infra',    sunset: '' },   platforms: { java: '17' }, urls: { prod: 'https://config-service.prod.example.com' },   javaVersion: '17', javaComplianceStatus: 'compliant',     xrayUrl: 'https://xray.example.com/config-service',         artifactoryUrl: 'https://artifactory.example.com/config-service',     splunkUrl: 'https://splunk.example.com/config-service',       probeHealth: '/actuator/health', probeLiveness: '/actuator/liveness', probeReadiness: '/actuator/readiness', probeInfo: '/actuator/info' });
   await appService.create({ appId: 'service-mesh-proxy',    gitRepo: 'git@github.com:org/service-mesh-proxy',   squadId: platformSquad.id,  squadKey: 'platform',       status: 'active',                      tags: { criticality: 'high',     pillar: 'infra',    sunset: '' },   platforms: { java: '11' }, urls: { prod: 'https://service-mesh.prod.example.com' },     javaVersion: '11', javaComplianceStatus: 'non-compliant', xrayUrl: 'https://xray.example.com/service-mesh-proxy',     artifactoryUrl: 'https://artifactory.example.com/service-mesh-proxy', splunkUrl: '' });
 
-  void [r2, r5, r6, p2, p4, a1, a4, k1, k5,
-        sdBI, sdBilling, sdComms, sdData, sdExperimentation, sdInternal, sdML, sdMobile,
+  void [sdBI, sdBilling, sdComms, sdData, sdExperimentation, sdInternal, sdML, sdMobile,
         sdRelevance, sdRisk, sdSRE, sdStorefront, sdTooling, sdWeb, sdAppSec,
         checkoutSquad, mobileSquad, webSquad, notifSquad, supportSquad, growthSquad,
         devexSquad, fraudSquad, paymentsSquad, identitySquad, recsSquad,
@@ -311,7 +242,6 @@ async function seed() {
   console.log(` ${'squads'.padEnd(14)} 16`);
   console.log(` ${'chapters'.padEnd(14)} 6`);
   console.log(` ${'guilds'.padEnd(14)} 6`);
-  console.log(` ${'sprints'.padEnd(14)} 4`);
   console.log(` ${'apps'.padEnd(14)} 24`);
   console.log('\nLogin: admin@example.com / Admin1234!');
   process.exit(0);
