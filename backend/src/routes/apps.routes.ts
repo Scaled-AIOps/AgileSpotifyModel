@@ -16,6 +16,12 @@ router.use(authenticate);
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
+const safeUrl = z.string()
+  .url()
+  .refine((u) => /^https?:\/\//i.test(u), 'Only HTTP and HTTPS URLs are allowed')
+  .optional()
+  .or(z.literal(''));
+
 async function resolveEditable(appSquadId: string, user: JwtPayload): Promise<boolean> {
   if (user.role === 'Admin' || user.role === 'AgileCoach') return true;
   if (!user.memberId) return false;
@@ -33,7 +39,7 @@ async function resolveEditable(appSquadId: string, user: JwtPayload): Promise<bo
 
 const createAppSchema = z.object({
   appId:                z.string().min(1).regex(/^[a-z0-9-]+$/, 'Only lowercase letters, numbers and hyphens'),
-  gitRepo:              z.string().url().optional().or(z.literal('')).default(''),
+  gitRepo:              safeUrl.default(''),
   squadId:              z.string().min(1),
   status:               z.enum(['active', 'inactive', 'marked-for-decommissioning', 'failed']).default('active'),
   tags:                 z.record(z.string()).optional().default({}),
@@ -41,10 +47,10 @@ const createAppSchema = z.object({
   urls:                 z.record(z.string()).optional().default({}),
   javaVersion:          z.string().optional(),
   javaComplianceStatus: z.string().optional(),
-  artifactoryUrl:       z.string().url().optional().or(z.literal('')),
-  xrayUrl:              z.string().url().optional().or(z.literal('')),
-  compositionViewerUrl: z.string().url().optional().or(z.literal('')),
-  splunkUrl:            z.string().url().optional().or(z.literal('')),
+  artifactoryUrl:       safeUrl,
+  xrayUrl:              safeUrl,
+  compositionViewerUrl: safeUrl,
+  splunkUrl:            safeUrl,
   probeHealth:          z.string().optional(),
   probeInfo:            z.string().optional(),
   probeLiveness:        z.string().optional(),
@@ -61,7 +67,7 @@ const recordDeploySchema = z.object({
   state:                z.enum(['success', 'failed', 'pending', 'rolledback']),
   deployedAt:           z.string().datetime().optional().default(() => new Date().toISOString()),
   notes:                z.string().optional(),
-  xray:                 z.string().url().optional(),
+  xray:                 safeUrl,
   javaVersion:          z.string().optional(),
   javaComplianceStatus: z.string().optional(),
   changeRequest:        z.string().optional(),

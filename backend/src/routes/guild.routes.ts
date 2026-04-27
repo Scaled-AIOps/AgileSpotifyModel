@@ -36,13 +36,30 @@ router.get('/:id/members', async (req, res, next) => {
   try { res.json(await guildService.getMembers(req.params.id)); } catch (e) { next(e); }
 });
 
+const canManageGuildMember = (actorMemberId: string, targetMemberId: string, role: string) =>
+  actorMemberId === targetMemberId || role === 'Admin' || role === 'TribeLead' || role === 'AgileCoach';
+
 // Members can self-join or self-leave; TribeLead+ can manage anyone
-router.post('/:id/members/:memberId', authenticate, async (req, res, next) => {
-  try { await guildService.addMember(req.params.id, req.params.memberId); res.status(204).send(); } catch (e) { next(e); }
+router.post('/:id/members/:memberId', async (req, res, next) => {
+  try {
+    if (!canManageGuildMember(req.user!.memberId, req.params.memberId, req.user!.role)) {
+      res.status(403).json({ error: 'You can only add yourself to a guild' });
+      return;
+    }
+    await guildService.addMember(req.params.id, req.params.memberId);
+    res.status(204).send();
+  } catch (e) { next(e); }
 });
 
-router.delete('/:id/members/:memberId', authenticate, async (req, res, next) => {
-  try { await guildService.removeMember(req.params.id, req.params.memberId); res.status(204).send(); } catch (e) { next(e); }
+router.delete('/:id/members/:memberId', async (req, res, next) => {
+  try {
+    if (!canManageGuildMember(req.user!.memberId, req.params.memberId, req.user!.role)) {
+      res.status(403).json({ error: 'You can only remove yourself from a guild' });
+      return;
+    }
+    await guildService.removeMember(req.params.id, req.params.memberId);
+    res.status(204).send();
+  } catch (e) { next(e); }
 });
 
 export default router;

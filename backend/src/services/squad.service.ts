@@ -41,8 +41,18 @@ export async function findById(id: string): Promise<Squad | null> {
 export async function update(id: string, data: Partial<Omit<Squad, 'id' | 'tribeId' | 'createdAt' | 'updatedAt'>>): Promise<Squad> {
   const existing = await findById(id);
   if (!existing) throw createError('Squad not found', 404);
+  if (data.key && data.key !== existing.key) {
+    const taken = await redis.get(`squad:key:${data.key}`);
+    if (taken) throw createError('Squad key already in use', 409);
+  }
   const updated = { ...existing, ...data, updatedAt: new Date().toISOString() };
-  await redis.hset(`squad:${id}`, updated as unknown as Record<string, string>);
+  const pipeline = redis.pipeline();
+  pipeline.hset(`squad:${id}`, updated as unknown as Record<string, string>);
+  if (data.key && data.key !== existing.key) {
+    if (existing.key) pipeline.del(`squad:key:${existing.key}`);
+    pipeline.set(`squad:key:${data.key}`, id);
+  }
+  await pipeline.exec();
   return updated;
 }
 

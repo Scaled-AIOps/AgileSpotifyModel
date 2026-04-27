@@ -28,7 +28,17 @@ app.use(rateLimit({
   legacyHeaders: false,
 }));
 
+const authRateLimit = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many requests, please try again later' },
+});
+
 app.get('/health', (_req, res) => res.json({ status: 'ok' }));
+app.use('/api/v1/auth/login', authRateLimit);
+app.use('/api/v1/auth/register', authRateLimit);
 app.use('/api/v1', routes);
 
 app.use(notFound);
