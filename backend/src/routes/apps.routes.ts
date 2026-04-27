@@ -8,6 +8,7 @@ import * as appstatusService from '../services/appstatus.service';
 import * as auditService from '../services/audit.service';
 import * as memberService from '../services/member.service';
 import * as squadService from '../services/squad.service';
+import { linksFields } from '../schemas/links.schema';
 import redis from '../config/redis';
 import type { JwtPayload } from '../middleware/auth';
 
@@ -39,7 +40,7 @@ async function resolveEditable(appSquadId: string, user: JwtPayload): Promise<bo
 
 const createAppSchema = z.object({
   appId:                z.string().min(1).regex(/^[a-z0-9-]+$/, 'Only lowercase letters, numbers and hyphens'),
-  gitRepo:              safeUrl.default(''),
+  description:          z.string().optional().default(''),
   squadId:              z.string().min(1),
   status:               z.enum(['active', 'inactive', 'marked-for-decommissioning', 'failed']).default('active'),
   tags:                 z.record(z.string()).optional().default({}),
@@ -55,6 +56,7 @@ const createAppSchema = z.object({
   probeInfo:            z.string().optional(),
   probeLiveness:        z.string().optional(),
   probeReadiness:       z.string().optional(),
+  ...linksFields,
 });
 
 // ── Deploy schema ─────────────────────────────────────────────────────────────
@@ -87,13 +89,17 @@ router.post('/', authorize('TribeLead'), validate(createAppSchema), async (req, 
     if (!squad) { res.status(400).json({ error: 'Squad not found' }); return; }
     const app = await appService.create({
       appId:                req.body.appId,
-      gitRepo:              req.body.gitRepo ?? '',
+      description:          req.body.description ?? '',
       squadId:              req.body.squadId,
       squadKey:             squad.key ?? '',
       status:               req.body.status,
       tags:                 req.body.tags ?? {},
       platforms:            req.body.platforms ?? {},
       urls:                 req.body.urls ?? {},
+      jira:                 req.body.jira,
+      confluence:           req.body.confluence,
+      github:               req.body.github,
+      mailingList:          req.body.mailingList,
       javaVersion:          req.body.javaVersion,
       javaComplianceStatus: req.body.javaComplianceStatus,
       artifactoryUrl:       req.body.artifactoryUrl,

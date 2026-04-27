@@ -1,22 +1,54 @@
 import redis from '../config/redis';
 import { generateId } from '../lib/id';
 import { createError } from '../middleware/errorHandler';
-import type { Tribe } from '../models/index';
+import { coerceLinks, parseLinks, serialiseLinks } from '../lib/links';
+import type { Tribe, Link } from '../models/index';
 
 function fromHash(h: Record<string, string>): Tribe {
-  return h as unknown as Tribe;
+  return {
+    ...(h as unknown as Tribe),
+    jira:        parseLinks(h.jira),
+    confluence:  parseLinks(h.confluence),
+    github:      parseLinks(h.github),
+    mailingList: parseLinks(h.mailingList),
+  };
 }
 
-export async function create(data: { id?: string; name: string; description: string; domainId: string; subdomainId?: string; leadMemberId?: string; releaseManager?: string; agileCoach?: string; confluence?: string }): Promise<Tribe> {
+function toHash(t: Tribe): Record<string, string> {
+  return {
+    ...(t as unknown as Record<string, string>),
+    jira:        serialiseLinks(t.jira),
+    confluence:  serialiseLinks(t.confluence),
+    github:      serialiseLinks(t.github),
+    mailingList: serialiseLinks(t.mailingList),
+  };
+}
+
+export async function create(data: {
+  id?: string; name: string; tribeName?: string; description: string;
+  domainId: string; subdomainId?: string; leadMemberId?: string;
+  releaseManager?: string; agileCoach?: string;
+  jira?: unknown; confluence?: unknown; github?: unknown; mailingList?: unknown;
+}): Promise<Tribe> {
   const domainExists = await redis.exists(`domain:${data.domainId}`);
   if (!domainExists) throw createError('Domain not found', 404);
 
   const id = data.id ?? generateId();
   const now = new Date().toISOString();
-  const tribe: Tribe = { id, name: data.name, description: data.description, domainId: data.domainId, subdomainId: data.subdomainId ?? '', leadMemberId: data.leadMemberId ?? '', releaseManager: data.releaseManager ?? '', agileCoach: data.agileCoach ?? '', confluence: data.confluence ?? '', createdAt: now, updatedAt: now };
+  const tribe: Tribe = {
+    id, name: data.name, tribeName: data.tribeName ?? data.name,
+    description: data.description, domainId: data.domainId,
+    subdomainId: data.subdomainId ?? '', leadMemberId: data.leadMemberId ?? '',
+    releaseManager: data.releaseManager ?? '', agileCoach: data.agileCoach ?? '',
+    jira:        coerceLinks(data.jira),
+    confluence:  coerceLinks(data.confluence),
+    github:      coerceLinks(data.github),
+    mailingList: coerceLinks(data.mailingList),
+    createdAt: now, updatedAt: now,
+  };
 
   const pipeline = redis.pipeline();
-  pipeline.hset(`tribe:${id}`, tribe as unknown as Record<string, string>);
+  pipeline.hset(`tribe:${id}`, toHash(tribe));
   pipeline.sadd('tribes:all', id);
   if (tribe.subdomainId) {
     pipeline.sadd(`subdomain:${tribe.subdomainId}:tribes`, id);
@@ -41,12 +73,23 @@ export async function findById(id: string): Promise<Tribe | null> {
   return h?.id ? fromHash(h) : null;
 }
 
-export async function update(id: string, data: Partial<{ name: string; description: string; leadMemberId: string; subdomainId: string }>): Promise<Tribe> {
+export async function update(id: string, data: Partial<{
+  name: string; tribeName: string; description: string;
+  leadMemberId: string; subdomainId: string;
+  jira: Link[]; confluence: Link[]; github: Link[]; mailingList: Link[];
+}>): Promise<Tribe> {
   const existing = await findById(id);
   if (!existing) throw createError('Tribe not found', 404);
-  const updated = { ...existing, ...data, updatedAt: new Date().toISOString() };
-  await redis.hset(`tribe:${id}`, updated as unknown as Record<string, string>);
-  return updated;
+  const merged: Tribe = {
+    ...existing, ...data,
+    jira:        data.jira        !== undefined ? coerceLinks(data.jira)        : existing.jira,
+    confluence:  data.confluence  !== undefined ? coerceLinks(data.confluence)  : existing.confluence,
+    github:      data.github      !== undefined ? coerceLinks(data.github)      : existing.github,
+    mailingList: data.mailingList !== undefined ? coerceLinks(data.mailingList) : existing.mailingList,
+    updatedAt: new Date().toISOString(),
+  };
+  await redis.hset(`tribe:${id}`, toHash(merged));
+  return merged;
 }
 
 export async function remove(id: string): Promise<void> {

@@ -42,7 +42,8 @@ export interface SubDomain {
 
 export interface Tribe {
   id: string;
-  name: string;
+  name: string;        // short code, e.g. "PSS"
+  tribeName: string;   // long form, e.g. "Payment System Services"
   description: string;
   domainId: string;
   subdomainId: string;

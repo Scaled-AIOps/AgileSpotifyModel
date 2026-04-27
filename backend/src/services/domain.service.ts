@@ -1,18 +1,45 @@
 import redis from '../config/redis';
 import { generateId } from '../lib/id';
 import { createError } from '../middleware/errorHandler';
-import type { Domain } from '../models/index';
+import { coerceLinks, parseLinks, serialiseLinks, LINK_FIELDS } from '../lib/links';
+import type { Domain, Link } from '../models/index';
 
 function fromHash(h: Record<string, string>): Domain {
-  return h as unknown as Domain;
+  return {
+    ...(h as unknown as Domain),
+    jira:        parseLinks(h.jira),
+    confluence:  parseLinks(h.confluence),
+    github:      parseLinks(h.github),
+    mailingList: parseLinks(h.mailingList),
+  };
 }
 
-export async function create(data: { id?: string; name: string; description: string }): Promise<Domain> {
+function toHash(d: Domain): Record<string, string> {
+  return {
+    ...(d as unknown as Record<string, string>),
+    jira:        serialiseLinks(d.jira),
+    confluence:  serialiseLinks(d.confluence),
+    github:      serialiseLinks(d.github),
+    mailingList: serialiseLinks(d.mailingList),
+  };
+}
+
+export async function create(data: {
+  id?: string; name: string; description: string;
+  jira?: unknown; confluence?: unknown; github?: unknown; mailingList?: unknown;
+}): Promise<Domain> {
   const id = data.id ?? generateId();
   const now = new Date().toISOString();
-  const domain: Domain = { id, name: data.name, description: data.description, createdAt: now, updatedAt: now };
+  const domain: Domain = {
+    id, name: data.name, description: data.description,
+    jira:        coerceLinks(data.jira),
+    confluence:  coerceLinks(data.confluence),
+    github:      coerceLinks(data.github),
+    mailingList: coerceLinks(data.mailingList),
+    createdAt: now, updatedAt: now,
+  };
   const pipeline = redis.pipeline();
-  pipeline.hset(`domain:${id}`, domain as unknown as Record<string, string>);
+  pipeline.hset(`domain:${id}`, toHash(domain));
   pipeline.sadd('domains:all', id);
   await pipeline.exec();
   return domain;
@@ -32,12 +59,22 @@ export async function findById(id: string): Promise<Domain | null> {
   return h?.id ? fromHash(h) : null;
 }
 
-export async function update(id: string, data: Partial<{ name: string; description: string }>): Promise<Domain> {
+export async function update(id: string, data: Partial<{
+  name: string; description: string;
+  jira: Link[]; confluence: Link[]; github: Link[]; mailingList: Link[];
+}>): Promise<Domain> {
   const existing = await findById(id);
   if (!existing) throw createError('Domain not found', 404);
-  const updated = { ...existing, ...data, updatedAt: new Date().toISOString() };
-  await redis.hset(`domain:${id}`, updated as unknown as Record<string, string>);
-  return updated;
+  const merged: Domain = {
+    ...existing, ...data,
+    jira:        data.jira        !== undefined ? coerceLinks(data.jira)        : existing.jira,
+    confluence:  data.confluence  !== undefined ? coerceLinks(data.confluence)  : existing.confluence,
+    github:      data.github      !== undefined ? coerceLinks(data.github)      : existing.github,
+    mailingList: data.mailingList !== undefined ? coerceLinks(data.mailingList) : existing.mailingList,
+    updatedAt: new Date().toISOString(),
+  };
+  await redis.hset(`domain:${id}`, toHash(merged));
+  return merged;
 }
 
 export async function remove(id: string): Promise<void> {

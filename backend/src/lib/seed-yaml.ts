@@ -26,13 +26,16 @@ function loadYaml<T>(file: string): T[] {
   return Array.isArray(raw) ? (raw as T[]) : [];
 }
 
-interface YamlDomain    { name: string; description?: string }
-interface YamlSubdomain { name: string; tribeDomain: string; description?: string }
-interface YamlTribe     { name: string; subDomain: string; tribeDomain: string; releaseManager?: string; agileCoach?: string; description?: string; confluence?: string }
-interface YamlSquad     { key: string; name: string; description?: string; tribe: string; po?: string; sm?: string; jira?: string; confluence?: string; mailingList?: string[]; tags?: Record<string, string> }
-interface YamlInfra     { platformId: string; name: string; clusterId: string; environment: string; host: string; routeHostName: string; platform: string; platformType: string; tokenId: string; tags?: Record<string, string> }
-interface YamlApp {
-  appId: string; gitRepo: string; squad: string; status: AppStatus; tags?: Record<string, string>;
+type YamlLinks = {
+  jira?: unknown; confluence?: unknown; github?: unknown; mailingList?: unknown;
+};
+interface YamlDomain extends YamlLinks    { name: string; description?: string }
+interface YamlSubdomain extends YamlLinks { name: string; tribeDomain: string; description?: string }
+interface YamlTribe extends YamlLinks     { name: string; tribeName?: string; subDomain: string; tribeDomain: string; releaseManager?: string; agileCoach?: string; description?: string }
+interface YamlSquad extends YamlLinks     { key: string; name: string; description?: string; tribe: string; po?: string; sm?: string; tags?: Record<string, string> }
+interface YamlInfra { platformId: string; name: string; description?: string; clusterId: string; environment: string; host: string; routeHostName: string; platform: string; platformType: string; tokenId: string; tags?: Record<string, string> }
+interface YamlApp extends YamlLinks {
+  appId: string; description?: string; gitRepo?: string; squad: string; status: AppStatus; tags?: Record<string, string>;
   localPlatform?: string; devPlatform?: string; intPlatform?: string; uatPlatform?: string; prdPlatform?: string;
   localUrl?: string; devUrl?: string; intUrl?: string; uatUrl?: string; prdUrl?: string;
   probeHealth?: string; probeInfo?: string; probeLiveness?: string; probeReadiness?: string;
@@ -56,7 +59,10 @@ export async function seedFromYaml(): Promise<void> {
 
   for (const d of domainDefs) {
     if (domainByName.has(d.name)) { skipped++; continue; }
-    const nd = await domainSvc.create({ name: d.name, description: d.description ?? '' });
+    const nd = await domainSvc.create({
+      name: d.name, description: d.description ?? '',
+      jira: d.jira, confluence: d.confluence, github: d.github, mailingList: d.mailingList,
+    });
     domainByName.set(nd.name, nd);
     created++;
   }
@@ -70,7 +76,10 @@ export async function seedFromYaml(): Promise<void> {
     if (subdomainByName.has(s.name)) { skipped++; continue; }
     const domain = domainByName.get(s.tribeDomain);
     if (!domain) { console.warn(`[seed] subdomain "${s.name}": domain "${s.tribeDomain}" not found`); skipped++; continue; }
-    const ns = await subdomainSvc.create({ name: s.name, description: s.description ?? '', domainId: domain.id });
+    const ns = await subdomainSvc.create({
+      name: s.name, description: s.description ?? '', domainId: domain.id,
+      jira: s.jira, confluence: s.confluence, github: s.github, mailingList: s.mailingList,
+    });
     subdomainByName.set(ns.name, ns);
     created++;
   }
@@ -78,7 +87,11 @@ export async function seedFromYaml(): Promise<void> {
   // ── Tribes ────────────────────────────────────────────────────────────────────
   const tribeDefs = loadYaml<YamlTribe>('tribes.yaml');
   const allTribes = await tribeSvc.findAll();
-  const tribeByName = new Map<string, Tribe>(allTribes.map((t) => [t.name, t]));
+  const tribeByName = new Map<string, Tribe>();
+  for (const t of allTribes) {
+    tribeByName.set(t.name, t);
+    if (t.tribeName && t.tribeName !== t.name) tribeByName.set(t.tribeName, t);
+  }
 
   for (const t of tribeDefs) {
     if (tribeByName.has(t.name)) { skipped++; continue; }
@@ -86,11 +99,14 @@ export async function seedFromYaml(): Promise<void> {
     if (!domain) { console.warn(`[seed] tribe "${t.name}": domain "${t.tribeDomain}" not found`); skipped++; continue; }
     const subdomain = subdomainByName.get(t.subDomain);
     const nt = await tribeSvc.create({
-      name: t.name, description: t.description ?? '', domainId: domain.id,
+      name: t.name, tribeName: t.tribeName ?? t.name,
+      description: t.description ?? '', domainId: domain.id,
       subdomainId: subdomain?.id, releaseManager: t.releaseManager,
-      agileCoach: t.agileCoach, confluence: t.confluence,
+      agileCoach: t.agileCoach,
+      jira: t.jira, confluence: t.confluence, github: t.github, mailingList: t.mailingList,
     });
     tribeByName.set(nt.name, nt);
+    if (nt.tribeName && nt.tribeName !== nt.name) tribeByName.set(nt.tribeName, nt);
     created++;
   }
 
@@ -102,8 +118,8 @@ export async function seedFromYaml(): Promise<void> {
     if (!tribe) { console.warn(`[seed] squad "${s.key}": tribe "${s.tribe}" not found`); skipped++; continue; }
     await squadSvc.create({
       key: s.key, name: s.name, description: s.description ?? '', tribeId: tribe.id,
-      po: s.po, sm: s.sm, jira: s.jira, confluence: s.confluence,
-      mailingList: Array.isArray(s.mailingList) ? s.mailingList[0] : s.mailingList,
+      po: s.po, sm: s.sm,
+      jira: s.jira, confluence: s.confluence, github: s.github, mailingList: s.mailingList,
       tier: s.tags?.tier,
     });
     created++;
@@ -117,10 +133,10 @@ export async function seedFromYaml(): Promise<void> {
     for (const c of infraDefs) {
       if (infraIds.has(c.platformId)) { skipped++; continue; }
       await infraSvc.create({
-        platformId: c.platformId, name: c.name, clusterId: c.clusterId,
-        environment: c.environment, host: c.host, routeHostName: c.routeHostName,
-        platform: c.platform, platformType: c.platformType, tokenId: c.tokenId,
-        tags: JSON.stringify(c.tags ?? {}),
+        platformId: c.platformId, name: c.name, description: c.description ?? '',
+        clusterId: c.clusterId, environment: c.environment, host: c.host,
+        routeHostName: c.routeHostName, platform: c.platform, platformType: c.platformType,
+        tokenId: c.tokenId, tags: JSON.stringify(c.tags ?? {}),
       });
       infraIds.add(c.platformId);
       created++;
@@ -148,10 +164,14 @@ export async function seedFromYaml(): Promise<void> {
       if (a.intUrl)   urls['int']   = a.intUrl;
       if (a.uatUrl)   urls['uat']   = a.uatUrl;
       if (a.prdUrl)   urls['prd']   = a.prdUrl;
+      const githubLinks: unknown = a.github ?? (a.gitRepo ? [a.gitRepo] : undefined);
       await appSvc.create({
-        appId: a.appId, gitRepo: a.gitRepo, squadId: squad.id, squadKey: squad.key,
+        appId: a.appId, description: a.description ?? '',
+        squadId: squad.id, squadKey: squad.key,
         status: a.status, tags: (a.tags as Record<string, string>) ?? {},
-        platforms, urls, probeHealth: a.probeHealth, probeInfo: a.probeInfo,
+        platforms, urls,
+        jira: a.jira, confluence: a.confluence, github: githubLinks, mailingList: a.mailingList,
+        probeHealth: a.probeHealth, probeInfo: a.probeInfo,
         probeLiveness: a.probeLiveness, probeReadiness: a.probeReadiness,
         javaVersion: a.javaVersion, javaComplianceStatus: a.javaComplianceStatus,
       });

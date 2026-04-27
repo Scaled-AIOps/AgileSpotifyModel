@@ -1,21 +1,48 @@
 import redis from '../config/redis';
 import { generateId } from '../lib/id';
 import { createError } from '../middleware/errorHandler';
-import type { SubDomain } from '../models/index';
+import { coerceLinks, parseLinks, serialiseLinks } from '../lib/links';
+import type { SubDomain, Link } from '../models/index';
 
 function fromHash(h: Record<string, string>): SubDomain {
-  return h as unknown as SubDomain;
+  return {
+    ...(h as unknown as SubDomain),
+    jira:        parseLinks(h.jira),
+    confluence:  parseLinks(h.confluence),
+    github:      parseLinks(h.github),
+    mailingList: parseLinks(h.mailingList),
+  };
 }
 
-export async function create(data: { id?: string; name: string; description: string; domainId: string }): Promise<SubDomain> {
+function toHash(s: SubDomain): Record<string, string> {
+  return {
+    ...(s as unknown as Record<string, string>),
+    jira:        serialiseLinks(s.jira),
+    confluence:  serialiseLinks(s.confluence),
+    github:      serialiseLinks(s.github),
+    mailingList: serialiseLinks(s.mailingList),
+  };
+}
+
+export async function create(data: {
+  id?: string; name: string; description: string; domainId: string;
+  jira?: unknown; confluence?: unknown; github?: unknown; mailingList?: unknown;
+}): Promise<SubDomain> {
   const domainExists = await redis.exists(`domain:${data.domainId}`);
   if (!domainExists) throw createError('Domain not found', 404);
 
   const id = data.id ?? generateId();
   const now = new Date().toISOString();
-  const sd: SubDomain = { id, ...data, createdAt: now, updatedAt: now };
+  const sd: SubDomain = {
+    id, name: data.name, description: data.description, domainId: data.domainId,
+    jira:        coerceLinks(data.jira),
+    confluence:  coerceLinks(data.confluence),
+    github:      coerceLinks(data.github),
+    mailingList: coerceLinks(data.mailingList),
+    createdAt: now, updatedAt: now,
+  };
   const pipeline = redis.pipeline();
-  pipeline.hset(`subdomain:${id}`, sd as unknown as Record<string, string>);
+  pipeline.hset(`subdomain:${id}`, toHash(sd));
   pipeline.sadd('subdomains:all', id);
   pipeline.sadd(`domain:${data.domainId}:subdomains`, id);
   await pipeline.exec();
@@ -36,12 +63,22 @@ export async function findById(id: string): Promise<SubDomain | null> {
   return h?.id ? fromHash(h) : null;
 }
 
-export async function update(id: string, data: Partial<{ name: string; description: string }>): Promise<SubDomain> {
+export async function update(id: string, data: Partial<{
+  name: string; description: string;
+  jira: Link[]; confluence: Link[]; github: Link[]; mailingList: Link[];
+}>): Promise<SubDomain> {
   const existing = await findById(id);
   if (!existing) throw createError('SubDomain not found', 404);
-  const updated = { ...existing, ...data, updatedAt: new Date().toISOString() };
-  await redis.hset(`subdomain:${id}`, updated as unknown as Record<string, string>);
-  return updated;
+  const merged: SubDomain = {
+    ...existing, ...data,
+    jira:        data.jira        !== undefined ? coerceLinks(data.jira)        : existing.jira,
+    confluence:  data.confluence  !== undefined ? coerceLinks(data.confluence)  : existing.confluence,
+    github:      data.github      !== undefined ? coerceLinks(data.github)      : existing.github,
+    mailingList: data.mailingList !== undefined ? coerceLinks(data.mailingList) : existing.mailingList,
+    updatedAt: new Date().toISOString(),
+  };
+  await redis.hset(`subdomain:${id}`, toHash(merged));
+  return merged;
 }
 
 export async function remove(id: string): Promise<void> {

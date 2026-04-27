@@ -14,7 +14,12 @@ import type { Tribe, Squad, Chapter } from '../../../core/models/index';
     @else if (tribe) {
       <div class="page-header">
         <div class="page-title">
-          <h1>{{ tribe.name }}</h1>
+          <h1>
+            {{ tribe.tribeName || tribe.name }}
+            @if (tribe.tribeName && tribe.name !== tribe.tribeName) {
+              <span class="tribe-code">{{ tribe.name }}</span>
+            }
+          </h1>
           <div class="page-sub">{{ tribe.description }}</div>
         </div>
         <div style="display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center">
@@ -78,6 +83,7 @@ import type { Tribe, Squad, Chapter } from '../../../core/models/index';
     }
   `,
   styles: [`
+    .tribe-code { font-size: 0.7em; font-weight: 600; color: var(--text-muted); background: var(--surface-card); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 2px 8px; margin-left: 8px; vertical-align: middle; letter-spacing: 0.05em; font-family: var(--font-mono, monospace); }
     .meta-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 1.5rem; }
     .meta-card { background: var(--surface-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 16px; }
     .meta-label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 4px; }

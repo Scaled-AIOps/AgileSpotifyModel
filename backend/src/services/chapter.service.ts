@@ -7,13 +7,13 @@ function fromHash(h: Record<string, string>): Chapter {
   return h as unknown as Chapter;
 }
 
-export async function create(data: { name: string; discipline: string; tribeId: string; leadMemberId?: string }): Promise<Chapter> {
+export async function create(data: { name: string; description?: string; discipline: string; tribeId: string; leadMemberId?: string }): Promise<Chapter> {
   const tribeExists = await redis.exists(`tribe:${data.tribeId}`);
   if (!tribeExists) throw createError('Tribe not found', 404);
 
   const id = generateId();
   const now = new Date().toISOString();
-  const chapter: Chapter = { id, name: data.name, discipline: data.discipline, tribeId: data.tribeId, leadMemberId: data.leadMemberId ?? '', createdAt: now, updatedAt: now };
+  const chapter: Chapter = { id, name: data.name, description: data.description ?? '', discipline: data.discipline, tribeId: data.tribeId, leadMemberId: data.leadMemberId ?? '', createdAt: now, updatedAt: now };
 
   const pipeline = redis.pipeline();
   pipeline.hset(`chapter:${id}`, chapter as unknown as Record<string, string>);

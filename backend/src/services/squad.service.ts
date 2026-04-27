@@ -1,22 +1,53 @@
 import redis from '../config/redis';
 import { generateId } from '../lib/id';
 import { createError } from '../middleware/errorHandler';
-import type { Squad } from '../models/index';
+import { coerceLinks, parseLinks, serialiseLinks } from '../lib/links';
+import type { Squad, Link } from '../models/index';
 
 function fromHash(h: Record<string, string>): Squad {
-  return h as unknown as Squad;
+  return {
+    ...(h as unknown as Squad),
+    jira:        parseLinks(h.jira),
+    confluence:  parseLinks(h.confluence),
+    github:      parseLinks(h.github),
+    mailingList: parseLinks(h.mailingList),
+  };
 }
 
-export async function create(data: { name: string; description: string; tribeId: string; leadMemberId?: string; missionStatement?: string; key?: string; po?: string; sm?: string; jira?: string; confluence?: string; mailingList?: string; tier?: string }): Promise<Squad> {
+function toHash(s: Squad): Record<string, string> {
+  return {
+    ...(s as unknown as Record<string, string>),
+    jira:        serialiseLinks(s.jira),
+    confluence:  serialiseLinks(s.confluence),
+    github:      serialiseLinks(s.github),
+    mailingList: serialiseLinks(s.mailingList),
+  };
+}
+
+export async function create(data: {
+  name: string; description: string; tribeId: string;
+  leadMemberId?: string; missionStatement?: string; key?: string;
+  po?: string; sm?: string; tier?: string;
+  jira?: unknown; confluence?: unknown; github?: unknown; mailingList?: unknown;
+}): Promise<Squad> {
   const tribeExists = await redis.exists(`tribe:${data.tribeId}`);
   if (!tribeExists) throw createError('Tribe not found', 404);
 
   const id = data.key ?? generateId();
   const now = new Date().toISOString();
-  const squad: Squad = { id, name: data.name, description: data.description, tribeId: data.tribeId, leadMemberId: data.leadMemberId ?? '', missionStatement: data.missionStatement ?? '', key: data.key ?? '', po: data.po ?? '', sm: data.sm ?? '', jira: data.jira ?? '', confluence: data.confluence ?? '', mailingList: data.mailingList ?? '', tier: data.tier ?? '', createdAt: now, updatedAt: now };
+  const squad: Squad = {
+    id, name: data.name, description: data.description, tribeId: data.tribeId,
+    leadMemberId: data.leadMemberId ?? '', missionStatement: data.missionStatement ?? '',
+    key: data.key ?? '', po: data.po ?? '', sm: data.sm ?? '',
+    jira:        coerceLinks(data.jira),
+    confluence:  coerceLinks(data.confluence),
+    github:      coerceLinks(data.github),
+    mailingList: coerceLinks(data.mailingList),
+    tier: data.tier ?? '', createdAt: now, updatedAt: now,
+  };
 
   const pipeline = redis.pipeline();
-  pipeline.hset(`squad:${id}`, squad as unknown as Record<string, string>);
+  pipeline.hset(`squad:${id}`, toHash(squad));
   pipeline.sadd('squads:all', id);
   pipeline.sadd(`tribe:${data.tribeId}:squads`, id);
   if (data.key) pipeline.set(`squad:key:${data.key}`, id);
@@ -45,15 +76,22 @@ export async function update(id: string, data: Partial<Omit<Squad, 'id' | 'tribe
     const taken = await redis.get(`squad:key:${data.key}`);
     if (taken) throw createError('Squad key already in use', 409);
   }
-  const updated = { ...existing, ...data, updatedAt: new Date().toISOString() };
+  const merged: Squad = {
+    ...existing, ...data,
+    jira:        data.jira        !== undefined ? coerceLinks(data.jira)        : existing.jira,
+    confluence:  data.confluence  !== undefined ? coerceLinks(data.confluence)  : existing.confluence,
+    github:      data.github      !== undefined ? coerceLinks(data.github)      : existing.github,
+    mailingList: data.mailingList !== undefined ? coerceLinks(data.mailingList) : existing.mailingList,
+    updatedAt: new Date().toISOString(),
+  };
   const pipeline = redis.pipeline();
-  pipeline.hset(`squad:${id}`, updated as unknown as Record<string, string>);
+  pipeline.hset(`squad:${id}`, toHash(merged));
   if (data.key && data.key !== existing.key) {
     if (existing.key) pipeline.del(`squad:key:${existing.key}`);
     pipeline.set(`squad:key:${data.key}`, id);
   }
   await pipeline.exec();
-  return updated;
+  return merged;
 }
 
 export async function remove(id: string): Promise<void> {
