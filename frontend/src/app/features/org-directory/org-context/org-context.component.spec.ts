@@ -19,7 +19,7 @@ const TRIBE: Tribe = { id: 't1', name: 'Tribe A', domainId: 'd1', subdomainId: '
 
 function makeSpies() {
   const memberSpy = jasmine.createSpyObj('MemberApi', ['getAll', 'getById']);
-  const squadSpy = jasmine.createSpyObj('SquadApi', ['getAll', 'getById', 'getMembers', 'getActiveSprint']);
+  const squadSpy = jasmine.createSpyObj('SquadApi', ['getAll', 'getById', 'getMembers']);
   const tribeSpy = jasmine.createSpyObj('TribeApi', ['getAll', 'getById']);
   const apiSpy = jasmine.createSpyObj('ApiService', ['get', 'post', 'patch', 'delete']);
   const appsSpy = jasmine.createSpyObj('AppsApi', ['getAll', 'getBySquad']);
@@ -30,7 +30,6 @@ function makeSpies() {
   squadSpy.getAll.and.returnValue(of([]));
   squadSpy.getById.and.returnValue(of(SQUAD));
   squadSpy.getMembers.and.returnValue(of(['m1', 'm2']));
-  squadSpy.getActiveSprint.and.returnValue(of(null as any));
   tribeSpy.getAll.and.returnValue(of([TRIBE]));
   tribeSpy.getById.and.returnValue(of(TRIBE));
   apiSpy.get.and.returnValue(of({ id: 'd1', name: 'Domain A' } as any));
