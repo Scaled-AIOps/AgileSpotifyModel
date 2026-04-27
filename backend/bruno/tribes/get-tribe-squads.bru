@@ -1,0 +1,15 @@
+meta {
+  name: Get Tribe Squads
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{baseUrl}}/api/v1/tribes/{{tribeId}}/squads
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}

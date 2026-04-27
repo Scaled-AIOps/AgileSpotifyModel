@@ -1,0 +1,22 @@
+meta {
+  name: Update Subdomain
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{baseUrl}}/api/v1/subdomains/{{subdomainId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "name": "Data Platform (updated)",
+    "description": "Updated description"
+  }
+}

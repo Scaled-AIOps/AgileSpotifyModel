@@ -1,0 +1,29 @@
+meta {
+  name: Create Chapter
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/v1/chapters
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "name": "Frontend Chapter",
+    "discipline": "Frontend",
+    "tribeId": "{{tribeId}}"
+  }
+}
+
+script:post-response {
+  if (res.status === 201) {
+    bru.setVar("chapterId", res.body.id);
+  }
+}

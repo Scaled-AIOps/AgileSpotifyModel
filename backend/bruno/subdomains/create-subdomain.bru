@@ -1,0 +1,29 @@
+meta {
+  name: Create Subdomain
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/v1/subdomains
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "name": "Data Platform",
+    "description": "Data infra and analytics",
+    "domainId": "{{domainId}}"
+  }
+}
+
+script:post-response {
+  if (res.status === 201) {
+    bru.setVar("subdomainId", res.body.id);
+  }
+}

@@ -1,0 +1,22 @@
+meta {
+  name: Update Member
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{baseUrl}}/api/v1/members/{{memberId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "name": "Alice Johnson (updated)",
+    "role": "SquadLead"
+  }
+}

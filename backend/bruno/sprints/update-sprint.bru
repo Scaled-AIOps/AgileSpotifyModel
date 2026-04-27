@@ -1,0 +1,22 @@
+meta {
+  name: Update Sprint
+  type: http
+  seq: 5
+}
+
+patch {
+  url: {{baseUrl}}/api/v1/squads/{{squadId}}/sprints/{{sprintId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "name": "Sprint 1 (updated)",
+    "goal": "Deliver core authentication and profile flow"
+  }
+}

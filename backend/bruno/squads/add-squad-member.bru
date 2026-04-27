@@ -1,0 +1,15 @@
+meta {
+  name: Add Squad Member
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{baseUrl}}/api/v1/squads/{{squadId}}/members/{{memberId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}

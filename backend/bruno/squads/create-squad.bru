@@ -1,0 +1,30 @@
+meta {
+  name: Create Squad
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/v1/squads
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "name": "Search Relevance",
+    "description": "Relevance and ranking team",
+    "tribeId": "{{tribeId}}",
+    "missionStatement": "Make search results delightful"
+  }
+}
+
+script:post-response {
+  if (res.status === 201) {
+    bru.setVar("squadId", res.body.id);
+  }
+}

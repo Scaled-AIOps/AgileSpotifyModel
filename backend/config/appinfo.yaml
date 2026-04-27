@@ -1,0 +1,622 @@
+# AppInfo seed data consumed by scripts/mock_appinfo.js
+# 51 apps across all 16 squads. Status mix:
+#   ~40 active, 3 inactive, 5 marked-for-decommissioning, 3 failed
+#
+# IMPORTANT: every `squad` and `*Platform` value must already exist in Redis
+# (squad.key / infra.platformId). Seed squads + infra FIRST:
+#   node scripts/mock_data.js seed
+#   node scripts/mock_infra.js seed
+#   node scripts/mock_appinfo.js seed
+
+# ─── platform (3) ───────────────────────────────────────────────────────────
+- appId: auth-api
+  gitRepo: https://github.com/example/auth-api
+  squad: platform
+  intPlatform: backend-int-cluster
+  uatPlatform: backend-uat-cluster
+  prdPlatform: backend-prd-cluster
+  intUrl: https://gw-int-auth-api.intranet.example.com
+  uatUrl: https://gw-uat-auth-api.intranet.example.com
+  prdUrl: https://gw-prd-auth-api.intranet.example.com
+  probeHealth: /health
+  probeInfo: /info
+  probeLiveness: /health/liveness
+  probeReadiness: /health/readiness
+  status: active
+  tags: { criticality: high, pillar: platform }
+
+- appId: config-service
+  gitRepo: https://github.com/example/config-service
+  squad: platform
+  intPlatform: backend-int-cluster
+  uatPlatform: backend-uat-cluster
+  prdPlatform: backend-prd-cluster
+  intUrl: https://gw-int-config.intranet.example.com
+  uatUrl: https://gw-uat-config.intranet.example.com
+  prdUrl: https://gw-prd-config.intranet.example.com
+  probeHealth: /health
+  probeReadiness: /health/readiness
+  status: active
+  tags: { criticality: high, pillar: platform }
+
+- appId: health-checker
+  gitRepo: https://github.com/example/health-checker
+  squad: platform
+  intPlatform: backend-int-gcp
+  prdPlatform: backend-prd-gcp
+  intUrl: https://gw-int-healthcheck.example.com
+  prdUrl: https://gw-prd-healthcheck.example.com
+  probeHealth: /health
+  status: active
+  tags: { criticality: medium, pillar: platform }
+
+# ─── payments (4) ───────────────────────────────────────────────────────────
+- appId: payments-api
+  gitRepo: https://github.com/example/payments-api
+  squad: payments
+  intPlatform: backend-int-cluster
+  uatPlatform: backend-uat-cluster
+  prdPlatform: backend-prd-cluster
+  intUrl: https://gw-int-payments.intranet.example.com
+  uatUrl: https://gw-uat-payments.intranet.example.com
+  prdUrl: https://gw-prd-payments.intranet.example.com
+  probeHealth: /health
+  probeInfo: /info
+  probeLiveness: /health/liveness
+  probeReadiness: /health/readiness
+  status: active
+  tags: { criticality: high, pillar: commerce, pci: "true" }
+
+- appId: invoice-service
+  gitRepo: https://github.com/example/invoice-service
+  squad: payments
+  intPlatform: backend-int-gcp
+  uatPlatform: backend-uat-gcp
+  prdPlatform: backend-prd-gcp
+  intUrl: https://gw-int-invoice.example.com
+  uatUrl: https://gw-uat-invoice.example.com
+  prdUrl: https://gw-prd-invoice.example.com
+  probeHealth: /health
+  probeReadiness: /health/readiness
+  status: active
+  tags: { criticality: high, pillar: commerce }
+
+- appId: refund-worker
+  gitRepo: https://github.com/example/refund-worker
+  squad: payments
+  intPlatform: backend-int-gcp
+  uatPlatform: backend-uat-gcp
+  prdPlatform: backend-prd-gcp
+  intUrl: https://gw-int-refund.example.com
+  uatUrl: https://gw-uat-refund.example.com
+  prdUrl: https://gw-prd-refund.example.com
+  probeHealth: /health
+  status: active
+  tags: { criticality: high, pillar: commerce }
+
+- appId: payments-admin-ui
+  gitRepo: https://github.com/example/payments-admin-ui
+  squad: payments
+  prdPlatform: frontend-prd-cluster
+  uatPlatform: frontend-uat-cluster
+  prdUrl: https://gw-prd-payments-admin.intranet.example.com
+  uatUrl: https://gw-uat-payments-admin.intranet.example.com
+  probeHealth: /healthz
+  status: active
+  tags: { criticality: medium, pillar: commerce }
+
+# ─── checkout (3) ───────────────────────────────────────────────────────────
+- appId: checkout-web
+  gitRepo: https://github.com/example/checkout-web
+  squad: checkout
+  uatPlatform: frontend-uat-cluster
+  prdPlatform: frontend-prd-cluster
+  uatUrl: https://gw-uat-checkout.intranet.example.com
+  prdUrl: https://gw-prd-checkout.intranet.example.com
+  probeHealth: /healthz
+  status: active
+  tags: { criticality: high, pillar: commerce }
+
+- appId: cart-service
+  gitRepo: https://github.com/example/cart-service
+  squad: checkout
+  intPlatform: backend-int-cluster
+  uatPlatform: backend-uat-cluster
+  prdPlatform: backend-prd-cluster
+  intUrl: https://gw-int-cart.intranet.example.com
+  uatUrl: https://gw-uat-cart.intranet.example.com
+  prdUrl: https://gw-prd-cart.intranet.example.com
+  probeHealth: /health
+  probeReadiness: /health/readiness
+  status: active
+  tags: { criticality: high, pillar: commerce }
+
+- appId: checkout-legacy
+  gitRepo: https://github.com/example/checkout-legacy
+  squad: checkout
+  prdPlatform: backend-prd-cluster
+  prdUrl: https://gw-prd-checkout-legacy.intranet.example.com
+  probeHealth: /health
+  status: marked-for-decommissioning
+  tags: { criticality: low, sunset: "2026-Q3" }
+
+# ─── identity (3) ───────────────────────────────────────────────────────────
+- appId: auth-gateway
+  gitRepo: https://github.com/example/auth-gateway
+  squad: identity
+  intPlatform: backend-int-cluster
+  uatPlatform: backend-uat-cluster
+  prdPlatform: backend-prd-cluster
+  intUrl: https://gw-int-auth.intranet.example.com
+  uatUrl: https://gw-uat-auth.intranet.example.com
+  prdUrl: https://gw-prd-auth.intranet.example.com
+  probeHealth: /health
+  probeLiveness: /health/liveness
+  probeReadiness: /health/readiness
+  status: active
+  tags: { criticality: high, pillar: security }
+
+- appId: user-directory
+  gitRepo: https://github.com/example/user-directory
+  squad: identity
+  intPlatform: backend-int-cluster
+  uatPlatform: backend-uat-cluster
+  prdPlatform: backend-prd-cluster
+  intUrl: https://gw-int-userdir.intranet.example.com
+  uatUrl: https://gw-uat-userdir.intranet.example.com
+  prdUrl: https://gw-prd-userdir.intranet.example.com
+  probeHealth: /health
+  status: active
+  tags: { criticality: medium, pillar: security }
+
+- appId: sso-bridge
+  gitRepo: https://github.com/example/sso-bridge
+  squad: identity
+  intPlatform: backend-int-cluster
+  intUrl: https://gw-int-sso.intranet.example.com
+  probeHealth: /health
+  status: inactive
+  tags: { criticality: low, pillar: security }
+
+# ─── search (3) ─────────────────────────────────────────────────────────────
+- appId: search-api
+  gitRepo: https://github.com/example/search-api
+  squad: search
+  intPlatform: backend-int-cluster
+  uatPlatform: backend-uat-cluster
+  prdPlatform: backend-prd-cluster
+  intUrl: https://gw-int-search.intranet.example.com
+  uatUrl: https://gw-uat-search.intranet.example.com
+  prdUrl: https://gw-prd-search.intranet.example.com
+  probeHealth: /health
+  probeReadiness: /health/readiness
+  status: active
+  tags: { criticality: high, pillar: discovery }
+
+- appId: indexer
+  gitRepo: https://github.com/example/indexer
+  squad: search
+  intPlatform: backend-int-cluster
+  prdPlatform: backend-prd-cluster
+  intUrl: https://gw-int-indexer.intranet.example.com
+  prdUrl: https://gw-prd-indexer.intranet.example.com
+  probeHealth: /health
+  status: active
+  tags: { criticality: medium, pillar: discovery }
+
+- appId: search-suggest
+  gitRepo: https://github.com/example/search-suggest
+  squad: search
+  intPlatform: backend-int-gcp
+  uatPlatform: backend-uat-gcp
+  prdPlatform: backend-prd-gcp
+  intUrl: https://gw-int-suggest.example.com
+  uatUrl: https://gw-uat-suggest.example.com
+  prdUrl: https://gw-prd-suggest.example.com
+  probeHealth: /health
+  status: active
+  tags: { criticality: medium, pillar: discovery }
+
+# ─── recommendations (4) ────────────────────────────────────────────────────
+- appId: recs-api
+  gitRepo: https://github.com/example/recs-api
+  squad: recommendations
+  intPlatform: backend-int-cluster
+  uatPlatform: backend-uat-cluster
+  prdPlatform: backend-prd-cluster
+  intUrl: https://gw-int-recs-api.intranet.example.com
+  uatUrl: https://gw-uat-recs-api.intranet.example.com
+  prdUrl: https://gw-prd-recs-api.intranet.example.com
+  probeHealth: /health
+  probeInfo: /info
+  probeLiveness: /health/liveness
+  probeReadiness: /health/readiness
+  status: active
+  tags: { criticality: high, pillar: discovery }
+
+- appId: recs-feature-store
+  gitRepo: https://github.com/example/recs-feature-store
+  squad: recommendations
+  devPlatform: backend-dev-gcp
+  intPlatform: backend-int-gcp
+  uatPlatform: backend-uat-gcp
+  prdPlatform: backend-prd-gcp
+  devUrl: https://gw-dev-feature-store.example.com
+  intUrl: https://gw-int-feature-store.example.com
+  uatUrl: https://gw-uat-feature-store.example.com
+  prdUrl: https://gw-prd-feature-store.example.com
+  probeHealth: /health
+  probeReadiness: /health/ready
+  status: active
+  tags: { criticality: medium, pillar: discovery }
+
+- appId: ranking-trainer
+  gitRepo: https://github.com/example/ranking-trainer
+  squad: recommendations
+  devPlatform: data-pipeline-dev
+  intPlatform: data-pipeline-int
+  uatPlatform: data-pipeline-uat
+  prdPlatform: data-pipeline-prd
+  probeHealth: /health
+  status: active
+  tags: { criticality: medium, pillar: discovery, kind: batch }
+
+- appId: recs-admin
+  gitRepo: https://github.com/example/recs-admin
+  squad: recommendations
+  uatPlatform: frontend-uat-cluster
+  uatUrl: https://gw-uat-recs-admin.intranet.example.com
+  probeHealth: /healthz
+  status: inactive
+  tags: { criticality: low, pillar: discovery }
+
+# ─── mobile (3) ─────────────────────────────────────────────────────────────
+- appId: ios-app
+  gitRepo: https://github.com/example/ios-app
+  squad: mobile
+  status: active
+  tags: { criticality: high, pillar: apps, store: app-store }
+
+- appId: android-app
+  gitRepo: https://github.com/example/android-app
+  squad: mobile
+  status: active
+  tags: { criticality: high, pillar: apps, store: play-store }
+
+- appId: mobile-bff
+  gitRepo: https://github.com/example/mobile-bff
+  squad: mobile
+  intPlatform: backend-int-cluster
+  uatPlatform: backend-uat-cluster
+  prdPlatform: backend-prd-cluster
+  intUrl: https://gw-int-mobile-bff.intranet.example.com
+  uatUrl: https://gw-uat-mobile-bff.intranet.example.com
+  prdUrl: https://gw-prd-mobile-bff.intranet.example.com
+  probeHealth: /health
+  probeReadiness: /health/readiness
+  status: active
+  tags: { criticality: high, pillar: apps }
+
+# ─── web (3) ────────────────────────────────────────────────────────────────
+- appId: marketing-site
+  gitRepo: https://github.com/example/marketing-site
+  squad: web
+  prdPlatform: frontend-prd-cluster
+  uatPlatform: frontend-uat-cluster
+  uatUrl: https://gw-uat-marketing.intranet.example.com
+  prdUrl: https://example.com
+  probeHealth: /healthz
+  status: active
+  tags: { criticality: medium, pillar: apps }
+
+- appId: customer-portal
+  gitRepo: https://github.com/example/customer-portal
+  squad: web
+  uatPlatform: frontend-uat-cluster
+  prdPlatform: frontend-prd-cluster
+  uatUrl: https://gw-uat-portal.intranet.example.com
+  prdUrl: https://gw-prd-portal.intranet.example.com
+  probeHealth: /healthz
+  status: active
+  tags: { criticality: high, pillar: apps }
+
+- appId: legacy-cms
+  gitRepo: https://github.com/example/legacy-cms
+  squad: web
+  prdPlatform: frontend-prd-cluster
+  prdUrl: https://gw-prd-cms.intranet.example.com
+  probeHealth: /healthz
+  status: failed
+  tags: { criticality: low, pillar: apps, incident: "INC-9923" }
+
+# ─── data-platform (3) ──────────────────────────────────────────────────────
+- appId: datalake-loader
+  gitRepo: https://github.com/example/datalake-loader
+  squad: data-platform
+  devPlatform: data-pipeline-dev
+  intPlatform: data-pipeline-int
+  uatPlatform: data-pipeline-uat
+  prdPlatform: data-pipeline-prd
+  probeHealth: /health
+  status: active
+  tags: { criticality: high, pillar: data, kind: batch }
+
+- appId: kafka-bridge
+  gitRepo: https://github.com/example/kafka-bridge
+  squad: data-platform
+  intPlatform: backend-int-cluster
+  uatPlatform: backend-uat-cluster
+  prdPlatform: backend-prd-cluster
+  intUrl: https://gw-int-kafka.intranet.example.com
+  prdUrl: https://gw-prd-kafka.intranet.example.com
+  probeHealth: /health
+  status: active
+  tags: { criticality: high, pillar: data }
+
+- appId: dbt-runner
+  gitRepo: https://github.com/example/dbt-runner
+  squad: data-platform
+  devPlatform: data-pipeline-dev
+  intPlatform: data-pipeline-int
+  prdPlatform: data-pipeline-prd
+  probeHealth: /health
+  status: active
+  tags: { criticality: medium, pillar: data, kind: batch }
+
+# ─── analytics (3) ──────────────────────────────────────────────────────────
+- appId: looker-metrics
+  gitRepo: https://github.com/example/looker-metrics
+  squad: analytics
+  prdPlatform: backend-prd-gcp
+  prdUrl: https://gw-prd-looker.example.com
+  probeHealth: /health
+  status: active
+  tags: { criticality: medium, pillar: data }
+
+- appId: events-pipeline
+  gitRepo: https://github.com/example/events-pipeline
+  squad: analytics
+  intPlatform: data-pipeline-int
+  uatPlatform: data-pipeline-uat
+  prdPlatform: data-pipeline-prd
+  probeHealth: /health
+  status: active
+  tags: { criticality: high, pillar: data, kind: stream }
+
+- appId: ab-results-worker
+  gitRepo: https://github.com/example/ab-results-worker
+  squad: analytics
+  intPlatform: data-pipeline-int
+  prdPlatform: data-pipeline-prd
+  probeHealth: /health
+  status: active
+  tags: { criticality: medium, pillar: data }
+
+# ─── notifications (4) ──────────────────────────────────────────────────────
+- appId: email-worker
+  gitRepo: https://github.com/example/email-worker
+  squad: notifications
+  intPlatform: backend-int-gcp
+  uatPlatform: backend-uat-gcp
+  prdPlatform: backend-prd-gcp
+  intUrl: https://gw-int-email.example.com
+  uatUrl: https://gw-uat-email.example.com
+  prdUrl: https://gw-prd-email.example.com
+  probeHealth: /health
+  probeReadiness: /health/readiness
+  status: active
+  tags: { criticality: high, pillar: messaging }
+
+- appId: sms-gateway
+  gitRepo: https://github.com/example/sms-gateway
+  squad: notifications
+  intPlatform: backend-int-gcp
+  uatPlatform: backend-uat-gcp
+  prdPlatform: backend-prd-gcp
+  intUrl: https://gw-int-sms.example.com
+  uatUrl: https://gw-uat-sms.example.com
+  prdUrl: https://gw-prd-sms.example.com
+  probeHealth: /health
+  status: active
+  tags: { criticality: high, pillar: messaging }
+
+- appId: push-hub
+  gitRepo: https://github.com/example/push-hub
+  squad: notifications
+  intPlatform: backend-int-gcp
+  uatPlatform: backend-uat-gcp
+  prdPlatform: backend-prd-gcp
+  intUrl: https://gw-int-push.example.com
+  uatUrl: https://gw-uat-push.example.com
+  prdUrl: https://gw-prd-push.example.com
+  probeHealth: /health
+  status: active
+  tags: { criticality: medium, pillar: messaging }
+
+- appId: legacy-pager
+  gitRepo: https://github.com/example/legacy-pager
+  squad: notifications
+  prdPlatform: backend-prd-cluster
+  prdUrl: https://gw-prd-pager.intranet.example.com
+  probeHealth: /health
+  status: marked-for-decommissioning
+  tags: { criticality: low, sunset: "2026-Q2" }
+
+# ─── observability (3) ──────────────────────────────────────────────────────
+- appId: log-pipeline
+  gitRepo: https://github.com/example/log-pipeline
+  squad: observability
+  intPlatform: backend-int-cluster
+  prdPlatform: backend-prd-cluster
+  intUrl: https://gw-int-logs.intranet.example.com
+  prdUrl: https://gw-prd-logs.intranet.example.com
+  probeHealth: /health
+  status: active
+  tags: { criticality: high, pillar: platform }
+
+- appId: metrics-agent
+  gitRepo: https://github.com/example/metrics-agent
+  squad: observability
+  localPlatform: backend-local-cluster
+  intPlatform: backend-int-cluster
+  prdPlatform: backend-prd-cluster
+  probeHealth: /health
+  status: active
+  tags: { criticality: high, pillar: platform }
+
+- appId: trace-collector
+  gitRepo: https://github.com/example/trace-collector
+  squad: observability
+  intPlatform: backend-int-cluster
+  uatPlatform: backend-uat-cluster
+  prdPlatform: backend-prd-cluster
+  intUrl: https://gw-int-traces.intranet.example.com
+  prdUrl: https://gw-prd-traces.intranet.example.com
+  probeHealth: /health
+  status: active
+  tags: { criticality: medium, pillar: platform }
+
+# ─── devex (3) ──────────────────────────────────────────────────────────────
+- appId: ci-runner
+  gitRepo: https://github.com/example/ci-runner
+  squad: devex
+  prdPlatform: backend-prd-cluster
+  prdUrl: https://gw-prd-ci.intranet.example.com
+  probeHealth: /health
+  status: active
+  tags: { criticality: high, pillar: platform }
+
+- appId: build-cache
+  gitRepo: https://github.com/example/build-cache
+  squad: devex
+  prdPlatform: backend-prd-cluster
+  prdUrl: https://gw-prd-cache.intranet.example.com
+  probeHealth: /health
+  status: active
+  tags: { criticality: medium, pillar: platform }
+
+- appId: cli-tools
+  gitRepo: https://github.com/example/cli-tools
+  squad: devex
+  status: active
+  tags: { criticality: medium, pillar: platform, kind: cli }
+
+# ─── fraud (3) ──────────────────────────────────────────────────────────────
+- appId: risk-api
+  gitRepo: https://github.com/example/risk-api
+  squad: fraud
+  intPlatform: backend-int-cluster
+  uatPlatform: backend-uat-cluster
+  prdPlatform: backend-prd-cluster
+  intUrl: https://gw-int-risk.intranet.example.com
+  uatUrl: https://gw-uat-risk.intranet.example.com
+  prdUrl: https://gw-prd-risk.intranet.example.com
+  probeHealth: /health
+  probeReadiness: /health/readiness
+  status: active
+  tags: { criticality: high, pillar: security }
+
+- appId: rules-engine
+  gitRepo: https://github.com/example/rules-engine
+  squad: fraud
+  intPlatform: backend-int-cluster
+  uatPlatform: backend-uat-cluster
+  prdPlatform: backend-prd-cluster
+  intUrl: https://gw-int-rules.intranet.example.com
+  uatUrl: https://gw-uat-rules.intranet.example.com
+  prdUrl: https://gw-prd-rules.intranet.example.com
+  probeHealth: /health
+  status: active
+  tags: { criticality: high, pillar: security }
+
+- appId: fraud-legacy
+  gitRepo: https://github.com/example/fraud-legacy
+  squad: fraud
+  prdPlatform: backend-prd-cluster
+  prdUrl: https://gw-prd-fraud-legacy.intranet.example.com
+  probeHealth: /healthz
+  status: marked-for-decommissioning
+  tags: { criticality: low, sunset: "2026-Q3" }
+
+# ─── support-tools (3) ──────────────────────────────────────────────────────
+- appId: agent-console
+  gitRepo: https://github.com/example/agent-console
+  squad: support-tools
+  uatPlatform: frontend-uat-cluster
+  prdPlatform: frontend-prd-cluster
+  uatUrl: https://gw-uat-agent.intranet.example.com
+  prdUrl: https://gw-prd-agent.intranet.example.com
+  probeHealth: /healthz
+  status: active
+  tags: { criticality: medium, pillar: apps }
+
+- appId: case-manager
+  gitRepo: https://github.com/example/case-manager
+  squad: support-tools
+  intPlatform: backend-int-cluster
+  uatPlatform: backend-uat-cluster
+  prdPlatform: backend-prd-cluster
+  intUrl: https://gw-int-cases.intranet.example.com
+  uatUrl: https://gw-uat-cases.intranet.example.com
+  prdUrl: https://gw-prd-cases.intranet.example.com
+  probeHealth: /health
+  status: active
+  tags: { criticality: medium, pillar: apps }
+
+- appId: broken-old-tool
+  gitRepo: https://github.com/example/broken-old-tool
+  squad: support-tools
+  intPlatform: backend-int-cluster
+  intUrl: https://gw-int-broken.intranet.example.com
+  probeHealth: /health
+  status: failed
+  tags: { criticality: low, incident: "INC-9912" }
+
+# ─── growth (3) ─────────────────────────────────────────────────────────────
+- appId: ab-test-service
+  gitRepo: https://github.com/example/ab-test-service
+  squad: growth
+  intPlatform: backend-int-cluster
+  uatPlatform: backend-uat-cluster
+  prdPlatform: backend-prd-cluster
+  intUrl: https://gw-int-ab.intranet.example.com
+  uatUrl: https://gw-uat-ab.intranet.example.com
+  prdUrl: https://gw-prd-ab.intranet.example.com
+  probeHealth: /health
+  probeReadiness: /health/readiness
+  status: active
+  tags: { criticality: medium, pillar: growth }
+
+- appId: feature-flags
+  gitRepo: https://github.com/example/feature-flags
+  squad: growth
+  intPlatform: backend-int-cluster
+  uatPlatform: backend-uat-cluster
+  prdPlatform: backend-prd-cluster
+  intUrl: https://gw-int-flags.intranet.example.com
+  uatUrl: https://gw-uat-flags.intranet.example.com
+  prdUrl: https://gw-prd-flags.intranet.example.com
+  probeHealth: /health
+  status: active
+  tags: { criticality: high, pillar: growth }
+
+- appId: legacy-flags
+  gitRepo: https://github.com/example/legacy-flags
+  squad: growth
+  prdPlatform: backend-prd-cluster
+  prdUrl: https://gw-prd-flags-old.intranet.example.com
+  probeHealth: /health
+  status: inactive
+  tags: { criticality: low, pillar: growth }
+
+# ─── tail: failed/marked-for-decommissioning balance ─────────────────────────
+- appId: legacy-feature-flags
+  gitRepo: https://github.com/example/legacy-feature-flags
+  squad: growth
+  intPlatform: frontend-uat-cluster
+  prdPlatform: frontend-prd-cluster
+  intUrl: https://gw-int-flags-old-ui.intranet.example.com
+  prdUrl: https://gw-prd-flags-old-ui.intranet.example.com
+  probeHealth: /health
+  status: marked-for-decommissioning
+  tags: { criticality: low, sunset: "2026-Q4" }

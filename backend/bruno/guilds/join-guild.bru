@@ -1,0 +1,15 @@
+meta {
+  name: Join Guild
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{baseUrl}}/api/v1/guilds/{{guildId}}/members/{{memberId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}

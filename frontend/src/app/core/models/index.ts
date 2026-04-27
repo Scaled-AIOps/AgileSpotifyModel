@@ -1,0 +1,209 @@
+export type Role = 'Admin' | 'TribeLead' | 'PO' | 'AgileCoach' | 'ReleaseManager' | 'Member';
+
+export interface User {
+  id: string;
+  email: string;
+  role: Role;
+  memberId: string;
+  createdAt: string;
+}
+
+export const SQUAD_ROLES = [
+  'Frontend Dev', 'Backend Dev', 'Full Stack Dev', 'BA', 'SM',
+  'Tester', 'DevOps', 'AO', 'EM', 'Designer',
+  'Data Engineer', 'ML Engineer', 'SRE', 'Tech Lead', 'Architect',
+] as const;
+
+export interface Member {
+  id: string;
+  name: string;
+  email: string;
+  avatarUrl: string;
+  role: Role;
+  squadId: string;
+  squadRole: string;
+  chapterId: string;
+}
+
+export interface Domain {
+  id: string;
+  name: string;
+  description: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface SubDomain {
+  id: string;
+  name: string;
+  description: string;
+  domainId: string;
+}
+
+export interface Tribe {
+  id: string;
+  name: string;
+  description: string;
+  domainId: string;
+  subdomainId: string;
+  leadMemberId: string;
+  releaseManager: string;
+  agileCoach: string;
+  confluence: string;
+}
+
+export interface Squad {
+  id: string;
+  name: string;
+  description: string;
+  tribeId: string;
+  leadMemberId: string;
+  missionStatement: string;
+  key: string;
+  po: string;
+  sm: string;
+  jira: string;
+  confluence: string;
+  mailingList: string;
+  tier: string;
+  memberCount?: number;
+}
+
+export interface Chapter {
+  id: string;
+  name: string;
+  discipline: string;
+  tribeId: string;
+  leadMemberId: string;
+}
+
+export interface Guild {
+  id: string;
+  name: string;
+  description: string;
+  ownerMemberId: string;
+}
+
+export type BacklogStatus = 'Backlog' | 'InProgress' | 'Review' | 'Done';
+export type BacklogType = 'Story' | 'Bug' | 'Task' | 'Epic';
+
+export interface BacklogItem {
+  id: string;
+  squadId: string;
+  title: string;
+  description: string;
+  type: BacklogType;
+  status: BacklogStatus;
+  priority: number;
+  storyPoints: number;
+  sprintId: string;
+  assigneeId: string;
+  epicId: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type SprintStatus = 'Planning' | 'Active' | 'Completed';
+
+export interface Sprint {
+  id: string;
+  squadId: string;
+  name: string;
+  goal: string;
+  status: SprintStatus;
+  startDate: string;
+  endDate: string;
+  velocity: number;
+}
+
+// ── AIOps / App Registry ──────────────────────────────────────────────────────
+
+export type AppStatus = 'active' | 'inactive' | 'marked-for-decommissioning' | 'failed';
+export type DeployState = 'success' | 'failed' | 'pending' | 'rolledback';
+
+export interface App {
+  appId: string;
+  gitRepo: string;
+  squadId: string;
+  squadKey: string;
+  status: AppStatus;
+  tags: string;
+  platforms: string;
+  urls: string;
+  probeHealth: string;
+  probeInfo: string;
+  probeLiveness: string;
+  probeReadiness: string;
+  javaVersion: string;
+  javaComplianceStatus: string;
+  artifactoryUrl: string;
+  xrayUrl: string;
+  compositionViewerUrl: string;
+  splunkUrl: string;
+  createdAt: string;
+}
+
+export interface AppDeployment {
+  appId: string;
+  env: string;
+  version: string;
+  commitId: string;
+  branch: string;
+  deployedBy: string;
+  state: DeployState;
+  deployedAt: string;
+  notes: string;
+  xray: string;
+  javaVersion: string;
+  javaComplianceStatus: string;
+  changeRequest: string;
+}
+
+export interface AppWithDeploys extends App {
+  latestDeploys: Record<string, AppDeployment>;
+  editable: boolean;
+}
+
+export interface AuditEntry {
+  id: string;
+  appId: string;
+  userId: string;
+  userEmail: string;
+  changedAt: string;
+  action: string;
+  changes: Record<string, { from: string; to: string }>;
+}
+
+export interface InfraCluster {
+  platformId: string;
+  name: string;
+  clusterId: string;
+  environment: string;
+  host: string;
+  routeHostName: string;
+  platform: string;
+  platformType: string;
+  tokenId: string;
+  tags: string;
+  createdAt: string;
+}
+
+// ── Org tree node shape returned by GET /org/tree ─────────────────────────────
+// (was "Org tree node shape returned by GET /org/tree")
+export interface OrgTreeSquad extends Squad {
+  memberCount: number;
+  appCount: number;
+}
+
+export interface OrgTreeTribe extends Tribe {
+  squads: OrgTreeSquad[];
+}
+
+export interface OrgTreeSubDomain extends SubDomain {
+  tribes: OrgTreeTribe[];
+}
+
+export interface OrgTreeDomain extends Domain {
+  subdomains: OrgTreeSubDomain[];
+  tribes: OrgTreeTribe[];
+}

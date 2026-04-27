@@ -1,0 +1,22 @@
+meta {
+  name: Update Backlog Item
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{baseUrl}}/api/v1/squads/{{squadId}}/backlog/{{backlogItemId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "title": "Implement user authentication (updated)",
+    "storyPoints": 8
+  }
+}

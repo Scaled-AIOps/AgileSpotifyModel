@@ -1,0 +1,21 @@
+meta {
+  name: Assign Squad Lead
+  type: http
+  seq: 9
+}
+
+patch {
+  url: {{baseUrl}}/api/v1/squads/{{squadId}}/lead
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "leadMemberId": "{{memberId}}"
+  }
+}

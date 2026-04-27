@@ -1,0 +1,15 @@
+meta {
+  name: Delete Backlog Item
+  type: http
+  seq: 7
+}
+
+delete {
+  url: {{baseUrl}}/api/v1/squads/{{squadId}}/backlog/{{backlogItemId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}

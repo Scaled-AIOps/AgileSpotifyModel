@@ -1,0 +1,15 @@
+meta {
+  name: Get Active Sprint
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/api/v1/squads/{{squadId}}/sprints/active
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}

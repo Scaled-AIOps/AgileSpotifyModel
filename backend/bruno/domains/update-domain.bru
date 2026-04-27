@@ -1,0 +1,22 @@
+meta {
+  name: Update Domain
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{baseUrl}}/api/v1/domains/{{domainId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "name": "Platform Engineering (updated)",
+    "description": "Updated description"
+  }
+}

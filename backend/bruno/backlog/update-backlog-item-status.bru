@@ -1,0 +1,21 @@
+meta {
+  name: Update Backlog Item Status
+  type: http
+  seq: 5
+}
+
+patch {
+  url: {{baseUrl}}/api/v1/squads/{{squadId}}/backlog/{{backlogItemId}}/status
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "status": "InProgress"
+  }
+}

@@ -1,0 +1,548 @@
+# Squad seed data consumed by scripts/mock_data.js
+# Edit this file to change the seed set; the script just POSTs each entry.
+
+- key: platform
+  name: Platform
+  description: Core platform services and shared infrastructure
+  po: bob.patel@example.com
+  sm: carol.diaz@example.com
+  ao:
+    - dave.kim@example.com
+  tribe: Infrastructure
+  tribeDomain: Engineering
+  subDomain: SRE
+  mailingList:
+    - platform@example.com
+  jira: https://jira.example.com/projects/PLAT
+  github: https://github.com/example/platform
+  confluence: https://confluence.example.com/display/PLAT
+  devops:
+    - eve.torres@example.com
+  sre:
+    - alice.nguyen@example.com
+    - frank.li@example.com
+  backendDevs:
+    - grace.park@example.com
+    - heidi.ahmed@example.com
+  frontendDevs:
+    - ivan.popov@example.com
+  qa:
+    - judy.stone@example.com
+  members:
+    - alice@example.com
+    - bob@example.com
+    - carol@example.com
+    - dave@example.com
+  productsService:
+    - auth-api
+    - config-service
+  tags:
+    pillar: platform
+    tier: '1'
+- key: payments
+  name: Payments
+  description: Payment processing, billing, and invoicing
+  po: priya.shah@example.com
+  sm: tom.oliveira@example.com
+  ao:
+    - nina.roth@example.com
+  tribe: Commerce
+  tribeDomain: Business
+  subDomain: Billing
+  mailingList:
+    - payments@example.com
+  jira: https://jira.example.com/projects/PAY
+  github: https://github.com/example/payments
+  confluence: https://confluence.example.com/display/PAY
+  devops:
+    - ken.arai@example.com
+  sre:
+    - rita.hall@example.com
+  backendDevs:
+    - sam.ortiz@example.com
+    - lin.zhao@example.com
+    - omar.said@example.com
+  frontendDevs:
+    - uma.rao@example.com
+  qa:
+    - vera.lind@example.com
+    - wes.chan@example.com
+  members:
+    - marcus@example.com
+    - priya@example.com
+    - tom@example.com
+  productsService:
+    - payments-api
+    - invoice-service
+    - refund-worker
+  tags:
+    pillar: commerce
+    tier: '0'
+- key: checkout
+  name: Checkout
+  description: Cart and checkout flows for web and mobile
+  po: neil.hart@example.com
+  sm: jae.min@example.com
+  ao:
+    - luca.bianchi@example.com
+  tribe: Commerce
+  tribeDomain: Business
+  subDomain: Storefront
+  mailingList:
+    - checkout@example.com
+  jira: https://jira.example.com/projects/CHK
+  github: https://github.com/example/checkout
+  confluence: https://confluence.example.com/display/CHK
+  devops:
+    - maya.finn@example.com
+  sre:
+    - dana.voss@example.com
+  backendDevs:
+    - ed.reyes@example.com
+  frontendDevs:
+    - fiona.ng@example.com
+    - gus.klein@example.com
+    - hana.ito@example.com
+  qa:
+    - ira.cole@example.com
+  members: []
+  productsService:
+    - checkout-web
+    - cart-service
+  tags:
+    pillar: commerce
+    tier: '1'
+- key: identity
+  name: Identity
+  description: Authentication, SSO, and user directory
+  po: clara.vogt@example.com
+  sm: ben.park@example.com
+  ao:
+    - mei.tanaka@example.com
+  tribe: Security
+  tribeDomain: Engineering
+  subDomain: AppSec
+  mailingList:
+    - identity@example.com
+  jira: https://jira.example.com/projects/ID
+  github: https://github.com/example/identity
+  confluence: https://confluence.example.com/display/ID
+  devops:
+    - noah.field@example.com
+  sre:
+    - otis.pace@example.com
+    - pia.ruiz@example.com
+  backendDevs:
+    - quin.bauer@example.com
+    - ravi.shah@example.com
+  frontendDevs:
+    - sena.aoki@example.com
+  qa:
+    - tara.ray@example.com
+  members: []
+  productsService:
+    - auth-gateway
+    - user-directory
+  tags:
+    pillar: security
+    tier: '0'
+- key: search
+  name: Search
+  description: Search indexing, ranking, and query pipeline
+  po: iris.solano@example.com
+  sm: jon.baird@example.com
+  ao:
+    - kira.lund@example.com
+  tribe: Discovery
+  tribeDomain: Product
+  subDomain: Relevance
+  mailingList:
+    - search@example.com
+  jira: https://jira.example.com/projects/SRCH
+  github: https://github.com/example/search
+  confluence: https://confluence.example.com/display/SRCH
+  devops:
+    - lex.marin@example.com
+  sre:
+    - mira.shaw@example.com
+  backendDevs:
+    - nate.cruz@example.com
+    - owen.hale@example.com
+    - paz.vega@example.com
+  frontendDevs: []
+  qa:
+    - quinn.ash@example.com
+  members: []
+  productsService:
+    - search-api
+    - indexer
+  tags:
+    pillar: discovery
+    tier: '1'
+- key: recommendations
+  name: Recommendations
+  description: Personalization and ranking models
+  po: ulf.berg@example.com
+  sm: van.ho@example.com
+  ao:
+    - will.okafor@example.com
+  tribe: Discovery
+  tribeDomain: Product
+  subDomain: ML
+  mailingList:
+    - recs@example.com
+  jira: https://jira.example.com/projects/REC
+  github: https://github.com/example/recs
+  confluence: https://confluence.example.com/display/REC
+  devops:
+    - xia.wen@example.com
+  sre:
+    - yara.ali@example.com
+  backendDevs:
+    - zane.holt@example.com
+    - ana.rossi@example.com
+  frontendDevs:
+    - bea.ford@example.com
+  qa:
+    - cruz.nava@example.com
+  members: []
+  productsService:
+    - recs-api
+    - feature-store
+  tags:
+    pillar: discovery
+    tier: '2'
+- key: mobile
+  name: Mobile
+  description: iOS and Android apps
+  po: ema.ruiz@example.com
+  sm: finn.lee@example.com
+  ao:
+    - gia.mori@example.com
+  tribe: Apps
+  tribeDomain: Product
+  subDomain: Mobile
+  mailingList:
+    - mobile@example.com
+  jira: https://jira.example.com/projects/MOB
+  github: https://github.com/example/mobile
+  confluence: https://confluence.example.com/display/MOB
+  devops:
+    - hank.ort@example.com
+  sre:
+    - ida.park@example.com
+  backendDevs: []
+  frontendDevs:
+    - jack.tam@example.com
+    - kay.ovi@example.com
+    - leo.crag@example.com
+    - mae.fenn@example.com
+  qa:
+    - nik.bose@example.com
+  members: []
+  productsService:
+    - ios-app
+    - android-app
+  tags:
+    pillar: apps
+    tier: '1'
+- key: web
+  name: Web
+  description: Marketing site and customer web portal
+  po: pim.boer@example.com
+  sm: quan.vu@example.com
+  ao:
+    - rea.flynn@example.com
+  tribe: Apps
+  tribeDomain: Product
+  subDomain: Web
+  mailingList:
+    - web@example.com
+  jira: https://jira.example.com/projects/WEB
+  github: https://github.com/example/web
+  confluence: https://confluence.example.com/display/WEB
+  devops:
+    - sil.daoud@example.com
+  sre:
+    - tess.vogt@example.com
+  backendDevs:
+    - uri.klein@example.com
+  frontendDevs:
+    - vin.akoto@example.com
+    - wyn.cho@example.com
+    - xen.rai@example.com
+  qa:
+    - yas.sun@example.com
+  members: []
+  productsService:
+    - marketing-site
+    - portal
+  tags:
+    pillar: apps
+    tier: '2'
+- key: data-platform
+  name: Data Platform
+  description: Data lake, warehouse, and streaming infra
+  po: amy.lin@example.com
+  sm: ben.iso@example.com
+  ao:
+    - cal.rhee@example.com
+  tribe: Data
+  tribeDomain: Engineering
+  subDomain: Data
+  mailingList:
+    - data-platform@example.com
+  jira: https://jira.example.com/projects/DP
+  github: https://github.com/example/data-platform
+  confluence: https://confluence.example.com/display/DP
+  devops:
+    - dex.amor@example.com
+  sre:
+    - eli.vale@example.com
+    - fay.thor@example.com
+  backendDevs:
+    - gio.roca@example.com
+    - hal.mint@example.com
+  frontendDevs: []
+  qa:
+    - iva.doss@example.com
+  members: []
+  productsService:
+    - datalake
+    - kafka-cluster
+    - dbt-runner
+  tags:
+    pillar: data
+    tier: '0'
+- key: analytics
+  name: Analytics
+  description: BI dashboards and product analytics
+  po: kai.pera@example.com
+  sm: liv.nord@example.com
+  ao:
+    - max.iver@example.com
+  tribe: Data
+  tribeDomain: Product
+  subDomain: BI
+  mailingList:
+    - analytics@example.com
+  jira: https://jira.example.com/projects/ANL
+  github: https://github.com/example/analytics
+  confluence: https://confluence.example.com/display/ANL
+  devops:
+    - ned.rook@example.com
+  sre:
+    - olga.pate@example.com
+  backendDevs:
+    - pat.lume@example.com
+  frontendDevs:
+    - quin.hart@example.com
+    - rae.vox@example.com
+  qa:
+    - sol.keen@example.com
+  members: []
+  productsService:
+    - looker-metrics
+    - events-pipeline
+  tags:
+    pillar: data
+    tier: '2'
+- key: notifications
+  name: Notifications
+  description: Email, SMS, and push notification delivery
+  po: uma.hess@example.com
+  sm: viv.ost@example.com
+  ao:
+    - wren.orr@example.com
+  tribe: Messaging
+  tribeDomain: Engineering
+  subDomain: Comms
+  mailingList:
+    - notifications@example.com
+  jira: https://jira.example.com/projects/NTF
+  github: https://github.com/example/notifications
+  confluence: https://confluence.example.com/display/NTF
+  devops:
+    - xi.lorr@example.com
+  sre:
+    - yen.zook@example.com
+  backendDevs:
+    - zane.ribe@example.com
+    - ada.toma@example.com
+  frontendDevs: []
+  qa:
+    - bek.haim@example.com
+  members: []
+  productsService:
+    - email-worker
+    - sms-gateway
+    - push-hub
+  tags:
+    pillar: messaging
+    tier: '1'
+- key: observability
+  name: Observability
+  description: Logging, metrics, and tracing stack
+  po: don.ames@example.com
+  sm: eno.mair@example.com
+  ao:
+    - fri.solt@example.com
+  tribe: Infrastructure
+  tribeDomain: Engineering
+  subDomain: SRE
+  mailingList:
+    - observability@example.com
+  jira: https://jira.example.com/projects/OBS
+  github: https://github.com/example/observability
+  confluence: https://confluence.example.com/display/OBS
+  devops:
+    - gav.noor@example.com
+  sre:
+    - hal.ivers@example.com
+    - ira.oken@example.com
+    - jan.pike@example.com
+  backendDevs:
+    - kir.luna@example.com
+  frontendDevs:
+    - lex.mora@example.com
+  qa: []
+  members: []
+  productsService:
+    - log-pipeline
+    - metrics-agent
+    - trace-collector
+  tags:
+    pillar: platform
+    tier: '0'
+- key: devex
+  name: DevEx
+  description: Developer experience, CI/CD, build tooling
+  po: nils.peak@example.com
+  sm: ori.quade@example.com
+  ao:
+    - pim.rast@example.com
+  tribe: Infrastructure
+  tribeDomain: Engineering
+  subDomain: Tooling
+  mailingList:
+    - devex@example.com
+  jira: https://jira.example.com/projects/DEV
+  github: https://github.com/example/devex
+  confluence: https://confluence.example.com/display/DEV
+  devops:
+    - qi.sato@example.com
+    - ron.lace@example.com
+  sre:
+    - sia.ives@example.com
+  backendDevs:
+    - tor.hume@example.com
+  frontendDevs:
+    - uzo.dari@example.com
+  qa:
+    - vex.arla@example.com
+  members: []
+  productsService:
+    - ci-runner
+    - build-cache
+    - cli-tools
+  tags:
+    pillar: platform
+    tier: '2'
+- key: fraud
+  name: Fraud
+  description: Fraud detection and risk scoring
+  po: xan.dere@example.com
+  sm: yol.eppi@example.com
+  ao:
+    - zed.fair@example.com
+  tribe: Security
+  tribeDomain: Business
+  subDomain: Risk
+  mailingList:
+    - fraud@example.com
+  jira: https://jira.example.com/projects/FRD
+  github: https://github.com/example/fraud
+  confluence: https://confluence.example.com/display/FRD
+  devops:
+    - ami.gove@example.com
+  sre:
+    - ben.hein@example.com
+  backendDevs:
+    - cal.ives@example.com
+    - dan.jove@example.com
+  frontendDevs: []
+  qa:
+    - ell.kire@example.com
+  members: []
+  productsService:
+    - risk-api
+    - rules-engine
+  tags:
+    pillar: security
+    tier: '1'
+- key: support-tools
+  name: Support Tools
+  description: Internal tools for customer support agents
+  po: gio.mave@example.com
+  sm: han.nova@example.com
+  ao:
+    - iva.ored@example.com
+  tribe: Apps
+  tribeDomain: Operations
+  subDomain: Internal
+  mailingList:
+    - support-tools@example.com
+  jira: https://jira.example.com/projects/SUP
+  github: https://github.com/example/support-tools
+  confluence: https://confluence.example.com/display/SUP
+  devops:
+    - jak.pyle@example.com
+  sre:
+    - kit.quoi@example.com
+  backendDevs:
+    - lyn.reed@example.com
+  frontendDevs:
+    - mia.sora@example.com
+    - nod.tarn@example.com
+  qa:
+    - orr.ulin@example.com
+  members: []
+  productsService:
+    - agent-console
+    - case-manager
+  tags:
+    pillar: apps
+    tier: '3'
+- key: growth
+  name: Growth
+  description: Experimentation and growth initiatives
+  po: quo.wess@example.com
+  sm: ros.xin@example.com
+  ao:
+    - sun.yoh@example.com
+  tribe: Growth
+  tribeDomain: Product
+  subDomain: Experimentation
+  mailingList:
+    - growth@example.com
+  jira: https://jira.example.com/projects/GRW
+  github: https://github.com/example/growth
+  confluence: https://confluence.example.com/display/GRW
+  devops:
+    - taj.zorn@example.com
+  sre:
+    - una.acre@example.com
+  backendDevs:
+    - vic.brun@example.com
+  frontendDevs:
+    - wyn.colt@example.com
+    - xia.dune@example.com
+  qa:
+    - yul.eres@example.com
+  members: []
+  productsService:
+    - ab-test-service
+    - feature-flags
+  tags:
+    pillar: growth
+    tier: '2'

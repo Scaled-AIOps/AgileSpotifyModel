@@ -1,0 +1,22 @@
+meta {
+  name: Update Tribe
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{baseUrl}}/api/v1/tribes/{{tribeId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "name": "Search Tribe (updated)",
+    "description": "Updated description"
+  }
+}

@@ -1,0 +1,21 @@
+meta {
+  name: Assign Tribe Lead
+  type: http
+  seq: 8
+}
+
+patch {
+  url: {{baseUrl}}/api/v1/tribes/{{tribeId}}/lead
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "leadMemberId": "{{memberId}}"
+  }
+}

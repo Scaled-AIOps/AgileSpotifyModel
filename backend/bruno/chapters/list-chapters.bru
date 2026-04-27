@@ -1,0 +1,21 @@
+meta {
+  name: List Chapters
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/v1/chapters
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+script:post-response {
+  if (res.status === 200 && res.body.length > 0) {
+    bru.setVar("chapterId", res.body[0].id);
+  }
+}

@@ -1,0 +1,168 @@
+import { Router, Request } from 'express';
+import { z } from 'zod';
+import { authenticate } from '../middleware/auth';
+import { authorize } from '../middleware/authorize';
+import { validate } from '../middleware/validate';
+import * as appService from '../services/app.service';
+import * as appstatusService from '../services/appstatus.service';
+import * as auditService from '../services/audit.service';
+import * as memberService from '../services/member.service';
+import * as squadService from '../services/squad.service';
+import redis from '../config/redis';
+import type { JwtPayload } from '../middleware/auth';
+
+const router = Router();
+router.use(authenticate);
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+async function resolveEditable(appSquadId: string, user: JwtPayload): Promise<boolean> {
+  if (user.role === 'Admin' || user.role === 'AgileCoach') return true;
+  if (!user.memberId) return false;
+  const member = await memberService.findById(user.memberId);
+  if (!member?.squadId) return false;
+  const [userSquad, appSquad] = await Promise.all([
+    squadService.findById(member.squadId),
+    squadService.findById(appSquadId),
+  ]);
+  if (!userSquad || !appSquad) return false;
+  return userSquad.tribeId === appSquad.tribeId;
+}
+
+// ── Create-app schema ─────────────────────────────────────────────────────────
+
+const createAppSchema = z.object({
+  appId:                z.string().min(1).regex(/^[a-z0-9-]+$/, 'Only lowercase letters, numbers and hyphens'),
+  gitRepo:              z.string().url().optional().or(z.literal('')).default(''),
+  squadId:              z.string().min(1),
+  status:               z.enum(['active', 'inactive', 'marked-for-decommissioning', 'failed']).default('active'),
+  tags:                 z.record(z.string()).optional().default({}),
+  platforms:            z.record(z.string()).optional().default({}),
+  urls:                 z.record(z.string()).optional().default({}),
+  javaVersion:          z.string().optional(),
+  javaComplianceStatus: z.string().optional(),
+  artifactoryUrl:       z.string().url().optional().or(z.literal('')),
+  xrayUrl:              z.string().url().optional().or(z.literal('')),
+  compositionViewerUrl: z.string().url().optional().or(z.literal('')),
+  splunkUrl:            z.string().url().optional().or(z.literal('')),
+  probeHealth:          z.string().optional(),
+  probeInfo:            z.string().optional(),
+  probeLiveness:        z.string().optional(),
+  probeReadiness:       z.string().optional(),
+});
+
+// ── Deploy schema ─────────────────────────────────────────────────────────────
+
+const recordDeploySchema = z.object({
+  version:              z.string().min(1),
+  commitId:             z.string().min(1),
+  branch:               z.string().min(1),
+  deployedBy:           z.string().min(1),
+  state:                z.enum(['success', 'failed', 'pending', 'rolledback']),
+  deployedAt:           z.string().datetime().optional().default(() => new Date().toISOString()),
+  notes:                z.string().optional(),
+  xray:                 z.string().url().optional(),
+  javaVersion:          z.string().optional(),
+  javaComplianceStatus: z.string().optional(),
+  changeRequest:        z.string().optional(),
+});
+
+// ── App CRUD ──────────────────────────────────────────────────────────────────
+
+router.get('/', async (_req, res, next) => {
+  try { res.json(await appService.findAll()); } catch (e) { next(e); }
+});
+
+router.post('/', authorize('TribeLead'), validate(createAppSchema), async (req, res, next) => {
+  try {
+    const existing = await appService.findById(req.body.appId);
+    if (existing) { res.status(409).json({ error: `App '${req.body.appId}' already exists` }); return; }
+    const squad = await squadService.findById(req.body.squadId);
+    if (!squad) { res.status(400).json({ error: 'Squad not found' }); return; }
+    const app = await appService.create({
+      appId:                req.body.appId,
+      gitRepo:              req.body.gitRepo ?? '',
+      squadId:              req.body.squadId,
+      squadKey:             squad.key ?? '',
+      status:               req.body.status,
+      tags:                 req.body.tags ?? {},
+      platforms:            req.body.platforms ?? {},
+      urls:                 req.body.urls ?? {},
+      javaVersion:          req.body.javaVersion,
+      javaComplianceStatus: req.body.javaComplianceStatus,
+      artifactoryUrl:       req.body.artifactoryUrl,
+      xrayUrl:              req.body.xrayUrl,
+      compositionViewerUrl: req.body.compositionViewerUrl,
+      splunkUrl:            req.body.splunkUrl,
+      probeHealth:          req.body.probeHealth,
+      probeInfo:            req.body.probeInfo,
+      probeLiveness:        req.body.probeLiveness,
+      probeReadiness:       req.body.probeReadiness,
+    });
+    res.status(201).json(app);
+  } catch (e) { next(e); }
+});
+
+router.get('/:appId', async (req, res, next) => {
+  try {
+    const app = await appService.findById(req.params.appId);
+    if (!app) { res.status(404).json({ error: 'Not found' }); return; }
+    const [latestDeploys, editable] = await Promise.all([
+      appstatusService.getLatestAll(req.params.appId),
+      resolveEditable(app.squadId, req.user!),
+    ]);
+    res.json({ ...app, latestDeploys, editable });
+  } catch (e) { next(e); }
+});
+
+router.patch('/:appId', async (req, res, next) => {
+  try {
+    const app = await appService.findById(req.params.appId);
+    if (!app) { res.status(404).json({ error: 'Not found' }); return; }
+
+    if (!(await resolveEditable(app.squadId, req.user!))) {
+      res.status(403).json({ error: 'You must be within the same tribe to edit this application.' });
+      return;
+    }
+
+    const { app: updated, diff } = await appService.update(req.params.appId, req.body);
+
+    if (Object.keys(diff).length > 0) {
+      const userData = await redis.hgetall(`user:${req.user!.userId}`);
+      await auditService.record({
+        appId:     req.params.appId,
+        userId:    req.user!.userId,
+        userEmail: userData?.email ?? req.user!.userId,
+        action:    'update',
+        changes:   diff,
+      });
+    }
+
+    res.json(updated);
+  } catch (e) { next(e); }
+});
+
+router.delete('/:appId', authorize('Admin'), async (req, res, next) => {
+  try { await appService.remove(req.params.appId); res.status(204).send(); } catch (e) { next(e); }
+});
+
+// ── Audit log ─────────────────────────────────────────────────────────────────
+
+router.get('/:appId/audit', async (req, res, next) => {
+  try { res.json(await auditService.getForApp(req.params.appId)); } catch (e) { next(e); }
+});
+
+// ── Deployment history ────────────────────────────────────────────────────────
+
+router.get('/:appId/:env/deploys', async (req, res, next) => {
+  try { res.json(await appstatusService.getHistory(req.params.appId, req.params.env)); } catch (e) { next(e); }
+});
+
+router.post('/:appId/:env/deploys', authorize('ReleaseManager'), validate(recordDeploySchema), async (req, res, next) => {
+  try {
+    const d = await appstatusService.record(req.params.appId, req.params.env, req.body);
+    res.status(201).json(d);
+  } catch (e) { next(e); }
+});
+
+export default router;

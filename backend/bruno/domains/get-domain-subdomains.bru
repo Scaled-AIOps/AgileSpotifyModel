@@ -1,0 +1,15 @@
+meta {
+  name: Get Domain Subdomains
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{baseUrl}}/api/v1/domains/{{domainId}}/subdomains
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}

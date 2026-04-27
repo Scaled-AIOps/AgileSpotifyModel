@@ -1,0 +1,320 @@
+/**
+ * Seed script: populates Redis from config YAML definitions.
+ * Run with: npm run seed
+ */
+
+import dotenv from 'dotenv';
+import path from 'path';
+dotenv.config({ path: path.resolve(__dirname, '../../config/.env') });
+import '../config/env';
+import { connectRedis } from '../config/redis';
+import redis from '../config/redis';
+import * as authService from '../services/auth.service';
+import * as domainService from '../services/domain.service';
+import * as subdomainService from '../services/subdomain.service';
+import * as tribeService from '../services/tribe.service';
+import * as squadService from '../services/squad.service';
+import * as chapterService from '../services/chapter.service';
+import * as guildService from '../services/guild.service';
+import * as backlogService from '../services/backlog.service';
+import * as sprintService from '../services/sprint.service';
+import * as appService from '../services/app.service';
+
+function daysFromNow(days: number) {
+  return new Date(Date.now() + days * 86_400_000).toISOString();
+}
+
+async function seed() {
+  await connectRedis();
+  console.log('Flushing existing data...');
+  await redis.flushall();
+
+  console.log('Seeding users...');
+
+  // ── Users ──────────────────────────────────────────────────────────────
+  const { user: admin }  = await authService.register('admin@example.com',  'Admin1234!',  'System Admin',       'Admin');
+  const { user: uAlice } = await authService.register('alice@example.com',  'Alice1234!',  'Alice Chen',         'TribeLead');
+  const { user: uEva }   = await authService.register('eva@example.com',    'Eva12345!!',  'Eva Larsen',         'TribeLead');
+  const { user: uFrank } = await authService.register('frank@example.com',  'Frank1234!',  'Frank Torres',       'TribeLead');
+  const { user: uBob }   = await authService.register('bob@example.com',    'Bob12345!!',  'Bob Kumar',          'PO');
+  const { user: uGrace } = await authService.register('grace@example.com',  'Grace1234!',  'Grace Kim',          'PO');
+  const { user: uHenry } = await authService.register('henry@example.com',  'Henry1234!',  'Henry Patel',        'PO');
+  const { user: uIsabel }= await authService.register('isabel@example.com', 'Isabel123!',  'Isabel Müller',      'PO');
+  const { user: uJames } = await authService.register('james@example.com',  'James1234!',  'James Okoro',        'PO');
+  const { user: uKate }  = await authService.register('kate@example.com',   'Kate1234!!',  'Kate Ngo',           'AgileCoach');
+  const { user: uRosa }  = await authService.register('rosa@example.com',   'Rosa1234!!',  'Rosa Ndlovu',        'AgileCoach');
+  const { user: uLeo }   = await authService.register('leo@example.com',    'Leo12345!!',  'Leo Svensson',       'ReleaseManager');
+  const { user: uSam }   = await authService.register('sam@example.com',    'Sam12345!!',  'Sam O\'Brien',       'ReleaseManager');
+  const { user: uCarol } = await authService.register('carol@example.com',  'Carol123!',   'Carol Smith',        'Member');
+  const { user: uDave }  = await authService.register('dave@example.com',   'Dave1234!',   'Dave Okonkwo',       'Member');
+  const { user: uMaya }  = await authService.register('maya@example.com',   'Maya1234!!',  'Maya Rajan',         'Member');
+  const { user: uNoah }  = await authService.register('noah@example.com',   'Noah1234!!',  'Noah Williams',      'Member');
+  const { user: uOlivia }= await authService.register('olivia@example.com', 'Olivia123!',  'Olivia Hernandez',   'Member');
+  const { user: uPeter } = await authService.register('peter@example.com',  'Peter1234!',  'Peter Johansson',    'Member');
+  const { user: uQuinn } = await authService.register('quinn@example.com',  'Quinn1234!',  'Quinn Zhang',        'Member');
+  const { user: uRaj }   = await authService.register('raj@example.com',    'Raj12345!!',  'Raj Mehta',          'Member');
+  const { user: uSofia } = await authService.register('sofia@example.com',  'Sofia1234!',  'Sofia Eriksson',     'Member');
+  const { user: uTom }   = await authService.register('tom@example.com',    'Tom12345!!',  'Tom Nakamura',       'Member');
+  const { user: uLiam }  = await authService.register('liam@example.com',   'Liam1234!!',  'Liam O\'Connor',     'Member');
+  const { user: uZoe }   = await authService.register('zoe@example.com',    'Zoe12345!!',  'Zoe Adeyemi',        'Member');
+  const { user: uMax }   = await authService.register('max@example.com',    'Max12345!!',  'Max Fischer',        'Member');
+  const { user: uNina }  = await authService.register('nina@example.com',   'Nina1234!!',  'Nina Park',          'Member');
+
+  void [admin];
+  console.log('Created 27 users');
+
+  // ── Domains (from tribedomains.yaml) ───────────────────────────────────
+  const businessDomain    = await domainService.create({ id: 'business',    name: 'Business',     description: 'All commercial-facing tribes — checkout, payments, growth.' });
+  const engineeringDomain = await domainService.create({ id: 'engineering', name: 'Engineering',  description: 'Platform, data, infra, observability, dev productivity.' });
+  const operationsDomain  = await domainService.create({ id: 'operations',  name: 'Operations',   description: 'Notifications, support tooling, internal services.' });
+  const productDomain     = await domainService.create({ id: 'product',     name: 'Product',      description: 'Apps, analytics, recommendations, mobile.' });
+
+  // ── Sub-domains (from subdomains.yaml) ─────────────────────────────────
+  const sdAppSec        = await subdomainService.create({ id: 'appsec',          name: 'AppSec',          description: 'Application security controls',      domainId: engineeringDomain.id });
+  const sdBI            = await subdomainService.create({ id: 'bi',              name: 'BI',              description: 'Business intelligence and reporting', domainId: productDomain.id });
+  const sdBilling       = await subdomainService.create({ id: 'billing',         name: 'Billing',         description: 'Billing and invoicing',              domainId: businessDomain.id });
+  const sdComms         = await subdomainService.create({ id: 'comms',           name: 'Comms',           description: 'Communications infrastructure',      domainId: engineeringDomain.id });
+  const sdData          = await subdomainService.create({ id: 'sd-data',         name: 'Data',            description: 'Data lake and streaming infra',      domainId: engineeringDomain.id });
+  const sdExperimentation = await subdomainService.create({ id: 'experimentation', name: 'Experimentation', description: 'A/B testing and feature flags',   domainId: productDomain.id });
+  const sdInternal      = await subdomainService.create({ id: 'internal',        name: 'Internal',        description: 'Internal tooling and support',       domainId: operationsDomain.id });
+  const sdML            = await subdomainService.create({ id: 'ml',              name: 'ML',              description: 'Machine learning platform',          domainId: productDomain.id });
+  const sdMobile        = await subdomainService.create({ id: 'sd-mobile',       name: 'Mobile',          description: 'iOS and Android clients',            domainId: productDomain.id });
+  const sdRelevance     = await subdomainService.create({ id: 'relevance',       name: 'Relevance',       description: 'Search ranking and relevance',       domainId: productDomain.id });
+  const sdRisk          = await subdomainService.create({ id: 'risk',            name: 'Risk',            description: 'Fraud detection and risk scoring',   domainId: businessDomain.id });
+  const sdSRE           = await subdomainService.create({ id: 'sre',             name: 'SRE',             description: 'Site reliability engineering',       domainId: engineeringDomain.id });
+  const sdStorefront    = await subdomainService.create({ id: 'storefront',      name: 'Storefront',      description: 'Cart and checkout experiences',      domainId: businessDomain.id });
+  const sdTooling       = await subdomainService.create({ id: 'tooling',         name: 'Tooling',         description: 'CI/CD and developer tooling',        domainId: engineeringDomain.id });
+  const sdWeb           = await subdomainService.create({ id: 'sd-web',          name: 'Web',             description: 'Web client platform',               domainId: productDomain.id });
+
+  // ── Tribes (from tribes.yaml) ───────────────────────────────────────────
+  const infraTribe   = await tribeService.create({ id: 'infrastructure', name: 'Infrastructure', description: 'Platform, observability, devex.',                    domainId: engineeringDomain.id, subdomainId: sdSRE.id,            leadMemberId: uFrank.memberId,  releaseManager: 'rm.infra@example.com',     agileCoach: 'ac.infra@example.com',     confluence: 'https://confluence.example.com/display/INFRA' });
+  const commerceTribe= await tribeService.create({ id: 'commerce',       name: 'Commerce',       description: 'Checkout, payments, cart.',                         domainId: businessDomain.id,    subdomainId: sdStorefront.id,     leadMemberId: uAlice.memberId,  releaseManager: 'rm.commerce@example.com',  agileCoach: 'ac.commerce@example.com',  confluence: 'https://confluence.example.com/display/COMM' });
+  const securityTribe= await tribeService.create({ id: 'security',       name: 'Security',       description: 'Identity, auth, app-sec controls.',                 domainId: engineeringDomain.id, subdomainId: sdAppSec.id,         leadMemberId: uEva.memberId,    releaseManager: 'rm.security@example.com',  agileCoach: 'ac.security@example.com' });
+  const discoveryTribe=await tribeService.create({ id: 'discovery',      name: 'Discovery',      description: 'Search, recommendations, relevance.',               domainId: productDomain.id,     subdomainId: sdRelevance.id,      leadMemberId: uBob.memberId,    releaseManager: 'rm.discovery@example.com', agileCoach: 'ac.discovery@example.com' });
+  const appsTribe    = await tribeService.create({ id: 'apps',           name: 'Apps',           description: 'Mobile + web client apps.',                        domainId: productDomain.id,     subdomainId: sdMobile.id,         leadMemberId: uGrace.memberId,  releaseManager: 'rm.apps@example.com',      agileCoach: 'ac.apps@example.com' });
+  const dataTribe    = await tribeService.create({ id: 'data',           name: 'Data',           description: 'Data platform + pipelines.',                       domainId: engineeringDomain.id, subdomainId: sdData.id,           leadMemberId: uHenry.memberId,  releaseManager: 'rm.data@example.com',      agileCoach: 'ac.data@example.com' });
+  const messagingTribe=await tribeService.create({ id: 'messaging',      name: 'Messaging',      description: 'Email / SMS / push notifications.',                domainId: engineeringDomain.id, subdomainId: sdComms.id,          leadMemberId: uIsabel.memberId, releaseManager: 'rm.messaging@example.com', agileCoach: 'ac.messaging@example.com' });
+  const growthTribe  = await tribeService.create({ id: 'growth',         name: 'Growth',         description: 'A/B testing, feature flags, growth experiments.',  domainId: productDomain.id,     subdomainId: sdExperimentation.id, leadMemberId: uJames.memberId, releaseManager: 'rm.growth@example.com',    agileCoach: 'ac.growth@example.com' });
+
+  // ── Squads (from squads.yaml) ───────────────────────────────────────────
+  // NOTE: po/sm for search, data-platform, analytics, observability match registered user emails
+  // so those users can log in and exercise the "manage squad members" feature.
+  const platformSquad  = await squadService.create({ key: 'platform',       name: 'Platform',       tribeId: infraTribe.id,    description: 'Core platform services and shared infrastructure',       missionStatement: 'Core platform services and shared infrastructure',       po: 'frank@example.com',        sm: 'carol@example.com',        jira: 'https://jira.example.com/projects/PLAT', confluence: 'https://confluence.example.com/display/PLAT', mailingList: 'platform@example.com',       tier: '1', leadMemberId: uJames.memberId });
+  const paymentsSquad  = await squadService.create({ key: 'payments',       name: 'Payments',       tribeId: commerceTribe.id, description: 'Payment processing, billing, and invoicing',             missionStatement: 'Reliable, fast payments for every user',                 po: 'alice@example.com',        sm: 'eva@example.com',          jira: 'https://jira.example.com/projects/PAY',  confluence: 'https://confluence.example.com/display/PAY',  mailingList: 'payments@example.com',       tier: '0' });
+  const checkoutSquad  = await squadService.create({ key: 'checkout',       name: 'Checkout',       tribeId: commerceTribe.id, description: 'Cart and checkout flows for web and mobile',             missionStatement: 'Seamless checkout experience that converts',              po: 'alice@example.com',        sm: 'kate@example.com',         jira: 'https://jira.example.com/projects/CHK',  confluence: 'https://confluence.example.com/display/CHK',  mailingList: 'checkout@example.com',       tier: '1' });
+  const identitySquad  = await squadService.create({ key: 'identity',       name: 'Identity',       tribeId: securityTribe.id, description: 'Authentication, SSO, and user directory',               missionStatement: 'Secure, frictionless identity for every user',            po: 'eva@example.com',          sm: 'rosa@example.com',         jira: 'https://jira.example.com/projects/ID',   confluence: 'https://confluence.example.com/display/ID',   mailingList: 'identity@example.com',       tier: '0' });
+  const searchSquad    = await squadService.create({ key: 'search',         name: 'Search',         tribeId: discoveryTribe.id, description: 'Search indexing, ranking, and query pipeline',          missionStatement: 'Make search results delightful and precise',              po: 'bob@example.com',          sm: 'grace@example.com',        jira: 'https://jira.example.com/projects/SRCH', confluence: 'https://confluence.example.com/display/SRCH', mailingList: 'search@example.com',         tier: '1', leadMemberId: uBob.memberId });
+  const recsSquad      = await squadService.create({ key: 'recommendations', name: 'Recommendations', tribeId: discoveryTribe.id, description: 'Personalization and ranking models',                missionStatement: 'Personalised recommendations that delight users',          po: 'bob@example.com',          sm: 'isabel@example.com',       jira: 'https://jira.example.com/projects/REC',  confluence: 'https://confluence.example.com/display/REC',  mailingList: 'recs@example.com',           tier: '2' });
+  const mobileSquad    = await squadService.create({ key: 'mobile',         name: 'Mobile',         tribeId: appsTribe.id,     description: 'iOS and Android apps',                                   missionStatement: 'Delightful iOS and Android experiences',                 po: 'grace@example.com',        sm: 'noah@example.com',         jira: 'https://jira.example.com/projects/MOB',  confluence: 'https://confluence.example.com/display/MOB',  mailingList: 'mobile@example.com',         tier: '1' });
+  const webSquad       = await squadService.create({ key: 'web',            name: 'Web',            tribeId: appsTribe.id,     description: 'Marketing site and customer web portal',                 missionStatement: 'Fast, accessible web experiences',                       po: 'grace@example.com',        sm: 'peter@example.com',        jira: 'https://jira.example.com/projects/WEB',  confluence: 'https://confluence.example.com/display/WEB',  mailingList: 'web@example.com',            tier: '2' });
+  const dataPlatSquad  = await squadService.create({ key: 'data-platform',  name: 'Data Platform',  tribeId: dataTribe.id,     description: 'Data lake, warehouse, and streaming infra',              missionStatement: 'Reliable, scalable data infrastructure for the org',     po: 'henry@example.com',        sm: 'noah@example.com',         jira: 'https://jira.example.com/projects/DP',   confluence: 'https://confluence.example.com/display/DP',   mailingList: 'data-platform@example.com',  tier: '0', leadMemberId: uHenry.memberId });
+  const analyticsSquad = await squadService.create({ key: 'analytics',      name: 'Analytics',      tribeId: dataTribe.id,     description: 'BI dashboards and product analytics',                   missionStatement: 'Self-service analytics for the org',                     po: 'isabel@example.com',       sm: 'olivia@example.com',       jira: 'https://jira.example.com/projects/ANL',  confluence: 'https://confluence.example.com/display/ANL',  mailingList: 'analytics@example.com',      tier: '2', leadMemberId: uIsabel.memberId });
+  const notifSquad     = await squadService.create({ key: 'notifications',   name: 'Notifications',  tribeId: messagingTribe.id, description: 'Email, SMS, and push notification delivery',           missionStatement: 'Timely and relevant notifications across all channels',   po: 'isabel@example.com',       sm: 'quinn@example.com',        jira: 'https://jira.example.com/projects/NTF',  confluence: 'https://confluence.example.com/display/NTF',  mailingList: 'notifications@example.com',  tier: '1' });
+  const observSquad    = await squadService.create({ key: 'observability',   name: 'Observability',  tribeId: infraTribe.id,    description: 'Logging, metrics, and tracing stack',                   missionStatement: 'Full-stack visibility into system health',                po: 'james@example.com',        sm: 'sam@example.com',          jira: 'https://jira.example.com/projects/OBS',  confluence: 'https://confluence.example.com/display/OBS',  mailingList: 'observability@example.com',  tier: '0' });
+  const devexSquad     = await squadService.create({ key: 'devex',           name: 'DevEx',          tribeId: infraTribe.id,    description: 'Developer experience, CI/CD, build tooling',            missionStatement: 'Fast, joyful development loops for every engineer',       po: 'james@example.com',        sm: 'maya@example.com',         jira: 'https://jira.example.com/projects/DEV',  confluence: 'https://confluence.example.com/display/DEV',  mailingList: 'devex@example.com',          tier: '2' });
+  const fraudSquad     = await squadService.create({ key: 'fraud',           name: 'Fraud',          tribeId: securityTribe.id, description: 'Fraud detection and risk scoring',                      missionStatement: 'Protect users and the platform from fraud',               po: 'eva@example.com',          sm: 'tom@example.com',          jira: 'https://jira.example.com/projects/FRD',  confluence: 'https://confluence.example.com/display/FRD',  mailingList: 'fraud@example.com',          tier: '1' });
+  const supportSquad   = await squadService.create({ key: 'support-tools',   name: 'Support Tools',  tribeId: appsTribe.id,     description: 'Internal tools for customer support agents',            missionStatement: 'Tools that empower support agents to solve problems fast', po: 'grace@example.com',        sm: 'raj@example.com',          jira: 'https://jira.example.com/projects/SUP',  confluence: 'https://confluence.example.com/display/SUP',  mailingList: 'support-tools@example.com',  tier: '3' });
+  const growthSquad    = await squadService.create({ key: 'growth',          name: 'Growth',         tribeId: growthTribe.id,   description: 'Experimentation and growth initiatives',                missionStatement: 'Drive sustainable user and revenue growth',               po: 'james@example.com',        sm: 'sofia@example.com',        jira: 'https://jira.example.com/projects/GRW',  confluence: 'https://confluence.example.com/display/GRW',  mailingList: 'growth@example.com',         tier: '2' });
+
+  // ── Squad members ──────────────────────────────────────────────────────
+  await squadService.addMember(platformSquad.id,   uAlice.memberId,  'Tech Lead');
+  await squadService.addMember(platformSquad.id,   uBob.memberId,    'Backend Dev');
+  await squadService.addMember(platformSquad.id,   uCarol.memberId,  'Frontend Dev');
+  await squadService.addMember(platformSquad.id,   uDave.memberId,   'SRE');
+
+  await squadService.addMember(searchSquad.id,     uGrace.memberId,  'Backend Dev');
+  await squadService.addMember(searchSquad.id,     uMaya.memberId,   'Frontend Dev');
+  await squadService.addMember(searchSquad.id,     uKate.memberId,   'SM');
+
+  await squadService.addMember(dataPlatSquad.id,   uHenry.memberId,  'Tech Lead');
+  await squadService.addMember(dataPlatSquad.id,   uNoah.memberId,   'Data Engineer');
+  await squadService.addMember(dataPlatSquad.id,   uLeo.memberId,    'DevOps');
+
+  await squadService.addMember(analyticsSquad.id,  uIsabel.memberId, 'Tech Lead');
+  await squadService.addMember(analyticsSquad.id,  uOlivia.memberId, 'BA');
+  await squadService.addMember(analyticsSquad.id,  uRaj.memberId,    'ML Engineer');
+
+  await squadService.addMember(observSquad.id,     uJames.memberId,  'Tech Lead');
+  await squadService.addMember(observSquad.id,     uPeter.memberId,  'SRE');
+  await squadService.addMember(observSquad.id,     uSam.memberId,    'DevOps');
+  await squadService.addMember(observSquad.id,     uRosa.memberId,   'SM');
+
+  await squadService.addMember(identitySquad.id,   uSofia.memberId,  'Backend Dev');
+  await squadService.addMember(identitySquad.id,   uTom.memberId,    'Tester');
+
+  await squadService.addMember(paymentsSquad.id,   uLiam.memberId,   'Backend Dev');
+  await squadService.addMember(paymentsSquad.id,   uZoe.memberId,    'Frontend Dev');
+
+  await squadService.addMember(checkoutSquad.id,   uMax.memberId,    'Full Stack Dev');
+  await squadService.addMember(checkoutSquad.id,   uNina.memberId,   'Tester');
+
+  await squadService.addMember(notifSquad.id,      uQuinn.memberId,  'SM');
+
+  // ── Chapters ───────────────────────────────────────────────────────────
+  const feChapter      = await chapterService.create({ name: 'Frontend Chapter',         discipline: 'Frontend',         tribeId: discoveryTribe.id, leadMemberId: uCarol.memberId });
+  const beChapter      = await chapterService.create({ name: 'Backend Chapter',          discipline: 'Backend',          tribeId: discoveryTribe.id, leadMemberId: uBob.memberId });
+  const dataEngChapter = await chapterService.create({ name: 'Data Engineering Chapter', discipline: 'Data Engineering', tribeId: dataTribe.id,      leadMemberId: uHenry.memberId });
+  const devopsChapter  = await chapterService.create({ name: 'DevOps Chapter',           discipline: 'DevOps',           tribeId: infraTribe.id,     leadMemberId: uJames.memberId });
+  const qaChapter      = await chapterService.create({ name: 'QA Chapter',               discipline: 'Quality Assurance',tribeId: infraTribe.id });
+  const mlChapter      = await chapterService.create({ name: 'ML Engineering Chapter',   discipline: 'Machine Learning', tribeId: dataTribe.id });
+
+  await chapterService.addMember(feChapter.id, uCarol.memberId);
+  await chapterService.addMember(feChapter.id, uMaya.memberId);
+  await chapterService.addMember(feChapter.id, uOlivia.memberId);
+  await chapterService.addMember(beChapter.id, uBob.memberId);
+  await chapterService.addMember(beChapter.id, uDave.memberId);
+  await chapterService.addMember(beChapter.id, uQuinn.memberId);
+  await chapterService.addMember(beChapter.id, uRaj.memberId);
+  await chapterService.addMember(dataEngChapter.id, uHenry.memberId);
+  await chapterService.addMember(dataEngChapter.id, uNoah.memberId);
+  await chapterService.addMember(devopsChapter.id, uJames.memberId);
+  await chapterService.addMember(devopsChapter.id, uPeter.memberId);
+  await chapterService.addMember(qaChapter.id, uSofia.memberId);
+  await chapterService.addMember(qaChapter.id, uTom.memberId);
+  await chapterService.addMember(mlChapter.id, uRaj.memberId);
+
+  // ── Guilds ─────────────────────────────────────────────────────────────
+  const graphqlGuild       = await guildService.create({ name: 'GraphQL Guild',       description: 'GraphQL practitioners across all tribes',          ownerMemberId: uBob.memberId });
+  const accessibilityGuild = await guildService.create({ name: 'Accessibility Guild', description: 'A11y champions driving inclusive design',           ownerMemberId: uCarol.memberId });
+  const securityGuild      = await guildService.create({ name: 'Security Guild',      description: 'Security champions and threat modelling advocates', ownerMemberId: uSofia.memberId });
+  const testingGuild       = await guildService.create({ name: 'Testing Guild',       description: 'TDD, BDD, and quality culture evangelists',         ownerMemberId: uTom.memberId });
+  const mlGuild            = await guildService.create({ name: 'ML & AI Guild',       description: 'Machine learning and AI practitioners',             ownerMemberId: uRaj.memberId });
+  const agileGuild         = await guildService.create({ name: 'Agile Practitioners', description: 'Coaches and leads sharing agile best practices',    ownerMemberId: uKate.memberId });
+
+  await guildService.addMember(graphqlGuild.id, uBob.memberId);
+  await guildService.addMember(graphqlGuild.id, uDave.memberId);
+  await guildService.addMember(graphqlGuild.id, uQuinn.memberId);
+  await guildService.addMember(accessibilityGuild.id, uCarol.memberId);
+  await guildService.addMember(accessibilityGuild.id, uMaya.memberId);
+  await guildService.addMember(accessibilityGuild.id, uOlivia.memberId);
+  await guildService.addMember(securityGuild.id, uSofia.memberId);
+  await guildService.addMember(securityGuild.id, uTom.memberId);
+  await guildService.addMember(securityGuild.id, uPeter.memberId);
+  await guildService.addMember(testingGuild.id, uTom.memberId);
+  await guildService.addMember(testingGuild.id, uSofia.memberId);
+  await guildService.addMember(testingGuild.id, uGrace.memberId);
+  await guildService.addMember(mlGuild.id, uRaj.memberId);
+  await guildService.addMember(mlGuild.id, uNoah.memberId);
+  await guildService.addMember(mlGuild.id, uIsabel.memberId);
+  await guildService.addMember(agileGuild.id, uKate.memberId);
+  await guildService.addMember(agileGuild.id, uRosa.memberId);
+  await guildService.addMember(agileGuild.id, uAlice.memberId);
+  await guildService.addMember(agileGuild.id, uEva.memberId);
+
+  // ── Backlog: Search ────────────────────────────────────────────────────
+  const r1 = await backlogService.create(searchSquad.id, { title: 'Implement BM25 ranking algorithm',       type: 'Story', priority: 100, storyPoints: 8 });
+  const r2 = await backlogService.create(searchSquad.id, { title: 'Add query spell-check & autocorrect',    type: 'Story', priority: 200, storyPoints: 5 });
+  const r3 = await backlogService.create(searchSquad.id, { title: 'Fix index lag bug in real-time updates', type: 'Bug',   priority: 50,  storyPoints: 3 });
+  const r4 = await backlogService.create(searchSquad.id, { title: 'A/B test new ranking model',             type: 'Task',  priority: 300, storyPoints: 5 });
+  const r5 = await backlogService.create(searchSquad.id, { title: 'Migrate search cluster to v8',           type: 'Epic',  priority: 400, storyPoints: 13 });
+  const r6 = await backlogService.create(searchSquad.id, { title: 'Reduce p95 latency below 120ms',         type: 'Story', priority: 500, storyPoints: 8 });
+
+  const sprint1 = await sprintService.create(searchSquad.id, { name: 'Sprint 3', goal: 'Ship BM25 ranking and reduce index lag', startDate: daysFromNow(-7), endDate: daysFromNow(7) });
+  await sprintService.start(searchSquad.id, sprint1.id);
+  await sprintService.addItem(sprint1.id, r1.id);
+  await sprintService.addItem(sprint1.id, r3.id);
+  await sprintService.addItem(sprint1.id, r4.id);
+  await backlogService.updateStatus(r3.id, 'Done');
+  await backlogService.updateStatus(r4.id, 'Review');
+  await backlogService.updateStatus(r1.id, 'InProgress');
+
+  // ── Backlog: Data Platform ─────────────────────────────────────────────
+  const p1 = await backlogService.create(dataPlatSquad.id, { title: 'Migrate ingestion layer to Kafka Streams', type: 'Epic',  priority: 100, storyPoints: 21 });
+  const p2 = await backlogService.create(dataPlatSquad.id, { title: 'Add dead-letter queue for failed events',  type: 'Story', priority: 200, storyPoints: 5 });
+  const p3 = await backlogService.create(dataPlatSquad.id, { title: 'Fix duplicate event processing bug',       type: 'Bug',   priority: 50,  storyPoints: 3 });
+  const p4 = await backlogService.create(dataPlatSquad.id, { title: 'Schema registry integration',              type: 'Story', priority: 300, storyPoints: 8 });
+  const p5 = await backlogService.create(dataPlatSquad.id, { title: 'Set up pipeline monitoring dashboards',    type: 'Task',  priority: 400, storyPoints: 3 });
+
+  const sprint2 = await sprintService.create(dataPlatSquad.id, { name: 'Sprint 1', goal: 'Fix duplicate processing and start Kafka migration', startDate: daysFromNow(-10), endDate: daysFromNow(4) });
+  await sprintService.start(dataPlatSquad.id, sprint2.id);
+  await sprintService.addItem(sprint2.id, p3.id);
+  await sprintService.addItem(sprint2.id, p1.id);
+  await sprintService.addItem(sprint2.id, p5.id);
+  await backlogService.updateStatus(p3.id, 'Done');
+  await backlogService.updateStatus(p5.id, 'Done');
+  await backlogService.updateStatus(p1.id, 'Review');
+
+  // ── Backlog: Analytics ─────────────────────────────────────────────────
+  const a1 = await backlogService.create(analyticsSquad.id, { title: 'Build self-serve dashboard builder',  type: 'Epic',  priority: 100, storyPoints: 21 });
+  const a2 = await backlogService.create(analyticsSquad.id, { title: 'Add funnel analysis feature',         type: 'Story', priority: 200, storyPoints: 8 });
+  const a3 = await backlogService.create(analyticsSquad.id, { title: 'Fix incorrect cohort calculation',    type: 'Bug',   priority: 50,  storyPoints: 3 });
+  const a4 = await backlogService.create(analyticsSquad.id, { title: 'Integrate with data warehouse',       type: 'Story', priority: 300, storyPoints: 13 });
+
+  const sprint3 = await sprintService.create(analyticsSquad.id, { name: 'Sprint 2', goal: 'Ship funnel analysis and fix cohort bug', startDate: daysFromNow(-5), endDate: daysFromNow(9) });
+  await sprintService.start(analyticsSquad.id, sprint3.id);
+  await sprintService.addItem(sprint3.id, a2.id);
+  await sprintService.addItem(sprint3.id, a3.id);
+  await backlogService.updateStatus(a3.id, 'Done');
+  await backlogService.updateStatus(a2.id, 'InProgress');
+
+  // ── Backlog: Observability ─────────────────────────────────────────────
+  const k1 = await backlogService.create(observSquad.id, { title: 'Upgrade cluster to K8s 1.30',         type: 'Epic',  priority: 100, storyPoints: 13 });
+  const k2 = await backlogService.create(observSquad.id, { title: 'Implement pod autoscaling policies',  type: 'Story', priority: 200, storyPoints: 8 });
+  const k3 = await backlogService.create(observSquad.id, { title: 'Fix OOMKill on batch job pods',       type: 'Bug',   priority: 50,  storyPoints: 3 });
+  const k4 = await backlogService.create(observSquad.id, { title: 'Set up GitOps with Argo CD',          type: 'Story', priority: 300, storyPoints: 8 });
+  const k5 = await backlogService.create(observSquad.id, { title: 'Multi-region failover runbook',       type: 'Task',  priority: 400, storyPoints: 5 });
+
+  const sprint4 = await sprintService.create(observSquad.id, { name: 'Sprint 4', goal: 'Fix OOMKill and deliver GitOps setup', startDate: daysFromNow(-2), endDate: daysFromNow(12) });
+  await sprintService.start(observSquad.id, sprint4.id);
+  await sprintService.addItem(sprint4.id, k3.id);
+  await sprintService.addItem(sprint4.id, k4.id);
+  await sprintService.addItem(sprint4.id, k2.id);
+  await backlogService.updateStatus(k3.id, 'Done');
+  await backlogService.updateStatus(k4.id, 'InProgress');
+  await backlogService.updateStatus(k2.id, 'Review');
+
+  // ── Apps ───────────────────────────────────────────────────────────────
+  await appService.create({ appId: 'payment-gateway',       gitRepo: 'git@github.com:org/payment-gateway',       squadId: paymentsSquad.id,  squadKey: 'payments',       status: 'active',                      tags: { criticality: 'critical', pillar: 'commerce', sunset: '' },   platforms: { java: '17' }, urls: { prod: 'https://payment-gateway.prod.example.com' }, javaVersion: '17', javaComplianceStatus: 'compliant',     xrayUrl: 'https://xray.example.com/payment-gateway',       artifactoryUrl: 'https://artifactory.example.com/payment-gateway',    splunkUrl: 'https://splunk.example.com/payment-gateway',       probeHealth: '/actuator/health', probeLiveness: '/actuator/liveness', probeReadiness: '/actuator/readiness', probeInfo: '/actuator/info' });
+  await appService.create({ appId: 'payment-reconciler',    gitRepo: 'git@github.com:org/payment-reconciler',    squadId: paymentsSquad.id,  squadKey: 'payments',       status: 'active',                      tags: { criticality: 'critical', pillar: 'commerce', sunset: '' },   platforms: { java: '11' }, urls: { prod: 'https://payment-reconciler.prod.example.com' }, javaVersion: '11', javaComplianceStatus: 'non-compliant', xrayUrl: '',                                                        artifactoryUrl: 'https://artifactory.example.com/payment-reconciler', splunkUrl: 'https://splunk.example.com/payment-reconciler',    probeHealth: '/actuator/health', probeLiveness: '/actuator/liveness', probeReadiness: '/actuator/readiness', probeInfo: '/actuator/info' });
+  await appService.create({ appId: 'billing-service',       gitRepo: 'git@github.com:org/billing-service',       squadId: paymentsSquad.id,  squadKey: 'payments',       status: 'failed',                      tags: { criticality: 'high',     pillar: 'commerce', sunset: '' },   platforms: { java: '17' }, urls: { prod: 'https://billing-service.prod.example.com' },   javaVersion: '17', javaComplianceStatus: 'compliant',     xrayUrl: 'https://xray.example.com/billing-service',       artifactoryUrl: 'https://artifactory.example.com/billing-service',    splunkUrl: 'https://splunk.example.com/billing-service',       probeHealth: '/actuator/health', probeLiveness: '/actuator/liveness', probeReadiness: '/actuator/readiness', probeInfo: '/actuator/info' });
+  await appService.create({ appId: 'invoice-renderer',      gitRepo: 'git@github.com:org/invoice-renderer',      squadId: paymentsSquad.id,  squadKey: 'payments',       status: 'marked-for-decommissioning',  tags: { criticality: 'medium',   pillar: 'commerce', sunset: '2025-09-01' }, platforms: { java: '8' }, urls: { prod: 'https://invoice-renderer.prod.example.com' }, javaVersion: '8',  javaComplianceStatus: 'non-compliant', xrayUrl: '',                                                        artifactoryUrl: 'https://artifactory.example.com/invoice-renderer',   splunkUrl: '' });
+
+  await appService.create({ appId: 'checkout-bff',          gitRepo: 'git@github.com:org/checkout-bff',          squadId: checkoutSquad.id,  squadKey: 'checkout',       status: 'active',                      tags: { criticality: 'critical', pillar: 'commerce', sunset: '' },   platforms: { java: '21' }, urls: { prod: 'https://checkout-bff.prod.example.com' },     javaVersion: '21', javaComplianceStatus: 'compliant',     xrayUrl: 'https://xray.example.com/checkout-bff',          artifactoryUrl: 'https://artifactory.example.com/checkout-bff',       splunkUrl: 'https://splunk.example.com/checkout-bff',         probeHealth: '/actuator/health', probeLiveness: '/actuator/liveness', probeReadiness: '/actuator/readiness', probeInfo: '/actuator/info' });
+  await appService.create({ appId: 'cart-service',           gitRepo: 'git@github.com:org/cart-service',          squadId: checkoutSquad.id,  squadKey: 'checkout',       status: 'active',                      tags: { criticality: 'critical', pillar: 'commerce', sunset: '' },   platforms: { java: '17' }, urls: { prod: 'https://cart-service.prod.example.com' },     javaVersion: '17', javaComplianceStatus: 'compliant',     xrayUrl: 'https://xray.example.com/cart-service',           artifactoryUrl: 'https://artifactory.example.com/cart-service',       splunkUrl: 'https://splunk.example.com/cart-service',         probeHealth: '/actuator/health', probeLiveness: '/actuator/liveness', probeReadiness: '/actuator/readiness', probeInfo: '/actuator/info' });
+  await appService.create({ appId: 'promo-engine',           gitRepo: 'git@github.com:org/promo-engine',          squadId: checkoutSquad.id,  squadKey: 'checkout',       status: 'inactive',                    tags: { criticality: 'medium',   pillar: 'commerce', sunset: '' },   platforms: { java: '11' }, urls: { prod: 'https://promo-engine.prod.example.com' },     javaVersion: '11', javaComplianceStatus: 'non-compliant', xrayUrl: '',                                                        artifactoryUrl: 'https://artifactory.example.com/promo-engine',       splunkUrl: '' });
+
+  await appService.create({ appId: 'auth-service',           gitRepo: 'git@github.com:org/auth-service',          squadId: identitySquad.id,  squadKey: 'identity',       status: 'active',                      tags: { criticality: 'critical', pillar: 'security', sunset: '' },   platforms: { java: '21' }, urls: { prod: 'https://auth-service.prod.example.com' },     javaVersion: '21', javaComplianceStatus: 'compliant',     xrayUrl: 'https://xray.example.com/auth-service',           artifactoryUrl: 'https://artifactory.example.com/auth-service',       splunkUrl: 'https://splunk.example.com/auth-service',         probeHealth: '/actuator/health', probeLiveness: '/actuator/liveness', probeReadiness: '/actuator/readiness', probeInfo: '/actuator/info' });
+  await appService.create({ appId: 'token-issuer',           gitRepo: 'git@github.com:org/token-issuer',          squadId: identitySquad.id,  squadKey: 'identity',       status: 'active',                      tags: { criticality: 'critical', pillar: 'security', sunset: '' },   platforms: { java: '17' }, urls: { prod: 'https://token-issuer.prod.example.com' },     javaVersion: '17', javaComplianceStatus: 'compliant',     xrayUrl: 'https://xray.example.com/token-issuer',           artifactoryUrl: 'https://artifactory.example.com/token-issuer',       splunkUrl: 'https://splunk.example.com/token-issuer',         probeHealth: '/actuator/health', probeLiveness: '/actuator/liveness', probeReadiness: '/actuator/readiness', probeInfo: '/actuator/info' });
+  await appService.create({ appId: 'user-directory',         gitRepo: 'git@github.com:org/user-directory',        squadId: identitySquad.id,  squadKey: 'identity',       status: 'active',                      tags: { criticality: 'high',     pillar: 'security', sunset: '' },   platforms: { java: '11' }, urls: { prod: 'https://user-directory.prod.example.com' },   javaVersion: '11', javaComplianceStatus: 'non-compliant', xrayUrl: 'https://xray.example.com/user-directory',         artifactoryUrl: 'https://artifactory.example.com/user-directory',     splunkUrl: 'https://splunk.example.com/user-directory',       probeHealth: '/actuator/health', probeLiveness: '/actuator/liveness', probeReadiness: '/actuator/readiness', probeInfo: '/actuator/info' });
+
+  await appService.create({ appId: 'search-api',             gitRepo: 'git@github.com:org/search-api',            squadId: searchSquad.id,    squadKey: 'search',         status: 'active',                      tags: { criticality: 'high',     pillar: 'discovery', sunset: '' },  platforms: { java: '21' }, urls: { prod: 'https://search-api.prod.example.com' },       javaVersion: '21', javaComplianceStatus: 'compliant',     xrayUrl: 'https://xray.example.com/search-api',             artifactoryUrl: 'https://artifactory.example.com/search-api',         splunkUrl: 'https://splunk.example.com/search-api',           probeHealth: '/actuator/health', probeLiveness: '/actuator/liveness', probeReadiness: '/actuator/readiness', probeInfo: '/actuator/info' });
+  await appService.create({ appId: 'search-indexer',         gitRepo: 'git@github.com:org/search-indexer',        squadId: searchSquad.id,    squadKey: 'search',         status: 'active',                      tags: { criticality: 'high',     pillar: 'discovery', sunset: '' },  platforms: { java: '17' }, urls: { prod: 'https://search-indexer.prod.example.com' },   javaVersion: '17', javaComplianceStatus: 'compliant',     xrayUrl: 'https://xray.example.com/search-indexer',         artifactoryUrl: 'https://artifactory.example.com/search-indexer',     splunkUrl: 'https://splunk.example.com/search-indexer',       probeHealth: '/actuator/health', probeLiveness: '/actuator/liveness', probeReadiness: '/actuator/readiness', probeInfo: '/actuator/info' });
+  await appService.create({ appId: 'query-suggester',        gitRepo: 'git@github.com:org/query-suggester',       squadId: searchSquad.id,    squadKey: 'search',         status: 'failed',                      tags: { criticality: 'medium',   pillar: 'discovery', sunset: '' },  platforms: { java: '11' }, urls: { prod: 'https://query-suggester.prod.example.com' },  javaVersion: '11', javaComplianceStatus: 'non-compliant', xrayUrl: '',                                                        artifactoryUrl: 'https://artifactory.example.com/query-suggester',    splunkUrl: '' });
+
+  await appService.create({ appId: 'data-ingestion-svc',    gitRepo: 'git@github.com:org/data-ingestion-svc',    squadId: dataPlatSquad.id,  squadKey: 'data-platform',  status: 'active',                      tags: { criticality: 'critical', pillar: 'data',     sunset: '' },   platforms: { java: '17' }, urls: { prod: 'https://data-ingestion.prod.example.com' },   javaVersion: '17', javaComplianceStatus: 'compliant',     xrayUrl: 'https://xray.example.com/data-ingestion-svc',     artifactoryUrl: 'https://artifactory.example.com/data-ingestion-svc', splunkUrl: 'https://splunk.example.com/data-ingestion-svc',    probeHealth: '/actuator/health', probeLiveness: '/actuator/liveness', probeReadiness: '/actuator/readiness', probeInfo: '/actuator/info' });
+  await appService.create({ appId: 'stream-processor',      gitRepo: 'git@github.com:org/stream-processor',     squadId: dataPlatSquad.id,  squadKey: 'data-platform',  status: 'active',                      tags: { criticality: 'critical', pillar: 'data',     sunset: '' },   platforms: { java: '21' }, urls: { prod: 'https://stream-processor.prod.example.com' }, javaVersion: '21', javaComplianceStatus: 'compliant',     xrayUrl: 'https://xray.example.com/stream-processor',       artifactoryUrl: 'https://artifactory.example.com/stream-processor',   splunkUrl: 'https://splunk.example.com/stream-processor',     probeHealth: '/actuator/health', probeLiveness: '/actuator/liveness', probeReadiness: '/actuator/readiness', probeInfo: '/actuator/info' });
+  await appService.create({ appId: 'schema-registry-proxy', gitRepo: 'git@github.com:org/schema-registry-proxy',squadId: dataPlatSquad.id,  squadKey: 'data-platform',  status: 'active',                      tags: { criticality: 'high',     pillar: 'data',     sunset: '' },   platforms: { java: '11' }, urls: { prod: 'https://schema-registry.prod.example.com' },  javaVersion: '11', javaComplianceStatus: 'non-compliant', xrayUrl: 'https://xray.example.com/schema-registry-proxy',  artifactoryUrl: 'https://artifactory.example.com/schema-registry-proxy', splunkUrl: '' });
+
+  await appService.create({ appId: 'observability-agent',   gitRepo: 'git@github.com:org/observability-agent',   squadId: observSquad.id,    squadKey: 'observability',  status: 'active',                      tags: { criticality: 'critical', pillar: 'infra',    sunset: '' },   platforms: { java: '17' }, urls: { prod: 'https://obs-agent.prod.example.com' },        javaVersion: '17', javaComplianceStatus: 'compliant',     xrayUrl: 'https://xray.example.com/observability-agent',    artifactoryUrl: 'https://artifactory.example.com/observability-agent', splunkUrl: 'https://splunk.example.com/observability-agent',  probeHealth: '/actuator/health', probeLiveness: '/actuator/liveness', probeReadiness: '/actuator/readiness', probeInfo: '/actuator/info' });
+  await appService.create({ appId: 'metrics-collector',     gitRepo: 'git@github.com:org/metrics-collector',    squadId: observSquad.id,    squadKey: 'observability',  status: 'active',                      tags: { criticality: 'high',     pillar: 'infra',    sunset: '' },   platforms: { java: '21' }, urls: { prod: 'https://metrics.prod.example.com' },          javaVersion: '21', javaComplianceStatus: 'compliant',     xrayUrl: 'https://xray.example.com/metrics-collector',      artifactoryUrl: 'https://artifactory.example.com/metrics-collector',   splunkUrl: 'https://splunk.example.com/metrics-collector',    probeHealth: '/actuator/health', probeLiveness: '/actuator/liveness', probeReadiness: '/actuator/readiness', probeInfo: '/actuator/info' });
+  await appService.create({ appId: 'log-aggregator',        gitRepo: 'git@github.com:org/log-aggregator',       squadId: observSquad.id,    squadKey: 'observability',  status: 'inactive',                    tags: { criticality: 'medium',   pillar: 'infra',    sunset: '' },   platforms: { java: '8' },  urls: { prod: 'https://log-aggregator.prod.example.com' },   javaVersion: '8',  javaComplianceStatus: 'non-compliant', xrayUrl: '',                                                        artifactoryUrl: '',                                                    splunkUrl: '' });
+
+  await appService.create({ appId: 'notification-dispatcher', gitRepo: 'git@github.com:org/notification-dispatcher', squadId: notifSquad.id, squadKey: 'notifications', status: 'active',                     tags: { criticality: 'high',     pillar: 'messaging', sunset: '' },  platforms: { java: '17' }, urls: { prod: 'https://notif-dispatcher.prod.example.com' }, javaVersion: '17', javaComplianceStatus: 'compliant',     xrayUrl: 'https://xray.example.com/notification-dispatcher', artifactoryUrl: 'https://artifactory.example.com/notification-dispatcher', splunkUrl: 'https://splunk.example.com/notification-dispatcher', probeHealth: '/actuator/health', probeLiveness: '/actuator/liveness', probeReadiness: '/actuator/readiness', probeInfo: '/actuator/info' });
+  await appService.create({ appId: 'push-gateway',          gitRepo: 'git@github.com:org/push-gateway',         squadId: notifSquad.id,     squadKey: 'notifications',  status: 'failed',                      tags: { criticality: 'high',     pillar: 'messaging', sunset: '' },  platforms: { java: '11' }, urls: { prod: 'https://push-gateway.prod.example.com' },     javaVersion: '11', javaComplianceStatus: 'non-compliant', xrayUrl: '',                                                        artifactoryUrl: 'https://artifactory.example.com/push-gateway',       splunkUrl: '' });
+
+  await appService.create({ appId: 'platform-gateway',      gitRepo: 'git@github.com:org/platform-gateway',     squadId: platformSquad.id,  squadKey: 'platform',       status: 'active',                      tags: { criticality: 'critical', pillar: 'infra',    sunset: '' },   platforms: { java: '21' }, urls: { prod: 'https://platform-gateway.prod.example.com' }, javaVersion: '21', javaComplianceStatus: 'compliant',     xrayUrl: 'https://xray.example.com/platform-gateway',       artifactoryUrl: 'https://artifactory.example.com/platform-gateway',   splunkUrl: 'https://splunk.example.com/platform-gateway',     probeHealth: '/actuator/health', probeLiveness: '/actuator/liveness', probeReadiness: '/actuator/readiness', probeInfo: '/actuator/info' });
+  await appService.create({ appId: 'config-service',        gitRepo: 'git@github.com:org/config-service',       squadId: platformSquad.id,  squadKey: 'platform',       status: 'active',                      tags: { criticality: 'critical', pillar: 'infra',    sunset: '' },   platforms: { java: '17' }, urls: { prod: 'https://config-service.prod.example.com' },   javaVersion: '17', javaComplianceStatus: 'compliant',     xrayUrl: 'https://xray.example.com/config-service',         artifactoryUrl: 'https://artifactory.example.com/config-service',     splunkUrl: 'https://splunk.example.com/config-service',       probeHealth: '/actuator/health', probeLiveness: '/actuator/liveness', probeReadiness: '/actuator/readiness', probeInfo: '/actuator/info' });
+  await appService.create({ appId: 'service-mesh-proxy',    gitRepo: 'git@github.com:org/service-mesh-proxy',   squadId: platformSquad.id,  squadKey: 'platform',       status: 'active',                      tags: { criticality: 'high',     pillar: 'infra',    sunset: '' },   platforms: { java: '11' }, urls: { prod: 'https://service-mesh.prod.example.com' },     javaVersion: '11', javaComplianceStatus: 'non-compliant', xrayUrl: 'https://xray.example.com/service-mesh-proxy',     artifactoryUrl: 'https://artifactory.example.com/service-mesh-proxy', splunkUrl: '' });
+
+  void [r2, r5, r6, p2, p4, a1, a4, k1, k5,
+        sdBI, sdBilling, sdComms, sdData, sdExperimentation, sdInternal, sdML, sdMobile,
+        sdRelevance, sdRisk, sdSRE, sdStorefront, sdTooling, sdWeb, sdAppSec,
+        checkoutSquad, mobileSquad, webSquad, notifSquad, supportSquad, growthSquad,
+        devexSquad, fraudSquad, paymentsSquad, identitySquad, recsSquad,
+        operationsDomain];
+
+  console.log('\nSeed complete:');
+  console.log(` ${'users'.padEnd(14)} 27`);
+  console.log(` ${'domains'.padEnd(14)} 4`);
+  console.log(` ${'subdomains'.padEnd(14)} 15`);
+  console.log(` ${'tribes'.padEnd(14)} 8`);
+  console.log(` ${'squads'.padEnd(14)} 16`);
+  console.log(` ${'chapters'.padEnd(14)} 6`);
+  console.log(` ${'guilds'.padEnd(14)} 6`);
+  console.log(` ${'sprints'.padEnd(14)} 4`);
+  console.log(` ${'apps'.padEnd(14)} 24`);
+  console.log('\nLogin: admin@example.com / Admin1234!');
+  process.exit(0);
+}
+
+seed().catch((err) => { console.error(err); process.exit(1); });

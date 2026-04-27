@@ -1,0 +1,22 @@
+meta {
+  name: Update Chapter
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{baseUrl}}/api/v1/chapters/{{chapterId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "name": "Frontend Chapter (updated)",
+    "discipline": "Frontend & Mobile"
+  }
+}

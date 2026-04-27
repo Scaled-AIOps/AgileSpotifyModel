@@ -1,0 +1,31 @@
+meta {
+  name: Create Tribe
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/v1/tribes
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "name": "Search Tribe",
+    "description": "Search and discovery features",
+    "domainId": "{{domainId}}",
+    "subdomainId": "",
+    "leadMemberId": ""
+  }
+}
+
+script:post-response {
+  if (res.status === 201) {
+    bru.setVar("tribeId", res.body.id);
+  }
+}

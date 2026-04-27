@@ -1,0 +1,62 @@
+# Each tribe carries a `lead` (who runs it), a `releaseManager`
+# (who owns deploy cadence + change-request workflow for every app under it),
+# and an `agileCoach` (who facilitates ceremonies, retros, dependency mapping,
+# and team-of-teams working agreements across all squads in the tribe).
+- name: Infrastructure
+  subDomain: SRE
+  tribeDomain: Engineering
+  lead: nils.peak@example.com
+  releaseManager: rm.infra@example.com
+  agileCoach: ac.infra@example.com
+  description: Platform, observability, devex.
+  confluence: https://confluence.example.com/display/INFRA
+- name: Commerce
+  subDomain: Storefront
+  tribeDomain: Business
+  lead: priya.shah@example.com
+  releaseManager: rm.commerce@example.com
+  agileCoach: ac.commerce@example.com
+  description: Checkout, payments, cart.
+  confluence: https://confluence.example.com/display/COMM
+- name: Security
+  subDomain: AppSec
+  tribeDomain: Engineering
+  lead: clara.vogt@example.com
+  releaseManager: rm.security@example.com
+  agileCoach: ac.security@example.com
+  description: Identity, auth, app-sec controls.
+- name: Discovery
+  subDomain: Relevance
+  tribeDomain: Product
+  lead: iris.solano@example.com
+  releaseManager: rm.discovery@example.com
+  agileCoach: ac.discovery@example.com
+  description: Search, recommendations, relevance.
+- name: Apps
+  subDomain: Mobile
+  tribeDomain: Product
+  lead: ema.ruiz@example.com
+  releaseManager: rm.apps@example.com
+  agileCoach: ac.apps@example.com
+  description: Mobile + web client apps.
+- name: Data
+  subDomain: Data
+  tribeDomain: Engineering
+  lead: amy.lin@example.com
+  releaseManager: rm.data@example.com
+  agileCoach: ac.data@example.com
+  description: Data platform + pipelines.
+- name: Messaging
+  subDomain: Comms
+  tribeDomain: Engineering
+  lead: uma.hess@example.com
+  releaseManager: rm.messaging@example.com
+  agileCoach: ac.messaging@example.com
+  description: Email / SMS / push notifications.
+- name: Growth
+  subDomain: Experimentation
+  tribeDomain: Product
+  lead: quo.wess@example.com
+  releaseManager: rm.growth@example.com
+  agileCoach: ac.growth@example.com
+  description: A/B testing, feature flags, growth experiments.

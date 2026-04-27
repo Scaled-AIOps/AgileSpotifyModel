@@ -1,0 +1,12 @@
+- name: Business
+  lead: cco@example.com
+  description: All commercial-facing tribes — checkout, payments, growth.
+- name: Engineering
+  lead: cto@example.com
+  description: Platform, data, infra, observability, dev productivity.
+- name: Operations
+  lead: coo@example.com
+  description: Notifications, support tooling, internal services.
+- name: Product
+  lead: cpo@example.com
+  description: Apps, analytics, recommendations, mobile.

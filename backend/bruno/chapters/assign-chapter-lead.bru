@@ -1,0 +1,21 @@
+meta {
+  name: Assign Chapter Lead
+  type: http
+  seq: 9
+}
+
+patch {
+  url: {{baseUrl}}/api/v1/chapters/{{chapterId}}/lead
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "leadMemberId": "{{memberId}}"
+  }
+}

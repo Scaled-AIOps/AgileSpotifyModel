@@ -1,0 +1,29 @@
+meta {
+  name: Create Member
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/v1/members
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "name": "Alice Johnson",
+    "email": "alice@example.com",
+    "role": "Member"
+  }
+}
+
+script:post-response {
+  if (res.status === 201) {
+    bru.setVar("memberId", res.body.id);
+  }
+}

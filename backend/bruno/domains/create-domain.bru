@@ -1,0 +1,28 @@
+meta {
+  name: Create Domain
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/v1/domains
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "name": "Platform Engineering",
+    "description": "Core infrastructure and developer tooling"
+  }
+}
+
+script:post-response {
+  if (res.status === 201) {
+    bru.setVar("domainId", res.body.id);
+  }
+}

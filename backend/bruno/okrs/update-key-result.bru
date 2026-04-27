@@ -1,0 +1,21 @@
+meta {
+  name: Update Key Result
+  type: http
+  seq: 6
+}
+
+patch {
+  url: {{baseUrl}}/api/v1/squads/{{squadId}}/okrs/{{okrId}}/keyresults/{{krId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "current": 320
+  }
+}

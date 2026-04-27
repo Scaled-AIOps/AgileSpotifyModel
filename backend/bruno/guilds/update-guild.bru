@@ -1,0 +1,22 @@
+meta {
+  name: Update Guild
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{baseUrl}}/api/v1/guilds/{{guildId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "name": "GraphQL Guild (updated)",
+    "description": "Updated description"
+  }
+}

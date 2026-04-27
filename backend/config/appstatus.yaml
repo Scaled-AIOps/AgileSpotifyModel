@@ -1,0 +1,80 @@
+# AppStatus seed data consumed by scripts/mock_appstatus.js
+# Each entry is one deploy event. The loader replays them in order via
+#   POST /appstatus/<appId>/<env>
+# so the resulting log on disk preserves chronological order.
+#
+# IMPORTANT: every `appId` must already exist in /appinfo. Seed in this order:
+#   node scripts/mock_data.js seed
+#   node scripts/mock_infra.js seed
+#   node scripts/mock_appinfo.js seed
+#   node scripts/mock_appstatus.js seed
+
+# ─── recs-api: full prd lineage with a regression + rollback ────────────────
+- appId: recs-api
+  env: prd
+  deploy: { version: "1.4.0", commitId: "a1b2c3d", branch: main, deployedBy: alice@example.com, state: success, deployedAt: "2026-03-12T08:30:00.000Z", xray: "https://xray.example.com/recs-api/1.4.0", javaVersion: "17", javaComplianceStatus: compliant }
+- appId: recs-api
+  env: prd
+  deploy: { version: "1.4.1", commitId: "b2c3d4e", branch: main, deployedBy: bob@example.com,   state: success, deployedAt: "2026-03-19T08:30:00.000Z" }
+- appId: recs-api
+  env: prd
+  deploy: { version: "1.4.2", commitId: "c3d4e5f", branch: main, deployedBy: carol@example.com, state: failed,  deployedAt: "2026-03-26T08:30:00.000Z", notes: "memory regression detected by canary" }
+- appId: recs-api
+  env: prd
+  deploy: { version: "1.4.1", commitId: "b2c3d4e", branch: main, deployedBy: carol@example.com, state: rolledback, deployedAt: "2026-03-26T08:45:00.000Z", notes: "auto-rollback to 1.4.1" }
+- appId: recs-api
+  env: uat
+  deploy: { version: "1.4.3-rc1", commitId: "d4e5f6g", branch: release/1.4.3, deployedBy: alice@example.com, state: pending, deployedAt: "2026-04-22T10:00:00.000Z" }
+
+# ─── payments-api: int + uat + prd ──────────────────────────────────────────
+- appId: payments-api
+  env: int
+  deploy: { version: "2.0.0-rc3", commitId: "9aa8bb7", branch: release/2.0, deployedBy: priya@example.com, state: success, deployedAt: "2026-04-10T09:00:00.000Z" }
+- appId: payments-api
+  env: uat
+  deploy: { version: "2.0.0-rc3", commitId: "9aa8bb7", branch: release/2.0, deployedBy: priya@example.com, state: success, deployedAt: "2026-04-15T09:00:00.000Z" }
+- appId: payments-api
+  env: prd
+  deploy: { version: "1.9.7", commitId: "7eed889", branch: main, deployedBy: tom@example.com, state: success, deployedAt: "2026-04-08T11:30:00.000Z", xray: "https://xray.example.com/payments-api/1.9.7", javaVersion: "21", javaComplianceStatus: compliant, changeRequest: "CR-2026-0408-payments" }
+
+# ─── auth-gateway ───────────────────────────────────────────────────────────
+- appId: auth-gateway
+  env: prd
+  deploy: { version: "3.2.1", commitId: "f1e2d3c", branch: main, deployedBy: clara@example.com, state: success, deployedAt: "2026-04-01T07:00:00.000Z" }
+- appId: auth-gateway
+  env: prd
+  deploy: { version: "3.2.2", commitId: "deadbee", branch: main, deployedBy: ben@example.com, state: pending, deployedAt: "2026-04-25T06:00:00.000Z", notes: "blue-green cutover in progress" }
+
+# ─── ios-app ────────────────────────────────────────────────────────────────
+- appId: ios-app
+  env: prd
+  deploy: { version: "5.10.0", commitId: "ios0510", branch: main, deployedBy: ema@example.com, state: success, deployedAt: "2026-04-18T16:00:00.000Z", notes: "App Store release" }
+
+# ─── android-app ────────────────────────────────────────────────────────────
+- appId: android-app
+  env: prd
+  deploy: { version: "5.10.0", commitId: "and0510", branch: main, deployedBy: finn@example.com, state: success, deployedAt: "2026-04-19T11:00:00.000Z", notes: "Play Store release" }
+
+# ─── risk-api: int -> uat -> prd promotion ──────────────────────────────────
+- appId: risk-api
+  env: int
+  deploy: { version: "0.9.4", commitId: "risk094", branch: feat/score-v3, deployedBy: ami@example.com, state: success, deployedAt: "2026-04-20T08:00:00.000Z" }
+- appId: risk-api
+  env: uat
+  deploy: { version: "0.9.4", commitId: "risk094", branch: feat/score-v3, deployedBy: ami@example.com, state: success, deployedAt: "2026-04-22T08:00:00.000Z" }
+- appId: risk-api
+  env: prd
+  deploy: { version: "0.9.4", commitId: "risk094", branch: feat/score-v3, deployedBy: ami@example.com, state: pending, deployedAt: "2026-04-25T08:00:00.000Z", notes: "awaiting approval", xray: "https://xray.example.com/risk-api/0.9.4", javaVersion: "11", javaComplianceStatus: non-compliant, changeRequest: "CR-2026-0425-risk" }
+
+# ─── feature-flags: dev work in progress ────────────────────────────────────
+- appId: feature-flags
+  env: dev
+  deploy: { version: "snapshot", commitId: "ff-dev-1", branch: feat/percent-rollout, deployedBy: per@example.com, state: success, deployedAt: "2026-04-24T15:30:00.000Z" }
+- appId: feature-flags
+  env: dev
+  deploy: { version: "snapshot", commitId: "ff-dev-2", branch: feat/percent-rollout, deployedBy: per@example.com, state: failed,  deployedAt: "2026-04-25T07:00:00.000Z", notes: "schema migration failed in dev DB" }
+
+# ─── broken-old-tool: matches its 'failed' status in appinfo ────────────────
+- appId: broken-old-tool
+  env: int
+  deploy: { version: "0.0.1", commitId: "ancient", branch: master, deployedBy: jak@example.com, state: failed, deployedAt: "2025-11-15T22:00:00.000Z", notes: "tracked for retirement", javaVersion: "8", javaComplianceStatus: exempt }

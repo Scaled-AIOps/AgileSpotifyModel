@@ -1,0 +1,15 @@
+meta {
+  name: Delete Chapter
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{baseUrl}}/api/v1/chapters/{{chapterId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}

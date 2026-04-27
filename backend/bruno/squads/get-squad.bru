@@ -1,0 +1,15 @@
+meta {
+  name: Get Squad
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/api/v1/squads/{{squadId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}

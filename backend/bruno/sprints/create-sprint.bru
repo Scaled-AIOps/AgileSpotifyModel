@@ -1,0 +1,30 @@
+meta {
+  name: Create Sprint
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/v1/squads/{{squadId}}/sprints
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "name": "Sprint 1",
+    "goal": "Deliver core authentication flow",
+    "startDate": "2026-05-01",
+    "endDate": "2026-05-14"
+  }
+}
+
+script:post-response {
+  if (res.status === 201) {
+    bru.setVar("sprintId", res.body.id);
+  }
+}

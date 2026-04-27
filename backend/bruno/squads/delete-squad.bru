@@ -1,0 +1,15 @@
+meta {
+  name: Delete Squad
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{baseUrl}}/api/v1/squads/{{squadId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}

@@ -1,0 +1,23 @@
+meta {
+  name: Reorder Backlog
+  type: http
+  seq: 6
+}
+
+patch {
+  url: {{baseUrl}}/api/v1/squads/{{squadId}}/backlog/reorder
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "items": [
+      { "id": "{{backlogItemId}}", "priority": 1 }
+    ]
+  }
+}

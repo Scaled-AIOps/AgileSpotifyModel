@@ -1,0 +1,15 @@
+meta {
+  name: Get Subdomain Tribes
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{baseUrl}}/api/v1/subdomains/{{subdomainId}}/tribes
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}

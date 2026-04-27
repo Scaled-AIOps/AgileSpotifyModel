@@ -1,0 +1,22 @@
+meta {
+  name: Update Squad
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{baseUrl}}/api/v1/squads/{{squadId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "name": "Search Relevance (updated)",
+    "missionStatement": "Updated mission"
+  }
+}

@@ -1,0 +1,15 @@
+meta {
+  name: List OKRs
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/v1/squads/{{squadId}}/okrs
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}

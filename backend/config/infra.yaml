@@ -1,0 +1,211 @@
+# Infra seed data consumed by scripts/mock_infra.js
+# Distribution: 2 local, 3 dev, 3 int, 4 uat, 4 prd
+
+- name: Backend Local Cluster
+  tokenId: TOKEN_ocp_1
+  clusterId: CLUSTER001
+  environment: local
+  host: https://api.cluster001.intranet.example.com:6443
+  routeHostName: .apps.cluster001.intranet.example.com:6443
+  platform: onprem
+  platformType: OCP
+  platformId: backend-local-cluster
+  tags:
+    criticality: low
+    datacenter: eu-fra-1
+    costCenter: CC-1001
+- name: Frontend Local Cluster
+  tokenId: TOKEN_ocp_2
+  clusterId: CLUSTER002
+  environment: local
+  host: https://api.cluster002.intranet.example.com:6443
+  routeHostName: .apps.cluster002.intranet.example.com:6443
+  platform: onprem
+  platformType: OCP
+  platformId: frontend-local-cluster
+  tags:
+    criticality: low
+    datacenter: eu-fra-1
+    costCenter: CC-1001
+- name: Backend Dev Cluster
+  tokenId: TOKEN_ocp_3
+  clusterId: CLUSTER003
+  environment: dev
+  host: https://api.cluster003.intranet.example.com:6443
+  routeHostName: .apps.cluster003.intranet.example.com:6443
+  platform: onprem
+  platformType: OCP
+  platformId: backend-dev-cluster
+  tags:
+    criticality: low
+    datacenter: eu-fra-1
+    costCenter: CC-1001
+- name: Backend Int Cluster
+  tokenId: TOKEN_ocp_4
+  clusterId: CLUSTER004
+  environment: int
+  host: https://api.cluster004.intranet.example.com:6443
+  routeHostName: .apps.cluster004.intranet.example.com:6443
+  platform: onprem
+  platformType: OCP
+  platformId: backend-int-cluster
+  tags:
+    criticality: low
+    datacenter: eu-fra-1
+    costCenter: CC-1001
+- name: Backend UAT Cluster
+  tokenId: TOKEN_ocp_5
+  clusterId: CLUSTER005
+  environment: uat
+  host: https://api.cluster005.intranet.example.com:6443
+  routeHostName: .apps.cluster005.intranet.example.com:6443
+  platform: onprem
+  platformType: OCP
+  platformId: backend-uat-cluster
+  tags:
+    criticality: medium
+    datacenter: eu-fra-1
+    costCenter: CC-1001
+- name: Backend PRD Cluster
+  tokenId: TOKEN_ocp_6
+  clusterId: CLUSTER006
+  environment: prd
+  host: https://api.cluster006.intranet.example.com:6443
+  routeHostName: .apps.cluster006.intranet.example.com:6443
+  platform: onprem
+  platformType: OCP
+  platformId: backend-prd-cluster
+  tags:
+    criticality: high
+    datacenter: eu-fra-1
+    costCenter: CC-1001
+- name: Frontend UAT Cluster
+  tokenId: TOKEN_ocp_7
+  clusterId: CLUSTER007
+  environment: uat
+  host: https://api.cluster007.intranet.example.com:6443
+  routeHostName: .apps.cluster007.intranet.example.com:6443
+  platform: onprem
+  platformType: OCP
+  platformId: frontend-uat-cluster
+  tags:
+    criticality: medium
+    datacenter: eu-fra-1
+    costCenter: CC-1001
+- name: Frontend PRD Cluster
+  tokenId: TOKEN_ocp_8
+  clusterId: CLUSTER008
+  environment: prd
+  host: https://api.cluster008.intranet.example.com:6443
+  routeHostName: .apps.cluster008.intranet.example.com:6443
+  platform: onprem
+  platformType: OCP
+  platformId: frontend-prd-cluster
+  tags:
+    criticality: high
+    datacenter: eu-fra-1
+    costCenter: CC-1001
+- name: Backend GCP Dev
+  tokenId: TOKEN_GCP_9
+  clusterId: CLUSTER009
+  environment: dev
+  host: ''
+  routeHostName: .apps.cluster009.intranet.example.com:6443
+  platform: cloud
+  platformType: CloudRun
+  platformId: backend-dev-gcp
+  tags:
+    criticality: low
+    region: us-central1
+    costCenter: CC-2002
+- name: Backend GCP Int
+  tokenId: TOKEN_GCP_10
+  clusterId: CLUSTER010
+  environment: int
+  host: ''
+  routeHostName: .apps.cluster010.intranet.example.com:6443
+  platform: cloud
+  platformType: CloudRun
+  platformId: backend-int-gcp
+  tags:
+    criticality: low
+    region: us-central1
+    costCenter: CC-2002
+- name: Backend GCP UAT
+  tokenId: TOKEN_GCP_11
+  clusterId: CLUSTER011
+  environment: uat
+  host: ''
+  routeHostName: .apps.cluster011.intranet.example.com:6443
+  platform: cloud
+  platformType: CloudRun
+  platformId: backend-uat-gcp
+  tags:
+    criticality: medium
+    region: us-central1
+    costCenter: CC-2002
+- name: Backend GCP PRD
+  tokenId: TOKEN_GCP_12
+  clusterId: CLUSTER012
+  environment: prd
+  host: ''
+  routeHostName: .apps.cluster012.intranet.example.com:6443
+  platform: cloud
+  platformType: CloudRun
+  platformId: backend-prd-gcp
+  tags:
+    criticality: high
+    region: us-central1
+    costCenter: CC-2002
+- name: Data Pipeline Dev
+  tokenId: TOKEN_GCP_13
+  clusterId: CLUSTER013
+  environment: dev
+  host: ''
+  routeHostName: .apps.cluster013.intranet.example.com:6443
+  platform: cloud
+  platformType: CloudRun
+  platformId: data-pipeline-dev
+  tags:
+    criticality: low
+    region: us-central1
+    costCenter: CC-2002
+- name: Data Pipeline Int
+  tokenId: TOKEN_GCP_14
+  clusterId: CLUSTER014
+  environment: int
+  host: ''
+  routeHostName: .apps.cluster014.intranet.example.com:6443
+  platform: cloud
+  platformType: CloudRun
+  platformId: data-pipeline-int
+  tags:
+    criticality: low
+    region: us-central1
+    costCenter: CC-2002
+- name: Data Pipeline UAT
+  tokenId: TOKEN_GCP_15
+  clusterId: CLUSTER015
+  environment: uat
+  host: ''
+  routeHostName: .apps.cluster015.intranet.example.com:6443
+  platform: cloud
+  platformType: CloudRun
+  platformId: data-pipeline-uat
+  tags:
+    criticality: medium
+    region: us-central1
+    costCenter: CC-2002
+- name: Data Pipeline PRD
+  tokenId: TOKEN_GCP_16
+  clusterId: CLUSTER016
+  environment: prd
+  host: ''
+  routeHostName: .apps.cluster016.intranet.example.com:6443
+  platform: cloud
+  platformType: CloudRun
+  platformId: data-pipeline-prd
+  tags:
+    criticality: high
+    region: us-central1
+    costCenter: CC-2002
