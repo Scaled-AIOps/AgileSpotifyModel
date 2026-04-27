@@ -9,7 +9,7 @@ import { ApiService } from '../../../core/api/api.service';
 import { AppsApi } from '../../../core/api/apps.api';
 import { FeatureFlagsService } from '../../../core/feature-flags/feature-flags.service';
 import { OrgTreeComponent } from '../org-tree/org-tree.component';
-import type { Member, Squad, Tribe, Domain, SubDomain, Sprint } from '../../../core/models/index';
+import type { Member, Squad, Tribe, Domain, SubDomain } from '../../../core/models/index';
 
 @Component({
   selector: 'app-org-context',
@@ -110,15 +110,9 @@ import type { Member, Squad, Tribe, Domain, SubDomain, Sprint } from '../../../c
                     @if (flags.isEnabled('appRegistry') && appCount > 0) {
                       <span class="stat-pill">{{ appCount }} apps</span>
                     }
-                    @if (sprint) {
-                      <span class="stat-pill sprint-active">● Sprint active</span>
-                    } @else {
-                      <span class="stat-pill">No active sprint</span>
-                    }
                   </div>
                   <div class="chain-actions">
                     <a class="btn btn-ghost btn-sm" [routerLink]="['/org/squads', squad.id]">View Squad</a>
-                    <a class="btn btn-primary btn-sm" [routerLink]="['/work/squads', squad.id, 'sprint']">Sprint Board</a>
                     @if (flags.isEnabled('appRegistry') && appCount > 0) {
                       <a class="btn btn-ghost btn-sm" [routerLink]="['/org/squads', squad.id]" fragment="apps">Apps ↗</a>
                     }
@@ -209,7 +203,6 @@ import type { Member, Squad, Tribe, Domain, SubDomain, Sprint } from '../../../c
       border: 1px solid var(--border);
       color: var(--text-muted);
     }
-    .stat-pill.sprint-active { background: #dcfce7; border-color: #86efac; color: #166534; }
     .chain-actions { display: flex; gap: 8px; }
 
     /* Floating toggle FAB */
@@ -257,7 +250,6 @@ export class OrgContextComponent implements OnInit {
   tribe:  Tribe  | null = null;
   subdomain: SubDomain | null = null;
   domain:    Domain    | null = null;
-  sprint: Sprint | null = null;
   memberCount = 0;
   appCount    = 0;
   tribeLeadName  = '';
@@ -294,8 +286,6 @@ export class OrgContextComponent implements OnInit {
     ]);
     this.squad = sq;
     this.memberCount = memberIds.length;
-
-    try { this.sprint = await firstValueFrom(this.squadApi.getActiveSprint(squadId)); } catch { /* none */ }
 
     if (this.flags.isEnabled('appRegistry')) {
       try {

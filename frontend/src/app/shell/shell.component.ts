@@ -1,7 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../core/auth/auth.service';
-import { FeatureFlagsService } from '../core/feature-flags/feature-flags.service';
 
 @Component({
   selector: 'app-shell',
@@ -38,16 +37,6 @@ import { FeatureFlagsService } from '../core/feature-flags/feature-flags.service
             </svg>
             <span class="nav-label">Org Directory</span>
           </a>
-          @if (flags.isEnabled('workTracking')) {
-            <a class="topnav-item" routerLink="/work" routerLinkActive="active" title="Work Tracking">
-              <svg class="nav-svg" viewBox="0 0 20 20" fill="currentColor">
-                <rect x="2" y="4" width="16" height="2" rx="1"/>
-                <rect x="2" y="9" width="10" height="2" rx="1"/>
-                <rect x="2" y="14" width="13" height="2" rx="1"/>
-              </svg>
-              <span class="nav-label">Work</span>
-            </a>
-          }
           @if (canAccessAdmin) {
             <a class="topnav-item" routerLink="/admin" routerLinkActive="active" title="Admin">
               <svg class="nav-svg" viewBox="0 0 20 20" fill="currentColor">
@@ -168,7 +157,6 @@ import { FeatureFlagsService } from '../core/feature-flags/feature-flags.service
 })
 export class ShellComponent {
   private auth = inject(AuthService);
-  readonly flags = inject(FeatureFlagsService);
   readonly currentUser = this.auth.currentUser;
   get initials() { return (this.currentUser()?.email ?? 'U').charAt(0).toUpperCase(); }
   get canAccessAdmin() { const r = this.currentUser()?.role; return r === 'Admin' || r === 'AgileCoach' || r === 'TribeLead'; }

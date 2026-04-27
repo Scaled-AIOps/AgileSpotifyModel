@@ -4,11 +4,7 @@ import { authenticate } from '../middleware/auth';
 import { authorize } from '../middleware/authorize';
 import { validate } from '../middleware/validate';
 import { createSquadSchema, updateSquadSchema } from '../schemas/squad.schema';
-import { createBacklogItemSchema, updateBacklogItemSchema, updateStatusSchema, reorderBacklogSchema } from '../schemas/backlog.schema';
-import { createSprintSchema, updateSprintSchema } from '../schemas/sprint.schema';
 import * as squadService from '../services/squad.service';
-import * as backlogService from '../services/backlog.service';
-import * as sprintService from '../services/sprint.service';
 import * as appService from '../services/app.service';
 import redis from '../config/redis';
 import { SQUAD_ROLES } from '../models/index';
@@ -98,90 +94,6 @@ router.patch('/:id/lead', authorize('TribeLead'), validate(z.object({ leadMember
 
 router.get('/:id/apps', async (req, res, next) => {
   try { res.json(await appService.findBySquad(req.params.id)); } catch (e) { next(e); }
-});
-
-// ── Backlog ───────────────────────────────────────────────────────────────────
-
-router.get('/:squadId/backlog', async (req, res, next) => {
-  try { res.json(await backlogService.findBySquad(req.params.squadId)); } catch (e) { next(e); }
-});
-
-router.post('/:squadId/backlog', authorize('PO'), validate(createBacklogItemSchema), async (req, res, next) => {
-  try { res.status(201).json(await backlogService.create(req.params.squadId, req.body)); } catch (e) { next(e); }
-});
-
-router.get('/:squadId/backlog/:itemId', async (req, res, next) => {
-  try {
-    const item = await backlogService.findById(req.params.itemId);
-    if (!item) { res.status(404).json({ error: 'Not found' }); return; }
-    res.json(item);
-  } catch (e) { next(e); }
-});
-
-router.patch('/:squadId/backlog/reorder', authorize('PO'), validate(reorderBacklogSchema), async (req, res, next) => {
-  try { await backlogService.reorder(req.params.squadId, req.body.items); res.status(204).send(); } catch (e) { next(e); }
-});
-
-router.patch('/:squadId/backlog/:itemId', authorize('PO'), validate(updateBacklogItemSchema), async (req, res, next) => {
-  try { res.json(await backlogService.update(req.params.itemId, req.body)); } catch (e) { next(e); }
-});
-
-router.patch('/:squadId/backlog/:itemId/status', validate(updateStatusSchema), async (req, res, next) => {
-  try { res.json(await backlogService.updateStatus(req.params.itemId, req.body.status)); } catch (e) { next(e); }
-});
-
-router.delete('/:squadId/backlog/:itemId', authorize('PO'), async (req, res, next) => {
-  try { await backlogService.remove(req.params.itemId); res.status(204).send(); } catch (e) { next(e); }
-});
-
-// ── Sprints ───────────────────────────────────────────────────────────────────
-
-router.get('/:squadId/sprints', async (req, res, next) => {
-  try { res.json(await sprintService.findBySquad(req.params.squadId)); } catch (e) { next(e); }
-});
-
-router.post('/:squadId/sprints', authorize('PO'), validate(createSprintSchema), async (req, res, next) => {
-  try { res.status(201).json(await sprintService.create(req.params.squadId, req.body)); } catch (e) { next(e); }
-});
-
-router.get('/:squadId/sprints/active', async (req, res, next) => {
-  try {
-    const s = await sprintService.findActive(req.params.squadId);
-    if (!s) { res.status(404).json({ error: 'No active sprint' }); return; }
-    res.json(s);
-  } catch (e) { next(e); }
-});
-
-router.get('/:squadId/sprints/:sprintId', async (req, res, next) => {
-  try {
-    const s = await sprintService.findById(req.params.sprintId);
-    if (!s) { res.status(404).json({ error: 'Not found' }); return; }
-    res.json(s);
-  } catch (e) { next(e); }
-});
-
-router.patch('/:squadId/sprints/:sprintId', authorize('PO'), validate(updateSprintSchema), async (req, res, next) => {
-  try { res.json(await sprintService.update(req.params.sprintId, req.body)); } catch (e) { next(e); }
-});
-
-router.delete('/:squadId/sprints/:sprintId', authorize('PO'), async (req, res, next) => {
-  try { await sprintService.remove(req.params.sprintId); res.status(204).send(); } catch (e) { next(e); }
-});
-
-router.post('/:squadId/sprints/:sprintId/start', authorize('PO'), async (req, res, next) => {
-  try { res.json(await sprintService.start(req.params.squadId, req.params.sprintId)); } catch (e) { next(e); }
-});
-
-router.post('/:squadId/sprints/:sprintId/complete', authorize('PO'), async (req, res, next) => {
-  try { res.json(await sprintService.complete(req.params.squadId, req.params.sprintId)); } catch (e) { next(e); }
-});
-
-router.post('/:squadId/sprints/:sprintId/items/:itemId', authorize('PO'), async (req, res, next) => {
-  try { await sprintService.addItem(req.params.sprintId, req.params.itemId); res.status(204).send(); } catch (e) { next(e); }
-});
-
-router.delete('/:squadId/sprints/:sprintId/items/:itemId', authorize('PO'), async (req, res, next) => {
-  try { await sprintService.removeItem(req.params.sprintId, req.params.itemId); res.status(204).send(); } catch (e) { next(e); }
 });
 
 export default router;

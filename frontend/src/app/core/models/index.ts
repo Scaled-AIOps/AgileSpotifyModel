@@ -84,38 +84,6 @@ export interface Guild {
   ownerMemberId: string;
 }
 
-export type BacklogStatus = 'Backlog' | 'InProgress' | 'Review' | 'Done';
-export type BacklogType = 'Story' | 'Bug' | 'Task' | 'Epic';
-
-export interface BacklogItem {
-  id: string;
-  squadId: string;
-  title: string;
-  description: string;
-  type: BacklogType;
-  status: BacklogStatus;
-  priority: number;
-  storyPoints: number;
-  sprintId: string;
-  assigneeId: string;
-  epicId: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export type SprintStatus = 'Planning' | 'Active' | 'Completed';
-
-export interface Sprint {
-  id: string;
-  squadId: string;
-  name: string;
-  goal: string;
-  status: SprintStatus;
-  startDate: string;
-  endDate: string;
-  velocity: number;
-}
-
 // ── AIOps / App Registry ──────────────────────────────────────────────────────
 
 export type AppStatus = 'active' | 'inactive' | 'marked-for-decommissioning' | 'failed';

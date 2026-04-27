@@ -31,10 +31,6 @@ const APP_STATUS_CLASS: Record<AppStatus, string> = {
           <div class="page-sub">{{ squad.missionStatement }}</div>
         </div>
         <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
-          @if (flags.isEnabled('workTracking')) {
-            <a class="btn btn-primary btn-sm" [routerLink]="['/work/squads', squad.id, 'backlog']">Backlog</a>
-            <a class="btn btn-ghost btn-sm" [routerLink]="['/work/squads', squad.id, 'sprint']">Sprint Board</a>
-          }
           @if (squad.jira) { <a class="btn btn-ghost btn-sm" [href]="squad.jira" target="_blank" rel="noopener">Jira ↗</a> }
           @if (squad.confluence) { <a class="btn btn-ghost btn-sm" [href]="squad.confluence" target="_blank" rel="noopener">Confluence ↗</a> }
         </div>

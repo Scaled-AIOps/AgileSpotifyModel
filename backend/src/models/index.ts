@@ -98,35 +98,6 @@ export interface Guild {
   updatedAt: string;
 }
 
-export interface BacklogItem {
-  id: string;
-  squadId: string;
-  title: string;
-  description: string;
-  type: 'Story' | 'Bug' | 'Task' | 'Epic';
-  status: 'Backlog' | 'InProgress' | 'Review' | 'Done';
-  priority: number;
-  storyPoints: number;
-  sprintId: string;
-  assigneeId: string;
-  epicId: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface Sprint {
-  id: string;
-  squadId: string;
-  name: string;
-  goal: string;
-  status: 'Planning' | 'Active' | 'Completed';
-  startDate: string;
-  endDate: string;
-  velocity: number;
-  createdAt: string;
-  updatedAt: string;
-}
-
 export interface InfraCluster {
   platformId: string;
   name: string;

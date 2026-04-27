@@ -54,10 +54,7 @@ export async function remove(id: string): Promise<void> {
   memberIds.forEach((mid) => pipeline.hset(`member:${mid}`, 'squadId', ''));
   pipeline.del(`squad:${id}`);
   pipeline.del(`squad:${id}:members`);
-  pipeline.del(`squad:${id}:backlog`);
-  pipeline.del(`squad:${id}:sprints`);
-  pipeline.del(`squad:${id}:activeSprint`);
-pipeline.del(`squad:${id}:apps`);
+  pipeline.del(`squad:${id}:apps`);
   pipeline.srem('squads:all', id);
   pipeline.srem(`tribe:${existing.tribeId}:squads`, id);
   if (existing.key) pipeline.del(`squad:key:${existing.key}`);

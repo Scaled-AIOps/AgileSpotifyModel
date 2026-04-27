@@ -4,8 +4,7 @@ import { FeatureFlagsService, FeatureFlag } from '../../../core/feature-flags/fe
 interface FlagMeta { key: FeatureFlag; label: string; description: string; }
 
 const FLAG_META: FlagMeta[] = [
-  { key: 'workTracking', label: 'Work Tracking',  description: 'Backlog management and sprint boards for squads.' },
-  { key: 'appRegistry',  label: 'Applications',   description: 'Application catalogue, infra cluster view, and deployment history per squad.' },
+  { key: 'appRegistry', label: 'Applications', description: 'Application catalogue, infra cluster view, and deployment history per squad.' },
 ];
 
 @Component({

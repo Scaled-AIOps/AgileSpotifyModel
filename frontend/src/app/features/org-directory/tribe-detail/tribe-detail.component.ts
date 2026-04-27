@@ -52,7 +52,6 @@ import type { Tribe, Squad, Chapter } from '../../../core/models/index';
             </div>
             <div class="card-footer-row">
               <a class="btn btn-primary btn-sm" [routerLink]="['/org/squads', squad.id]">View Squad</a>
-              <a class="btn btn-ghost btn-sm" [routerLink]="['/work/squads', squad.id, 'backlog']">Backlog</a>
             </div>
           </div>
         }

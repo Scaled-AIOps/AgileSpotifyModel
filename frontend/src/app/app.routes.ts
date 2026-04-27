@@ -1,7 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/auth/auth.guard';
 import { roleGuard } from './core/auth/role.guard';
-import { featureFlagGuard } from './core/feature-flags/feature-flag.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/apps', pathMatch: 'full' },
@@ -21,11 +20,6 @@ export const routes: Routes = [
       {
         path: 'org',
         loadChildren: () => import('./features/org-directory/org-directory.routes').then((m) => m.orgDirectoryRoutes),
-      },
-      {
-        path: 'work',
-        canActivate: [featureFlagGuard('workTracking')],
-        loadChildren: () => import('./features/work-tracking/work-tracking.routes').then((m) => m.workTrackingRoutes),
       },
       {
         path: 'apps',
