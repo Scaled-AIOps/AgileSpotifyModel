@@ -4,6 +4,9 @@ dist/
 build/
 *.log
 
+# Generated
+backend/coverage/
+
 # Environment
 .env
 .env.local
