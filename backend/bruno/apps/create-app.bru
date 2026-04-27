@@ -17,12 +17,24 @@ auth:bearer {
 body:json {
   {
     "appId": "my-service",
+    "description": "Service responsible for handling payments",
     "squadId": "{{squadId}}",
-    "gitRepo": "https://github.com/example/my-service",
     "status": "active",
-    "tags": { "team": "payments" },
+    "tags": { "criticality": "high", "pillar": "commerce" },
     "platforms": {},
-    "urls": {}
+    "urls": {},
+    "jira": [
+      { "url": "https://jira.example.com/projects/PAY", "description": "Main board" }
+    ],
+    "confluence": [
+      { "url": "https://confluence.example.com/display/PAY", "description": "Architecture" }
+    ],
+    "github": [
+      { "url": "https://github.com/example/my-service", "description": "" }
+    ],
+    "mailingList": [
+      { "url": "payments-team@example.com", "description": "Team list" }
+    ]
   }
 }
 

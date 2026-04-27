@@ -1,13 +1,13 @@
 # Agile Spotify Model
 
-Management tool for organisations running the Spotify Agile Model. Covers the full entity hierarchy (Domains → Sub-Domains → Tribes → Squads / Chapters / Guilds / Members), application health monitoring, backlog and sprint tracking, and admin headcount management.
+Management tool for organisations running the Spotify Agile Model. Covers the full entity hierarchy (Domains → Sub-Domains → Tribes → Squads / Chapters / Guilds / Members), application health monitoring, and admin headcount management. Sprint and backlog tracking is delegated to Jira; this app links out to it.
 
 ## Stack
 
 | Layer | Technology |
 |---|---|
-| Backend | Node.js 20 + Express + TypeScript |
-| Frontend | Angular 17 standalone components |
+| Backend | Node.js 20 + Express + TypeScript, bundled with webpack |
+| Frontend | Angular 21 standalone components |
 | Data | Redis 7 (sole data store — no SQL) |
 | Auth | JWT (access 15 min in-memory, refresh 7 d HttpOnly cookie) + optional Jira / Microsoft SSO |
 
@@ -30,14 +30,20 @@ npm install
 npx ng serve                      # dev server on http://localhost:4200
 ```
 
-### 3. Seed demo data
+### 3. Seed data
+
+The backend automatically seeds **non-production** environments at startup from the YAML files in `backend/config/` (`tribedomains.yaml`, `subdomains.yaml`, `tribes.yaml`, `squads.yaml`, `infra.yaml`, `appinfo.yaml`, `appstatus.yaml`). The seed is idempotent: missing entities are created, existing ones are skipped — never overwritten. Production startup skips the YAML seed entirely.
+
+YAML files are not bundled into `dist/`; the deploy pipeline mounts `config/` next to `dist/server.js` at runtime (`CONFIG_DIR` env var overrides the default `./config`).
+
+The YAML files don't carry user accounts or password hashes. To bootstrap demo users on a fresh Redis, run the dev-only script:
 
 ```bash
 cd backend
-npm run seed
+npm run seed                    # creates 27 demo users + populates the org
 ```
 
-Seed creates: 27 users · 4 domains · 15 sub-domains · 8 tribes · 16 squads · 6 chapters · 6 guilds · 4 active sprints · 24 applications
+Demo data: 27 users · 4 domains · 15 sub-domains · 8 tribes · 16 squads · 6 chapters · 6 guilds · ~50 applications
 
 Default login: **admin@example.com / Admin1234!**
 
@@ -114,9 +120,22 @@ Base URL: `http://localhost:3000/api/v1`
 
 All endpoints require `Authorization: Bearer <token>` except `POST /auth/login` and `GET /auth/config`.
 
+`POST /auth/login` and `POST /auth/register` are additionally rate-limited to 20 requests per 15 minutes per IP to deter brute-force attacks.
+
 ### Roles
 
-`Admin` > `TribeLead` > `PO` > `AgileCoach` > `ReleaseManager` > `Member`
+The role hierarchy used by `authorize()`:
+
+| Role | Rank | Notes |
+|---|---|---|
+| `Admin` | 4 | Full access |
+| `AgileCoach` | 4 | Equivalent to Admin for management endpoints |
+| `TribeLead` | 3 | Can create squads / apps, modify squads in own tribe |
+| `PO` | 2 | Can update own squad |
+| `ReleaseManager` | 2 | Can record deploys |
+| `Member` | 1 | Read-only, plus self-join/leave guilds, squad-role updates |
+
+`authorize('TribeLead')` admits any role with rank ≥ 3.
 
 ### Auth endpoints
 
@@ -147,7 +166,22 @@ curl -H "Authorization: Bearer $TOKEN" http://localhost:3000/api/v1/org/tree | j
 
 # All applications
 curl -H "Authorization: Bearer $TOKEN" http://localhost:3000/api/v1/apps | jq
+
+# Patch an app with multi-link arrays
+curl -X PATCH -H "Authorization: Bearer $TOKEN" -H 'Content-Type: application/json' \
+  http://localhost:3000/api/v1/apps/auth-api -d '{
+    "description": "Identity & SSO API",
+    "jira": [
+      { "url": "https://jira.example.com/projects/AUTH", "description": "Main board" },
+      { "url": "https://jira.example.com/projects/SEC",  "description": "Security" }
+    ],
+    "github": [{ "url": "https://github.com/example/auth-api", "description": "" }]
+  }' | jq
 ```
+
+### Bruno collection
+
+The repo ships a Bruno collection under [`backend/bruno/`](backend/bruno/) covering every route. Open it in Bruno (https://usebruno.com) and select the `local` environment to run requests against `http://localhost:3000` with whichever access token you paste in.
 
 ---
 
@@ -155,41 +189,52 @@ curl -H "Authorization: Bearer $TOKEN" http://localhost:3000/api/v1/apps | jq
 
 ```
 AgileSpotifyModel/
-├── .env.example              ← copy to backend/config/.env
 ├── .gitignore
 ├── README.md
 │
 ├── backend/
-│   ├── config/
-│   │   └── .env              ← not committed
-│   ├── src/
-│   │   ├── config/           env.ts (Zod-validated), redis.ts
-│   │   ├── lib/              id.ts (UUID v4), crypto.ts (bcrypt)
-│   │   ├── middleware/       auth (JWT), authorize (role guard), validate (Zod), errorHandler
-│   │   ├── models/           TypeScript interfaces for all entities
-│   │   ├── schemas/          Zod request schemas
-│   │   ├── services/         Redis data access (one file per entity)
-│   │   ├── routes/           Express routers (one file per entity)
-│   │   └── scripts/
-│   │       └── seed.ts       demo org + apps
-│   └── package.json
+│   ├── config/                ← injected by deploy pipeline next to dist/
+│   │   ├── .env               (not committed)
+│   │   ├── tribedomains.yaml
+│   │   ├── subdomains.yaml
+│   │   ├── tribes.yaml        ← `name` is short code, `tribeName` is long form
+│   │   ├── squads.yaml
+│   │   ├── infra.yaml
+│   │   ├── appinfo.yaml
+│   │   └── appstatus.yaml
+│   ├── webpack.config.js      ← bundles src/ → dist/server.js
+│   ├── bruno/                 Bruno API collection (one folder per entity)
+│   ├── scripts/seed.ts        dev-only: seeds demo users + org
+│   ├── dist/                  webpack output (single bundled server.js)
+│   └── src/
+│       ├── config/            env.ts (Zod-validated), redis.ts
+│       ├── lib/               id.ts (UUID v4), crypto.ts (bcrypt),
+│       │                       links.ts (Link[] serialise/parse helpers),
+│       │                       seed-yaml.ts (idempotent startup seed)
+│       ├── middleware/        auth (JWT), authorize (role guard), validate (Zod), errorHandler
+│       ├── models/            TypeScript interfaces for all entities
+│       ├── schemas/           Zod request schemas, links.schema.ts (shared link fields)
+│       ├── services/          Redis data access (one file per entity)
+│       └── routes/            Express routers (one file per entity)
 │
 └── frontend/
     └── src/app/
         ├── core/
-        │   ├── auth/         AuthService (Signals), JWT interceptor, guards
-        │   ├── api/          typed API clients per entity
-        │   ├── config/       ConfigService — loads /auth/config on startup
+        │   ├── auth/          AuthService (Signals), JWT interceptor, guards
+        │   ├── api/           typed API clients per entity
+        │   ├── config/        ConfigService — loads /auth/config on startup
         │   ├── feature-flags/ FeatureFlagsService (localStorage)
-        │   └── models/       TypeScript interfaces
-        ├── shell/            top nav layout
+        │   └── models/        TypeScript interfaces incl. Link
+        ├── shared/
+        │   ├── link-list/     read-only Link[] renderer
+        │   └── link-repeater/ edit-form Link[] widget (URL + description rows)
+        ├── shell/             top nav layout
         └── features/
-            ├── auth/         login page, OAuth callback
-            ├── dashboard/    role-aware: fleet health (Admin), tribe health (TribeLead), squad app health (PO/Member)
-            ├── apps/         application list (CSV/JSON/YAML export), detail, registration form, infra clusters
+            ├── auth/          login page, OAuth callback
+            ├── dashboard/     role-aware fleet/tribe/squad health
+            ├── apps/          application list (CSV/JSON/YAML export), detail, registration form, infra clusters
             ├── org-directory/ D3 collapsible tree, domain/tribe/squad/chapter/guild views
-            ├── work-tracking/ backlog (drag-drop priority), sprint Kanban board
-            └── admin/        member CRUD, headcount chart, feature flags
+            └── admin/         member CRUD, headcount chart, feature flags
 ```
 
 ---
@@ -211,10 +256,33 @@ Each application tracks:
 | Field | Values |
 |---|---|
 | `status` | `active` · `inactive` · `failed` · `marked-for-decommissioning` |
+| `description` | free-text summary of what the app does |
 | `javaComplianceStatus` | `compliant` · `non-compliant` · `exempt` |
 | `xrayUrl` | URL to JFrog Xray scan report (empty = no scan) |
 | `tags.criticality` | `critical` · `high` · `medium` · `low` |
 | `tags.pillar` | free-text organisational pillar |
 | `tags.sunset` | planned decommission date |
 | Probe URLs | `probeHealth`, `probeLiveness`, `probeReadiness`, `probeInfo` |
-| Tool links | `gitRepo`, `artifactoryUrl`, `splunkUrl`, `compositionViewerUrl` |
+| Tool links | `artifactoryUrl`, `splunkUrl`, `xrayUrl`, `compositionViewerUrl` |
+| `jira[]` · `confluence[]` · `github[]` · `mailingList[]` | Each is a list of `{url, description}` (see Multi-link arrays below) |
+
+## Multi-link arrays
+
+Five entity types — `Domain`, `SubDomain`, `Tribe`, `Squad`, `App` — each carry four labelled link arrays: `jira`, `confluence`, `github`, `mailingList`. Each entry is a `Link` object:
+
+```ts
+interface Link {
+  url: string;
+  description: string;   // optional human label, e.g. "Main board"
+}
+```
+
+In API requests you may also send a bare URL string or an array of URL strings; the zod schema coerces them to `[{url, description: ''}]` for back-compat. Output is always normalised to `Link[]`. URLs are validated to start with `http://` or `https://` (mailing-list entries also accept plain email addresses).
+
+In the frontend, two shared standalone components render and edit these arrays:
+- [`<app-link-list>`](frontend/src/app/shared/link-list/link-list.component.ts) — read-only display on detail pages
+- [`<app-link-repeater>`](frontend/src/app/shared/link-repeater/link-repeater.component.ts) — repeater rows (URL + description + remove button) for edit forms
+
+## Tribe naming
+
+`Tribe.name` is a short code (e.g. `INF`, `PSS`); `Tribe.tribeName` is the long form (e.g. *"Infrastructure"*, *"Payment System Services"*). Detail pages show the long name with the short code as a monospace badge. The YAML loader accepts either form when other entities reference a tribe.

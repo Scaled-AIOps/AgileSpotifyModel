@@ -17,7 +17,17 @@ auth:bearer {
 body:json {
   {
     "name": "Platform Engineering",
-    "description": "Core infrastructure and developer tooling"
+    "description": "Core infrastructure and developer tooling",
+    "jira": [
+      { "url": "https://jira.example.com/projects/PLAT", "description": "Domain board" }
+    ],
+    "confluence": [
+      { "url": "https://confluence.example.com/display/PLAT", "description": "Domain space" }
+    ],
+    "github": [],
+    "mailingList": [
+      { "url": "platform-eng@example.com", "description": "Domain distro" }
+    ]
   }
 }
 

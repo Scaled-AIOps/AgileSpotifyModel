@@ -17,6 +17,9 @@ auth:bearer {
 body:json {
   {
     "status": "active",
-    "gitRepo": "https://github.com/example/my-service-updated"
+    "description": "Updated description",
+    "github": [
+      { "url": "https://github.com/example/my-service", "description": "Production repo" }
+    ]
   }
 }

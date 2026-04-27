@@ -16,7 +16,15 @@ auth:bearer {
 
 body:json {
   {
-    "name": "Search Relevance (updated)",
-    "missionStatement": "Updated mission"
+    "missionStatement": "Updated mission",
+    "tier": "0",
+    "jira": [
+      { "url": "https://jira.example.com/projects/RELEV", "description": "Sprint board" },
+      { "url": "https://jira.example.com/projects/INC",   "description": "Incidents" }
+    ],
+    "mailingList": [
+      { "url": "search-relevance@example.com", "description": "Squad" },
+      { "url": "search-oncall@example.com",    "description": "On-call" }
+    ]
   }
 }

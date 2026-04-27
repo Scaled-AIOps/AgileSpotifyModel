@@ -16,11 +16,22 @@ auth:bearer {
 
 body:json {
   {
-    "name": "Search Tribe",
+    "name": "SRCH",
+    "tribeName": "Search Tribe",
     "description": "Search and discovery features",
     "domainId": "{{domainId}}",
     "subdomainId": "",
-    "leadMemberId": ""
+    "leadMemberId": "",
+    "jira": [
+      { "url": "https://jira.example.com/projects/SRCH", "description": "Tribe board" }
+    ],
+    "confluence": [
+      { "url": "https://confluence.example.com/display/SRCH", "description": "Tribe space" }
+    ],
+    "github": [],
+    "mailingList": [
+      { "url": "search-tribe@example.com", "description": "Tribe distro" }
+    ]
   }
 }
 
