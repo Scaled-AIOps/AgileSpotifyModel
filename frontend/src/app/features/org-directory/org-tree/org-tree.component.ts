@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ElementRef, ViewChild, inject, AfterViewInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, ElementRef, ViewChild, inject, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
 import * as d3 from 'd3';
 import { OrgApi } from '../../../core/api/org.api';
@@ -58,13 +58,18 @@ export class OrgTreeComponent implements AfterViewInit, OnDestroy {
 
   private orgApi = inject(OrgApi);
   private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef);
 
   loading = true;
 
   async ngAfterViewInit() {
     const domains = await firstValueFrom(this.orgApi.getTree());
     this.loading = false;
-    setTimeout(() => this.renderTree(domains), 0);
+    // Force CD so `@if (loading)` swaps in the #treeContainer div before we touch ViewChild.
+    this.cdr.detectChanges();
+    if (this.containerRef?.nativeElement) {
+      this.renderTree(domains);
+    }
   }
 
   ngOnDestroy() {
