@@ -17,7 +17,7 @@ import * as appstatusSvc from '../services/appstatus.service';
 import type { Domain, SubDomain, Tribe } from '../models/index';
 import type { DeployState, AppStatus } from '../models/index';
 
-const CONFIG = path.resolve(__dirname, '../../config');
+const CONFIG = process.env.CONFIG_DIR || path.resolve(process.cwd(), 'config');
 
 function loadYaml<T>(file: string): T[] {
   const p = path.join(CONFIG, file);

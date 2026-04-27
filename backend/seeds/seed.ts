@@ -5,7 +5,8 @@
 
 import dotenv from 'dotenv';
 import path from 'path';
-dotenv.config({ path: path.resolve(__dirname, '../config/.env') });
+const CONFIG_DIR = process.env.CONFIG_DIR || path.resolve(process.cwd(), 'config');
+dotenv.config({ path: path.join(CONFIG_DIR, '.env') });
 import '../src/config/env';
 import { connectRedis } from '../src/config/redis';
 import redis from '../src/config/redis';
