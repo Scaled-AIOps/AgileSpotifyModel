@@ -1,3 +1,9 @@
+/**
+ * Purpose: New-app registration form.
+ * Usage:   Routed at /apps/new (TribeLead+). Submits to AppsApi.createApp.
+ * Goal:    Onboard a brand-new application with all the structured fields the registry tracks.
+ * ToDo:    Validate URL fields client-side before submit (mirrors safeUrl on backend).
+ */
 import { Component, OnInit, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';

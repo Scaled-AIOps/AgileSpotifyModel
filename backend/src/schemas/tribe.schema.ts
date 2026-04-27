@@ -1,3 +1,9 @@
+/**
+ * Purpose: Zod schemas for Tribe create / update.
+ * Usage:   Imported by tribe.routes.ts. Includes `tribeName` (optional long form) and spreads `linksFields`.
+ * Goal:    Validate tribe inputs and enforce the short-code / long-name pair.
+ * ToDo:    Relax the UUID requirement on `domainId` to accept slug IDs from legacy seeds, or migrate seed IDs to UUIDs.
+ */
 import { z } from 'zod';
 import { linksFields } from './links.schema';
 

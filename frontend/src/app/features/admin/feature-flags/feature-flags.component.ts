@@ -1,3 +1,9 @@
+/**
+ * Purpose: Feature flag toggle UI.
+ * Usage:   Routed at /admin/feature-flags. Reads / writes the FeatureFlagsService store; changes take effect immediately and persist in localStorage.
+ * Goal:    Operator-facing surface for client-side feature gating without a deploy.
+ * ToDo:    Show flag descriptions inline; group by category as more flags are added.
+ */
 import { Component, inject } from '@angular/core';
 import { FeatureFlagsService, FeatureFlag } from '../../../core/feature-flags/feature-flags.service';
 

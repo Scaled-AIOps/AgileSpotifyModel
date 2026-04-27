@@ -1,3 +1,9 @@
+/**
+ * Purpose: Functional HttpInterceptorFn that attaches the access token + handles 401.
+ * Usage:   Registered in app.config.ts via `provideHttpClient(withInterceptors([jwtInterceptor]))`. On 401 (non-/auth/) it transparently refreshes the token and retries the request.
+ * Goal:    Make every API call automatically authenticated and let expired tokens self-heal without bothering the caller.
+ * ToDo:    Coalesce concurrent 401s so only one /auth/refresh call is in flight at a time.
+ */
 import { HttpInterceptorFn, HttpRequest, HttpHandlerFn, HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { catchError, switchMap, throwError } from 'rxjs';

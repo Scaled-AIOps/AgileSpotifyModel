@@ -1,3 +1,9 @@
+/**
+ * Purpose: Top-level Express router that aggregates every entity sub-router.
+ * Usage:   Mounted by app.ts at `/api/v1`; lazy-loads each entity router (auth, domains, tribes, …) and wires it under its sub-path.
+ * Goal:    Keep the API URL layout (`/api/v1/<entity>`) in one file so routes are easy to audit and re-order.
+ * ToDo:    —
+ */
 import { Router } from 'express';
 import { env } from '../config/env';
 import authRoutes from './auth.routes';

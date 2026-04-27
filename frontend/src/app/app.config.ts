@@ -1,3 +1,9 @@
+/**
+ * Purpose: Angular ApplicationConfig.
+ * Usage:   Passed to `bootstrapApplication`. Provides zone change detection, the router, the JWT-aware HttpClient, animations, and an APP_INITIALIZER that warms ConfigService.
+ * Goal:    Single place that wires SPA-wide providers — no NgModule.
+ * ToDo:    Migrate APP_INITIALIZER to provideAppInitializer() (deprecated in Angular 21).
+ */
 import { ApplicationConfig, APP_INITIALIZER, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter, withComponentInputBinding } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';

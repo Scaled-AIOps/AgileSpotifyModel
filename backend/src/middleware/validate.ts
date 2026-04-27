@@ -1,3 +1,9 @@
+/**
+ * Purpose: Zod request-body validation middleware.
+ * Usage:   `validate(schema)` returns an Express middleware that parses + replaces `req.body` with the schema-coerced value, or 400s with the field errors.
+ * Goal:    Move all input shape enforcement out of route handlers so handlers can trust their inputs.
+ * ToDo:    —
+ */
 import { Request, Response, NextFunction } from 'express';
 import { ZodSchema } from 'zod';
 

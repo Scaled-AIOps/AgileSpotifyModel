@@ -1,3 +1,9 @@
+/**
+ * Purpose: Redis-backed CRUD for Guild + member management.
+ * Usage:   Called from guild.routes.ts. Maintains guild↔member bidirectional sets.
+ * Goal:    Persistence layer for opt-in interest groups.
+ * ToDo:    —
+ */
 import redis from '../config/redis';
 import { generateId } from '../lib/id';
 import { createError } from '../middleware/errorHandler';

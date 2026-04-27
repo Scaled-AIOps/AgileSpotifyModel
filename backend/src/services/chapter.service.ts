@@ -1,3 +1,9 @@
+/**
+ * Purpose: Redis-backed CRUD for Chapter + member management.
+ * Usage:   Called from chapter.routes.ts. Maintains tribe↔chapter and chapter↔member bidirectional sets.
+ * Goal:    Persistence layer for cross-squad disciplines.
+ * ToDo:    Add description-aware update path (ensure update() preserves the new description field round-trip).
+ */
 import redis from '../config/redis';
 import { generateId } from '../lib/id';
 import { createError } from '../middleware/errorHandler';

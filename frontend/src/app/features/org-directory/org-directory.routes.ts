@@ -1,3 +1,9 @@
+/**
+ * Purpose: Route table for the org-directory feature module.
+ * Usage:   Lazy-loaded by app.routes.ts under /org.
+ * Goal:    Group all hierarchy-browsing routes (tree, domain, tribe, squad, chapter, guild).
+ * ToDo:    —
+ */
 import { Routes } from '@angular/router';
 
 export const orgDirectoryRoutes: Routes = [

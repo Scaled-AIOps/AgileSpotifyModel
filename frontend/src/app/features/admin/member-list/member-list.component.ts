@@ -1,3 +1,9 @@
+/**
+ * Purpose: Member directory list / search page.
+ * Usage:   Routed at /admin/members. Sortable searchable table.
+ * Goal:    Find and manage the people directory.
+ * ToDo:    —
+ */
 import { Component, OnInit, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';

@@ -1,3 +1,9 @@
+/**
+ * Purpose: Typed HTTP client for the /tribes endpoints.
+ * Usage:   Injected by tribe-detail, dashboard, org-context.
+ * Goal:    Single seam for tribe data.
+ * ToDo:    —
+ */
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiService } from './api.service';

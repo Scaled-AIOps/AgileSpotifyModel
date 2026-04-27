@@ -1,3 +1,9 @@
+/**
+ * Purpose: Edit-form repeater for a `Link[]`.
+ * Usage:   `<app-link-repeater label='Jira' [links]='form.jira' (linksChange)='form.jira = $event'>` — used in app-form and app-detail edit mode.
+ * Goal:    Single widget that lets the user add / edit / remove labelled URLs without every form re-implementing the row layout and clean-up logic.
+ * ToDo:    Drag-handle reordering of rows.
+ */
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import type { Link } from '../../core/models/index';

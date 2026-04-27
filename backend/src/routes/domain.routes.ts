@@ -1,3 +1,9 @@
+/**
+ * Purpose: Express router for Domain CRUD + tree expansion.
+ * Usage:   Mounted at `/api/v1/domains`. Exposes list / get / create / update / delete plus `:id/subdomains`, `:id/tribes`, `:id/tree`.
+ * Goal:    HTTP surface for the highest level of the org hierarchy.
+ * ToDo:    —
+ */
 import { Router, Request, Response, NextFunction } from 'express';
 import { authenticate } from '../middleware/auth';
 import { authorize } from '../middleware/authorize';

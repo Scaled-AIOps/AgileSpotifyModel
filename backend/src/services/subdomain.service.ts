@@ -1,3 +1,9 @@
+/**
+ * Purpose: Redis-backed CRUD for SubDomain.
+ * Usage:   Called from subdomain.routes.ts. Maintains the bidirectional domain↔subdomain set membership in a Redis pipeline.
+ * Goal:    Persistence layer for sub-domains.
+ * ToDo:    Same `as unknown as SubDomain` cast cleanup as app.service.
+ */
 import redis from '../config/redis';
 import { generateId } from '../lib/id';
 import { createError } from '../middleware/errorHandler';

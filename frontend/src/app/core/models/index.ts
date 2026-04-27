@@ -1,3 +1,9 @@
+/**
+ * Purpose: All TypeScript interfaces shared across the frontend SPA.
+ * Usage:   Imported by every API client, component, and shared widget that needs an entity type. Mirrors the backend `models/index.ts`.
+ * Goal:    Single source of truth for entity shapes on the frontend; includes the `Link` type used by jira / confluence / github / mailingList arrays.
+ * ToDo:    —
+ */
 export type Role = 'Admin' | 'TribeLead' | 'PO' | 'AgileCoach' | 'ReleaseManager' | 'Member';
 
 export interface User {

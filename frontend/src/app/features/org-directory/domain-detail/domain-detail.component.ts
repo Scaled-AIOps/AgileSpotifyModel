@@ -1,3 +1,9 @@
+/**
+ * Purpose: Domain detail page.
+ * Usage:   Routed at /org/domains/:id. Shows domain metadata, link grid (jira / confluence / github / mailing), and child sub-domains + tribes.
+ * Goal:    Drill into a single domain and navigate to its children.
+ * ToDo:    Same — link arrays are read-only on this page.
+ */
 import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';

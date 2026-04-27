@@ -1,3 +1,9 @@
+/**
+ * Purpose: Typed HTTP client for the /members endpoints.
+ * Usage:   Injected by member-list, member-form, squad-detail, dashboard, org-context.
+ * Goal:    Single seam for member CRUD + assignments lookup.
+ * ToDo:    —
+ */
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiService } from './api.service';

@@ -1,3 +1,9 @@
+/**
+ * Purpose: Default /org page — your context.
+ * Usage:   Routed at /org. Shows the squad / tribe / domain chain the current user belongs to and a Global View button.
+ * Goal:    Give every user a personalised landing page in the org directory; Global View is the escape hatch for browsing other parts of the org.
+ * ToDo:    —
+ */
 import { Component, OnInit, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';

@@ -1,3 +1,9 @@
+/**
+ * Purpose: Express router for authentication.
+ * Usage:   Mounted at `/api/v1/auth` by routes/index.ts. Exposes login, register, refresh, logout, me, change-password, and the Jira / Microsoft SSO flows.
+ * Goal:    All credential / token surface lives in one router so security reviews and rate-limiter hooks have a single entry point.
+ * ToDo:    —
+ */
 import { Router, Request, Response, NextFunction } from 'express';
 import { validate } from '../middleware/validate';
 import { authenticate } from '../middleware/auth';

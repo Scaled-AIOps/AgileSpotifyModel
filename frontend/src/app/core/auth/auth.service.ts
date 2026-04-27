@@ -1,3 +1,9 @@
+/**
+ * Purpose: Authentication state + token management.
+ * Usage:   Singleton service. Login / logout / refresh / loadCurrentUser update the in-memory `_accessToken` and `_currentUser` Signals; consumed by guards, the JWT interceptor, and the shell header.
+ * Goal:    Keep the access token off localStorage (XSS-resistant) while still surviving page reloads via the HttpOnly refresh-token cookie.
+ * ToDo:    On 401-after-refresh-failure, redirect to login with a `?sessionExpired=1` flag and show a toast.
+ */
 import { Injectable, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';

@@ -1,3 +1,9 @@
+/**
+ * Purpose: Loads /auth/config at startup to learn which auth methods are enabled.
+ * Usage:   Eagerly initialised by APP_INITIALIZER in app.config.ts; the login page reads `basicEnabled() / jiraEnabled() / adEnabled()` to decide which buttons to show.
+ * Goal:    Avoid hard-coding server feature flags in the SPA bundle; let the backend advertise its capabilities at runtime.
+ * ToDo:    —
+ */
 import { Injectable, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';

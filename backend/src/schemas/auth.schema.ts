@@ -1,3 +1,9 @@
+/**
+ * Purpose: Zod schemas for auth endpoints (register, login, change-password).
+ * Usage:   Imported by auth.routes.ts and passed to the `validate(...)` middleware.
+ * Goal:    Centralise password complexity (≥8 chars, uppercase, digit) and email format rules so all auth routes share them.
+ * ToDo:    Bump password min length to 12 and add a special-char requirement.
+ */
 import { z } from 'zod';
 
 const strongPassword = z.string()

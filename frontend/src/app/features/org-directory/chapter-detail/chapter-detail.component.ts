@@ -1,3 +1,9 @@
+/**
+ * Purpose: Chapter detail page.
+ * Usage:   Routed at /org/chapters/:id. Shows discipline, members, lead.
+ * Goal:    Drill into a single chapter.
+ * ToDo:    —
+ */
 import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { firstValueFrom } from 'rxjs';

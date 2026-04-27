@@ -1,3 +1,9 @@
+/**
+ * Purpose: Zod schemas for Guild create / update.
+ * Usage:   Imported by guild.routes.ts.
+ * Goal:    Validate guild inputs (name, description, owner).
+ * ToDo:    —
+ */
 import { z } from 'zod';
 
 export const createGuildSchema = z.object({

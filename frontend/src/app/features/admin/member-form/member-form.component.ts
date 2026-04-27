@@ -1,3 +1,9 @@
+/**
+ * Purpose: Member create / edit form.
+ * Usage:   Routed at /admin/members/new and /admin/members/:id.
+ * Goal:    Single screen for adding or amending a person record.
+ * ToDo:    —
+ */
 import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';

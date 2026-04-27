@@ -1,3 +1,9 @@
+/**
+ * Purpose: Redis-backed audit log of application mutations.
+ * Usage:   Called from apps.routes.ts after a successful PATCH. Stores entries per appId; `getForApp(appId)` returns reverse-chronological history.
+ * Goal:    Track who changed what on each application so reviewers can trace edits.
+ * ToDo:    —
+ */
 import redis from '../config/redis';
 import { generateId } from '../lib/id';
 

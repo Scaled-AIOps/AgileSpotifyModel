@@ -1,3 +1,9 @@
+/**
+ * Purpose: Typed HTTP client for the /apps endpoints.
+ * Usage:   Injected by app-list, app-detail, app-form, dashboard. Wraps ApiService with App-shaped return types.
+ * Goal:    Single seam for the application registry from the frontend perspective.
+ * ToDo:    —
+ */
 import { Injectable, inject } from '@angular/core';
 import { ApiService } from './api.service';
 import type { App, AppWithDeploys, AppDeployment, InfraCluster, AuditEntry } from '../models/index';

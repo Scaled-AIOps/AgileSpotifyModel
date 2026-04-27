@@ -1,3 +1,9 @@
+/**
+ * Purpose: Shared zod schema fragments for the four Link[] arrays.
+ * Usage:   Spread into entity create/update schemas as `...linksFields`. Accepts either `{url, description}` objects or bare URL strings (single or array) for back-compat.
+ * Goal:    Single zod definition of how multi-link inputs are accepted at the API boundary so all five entity types validate them identically.
+ * ToDo:    —
+ */
 import { z } from 'zod';
 
 const safeUrl = z.string()

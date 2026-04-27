@@ -1,3 +1,9 @@
+/**
+ * Purpose: Backend entry point.
+ * Usage:   Loads environment from CONFIG_DIR/.env, connects to Redis, runs the YAML startup-seed in non-production, and starts the Express HTTP server.
+ * Goal:    Single bootstrap script bundled to dist/server.js by webpack and invoked via `node dist/server.js` (or `npm run dev` for ts-node + nodemon).
+ * ToDo:    —
+ */
 import dotenv from 'dotenv';
 import path from 'path';
 const CONFIG_DIR = process.env.CONFIG_DIR || path.resolve(process.cwd(), 'config');

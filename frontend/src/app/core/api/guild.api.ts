@@ -1,3 +1,9 @@
+/**
+ * Purpose: Typed HTTP client for the /guilds endpoints.
+ * Usage:   Injected by guild-list and guild-detail.
+ * Goal:    Single seam for guild data + self-join from the frontend.
+ * ToDo:    —
+ */
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiService } from './api.service';

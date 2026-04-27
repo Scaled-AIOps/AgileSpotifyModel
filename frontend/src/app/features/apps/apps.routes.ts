@@ -1,3 +1,9 @@
+/**
+ * Purpose: Route table for the application registry feature.
+ * Usage:   Lazy-loaded by app.routes.ts under /apps.
+ * Goal:    Group app list, detail, registration, and infra cluster routes.
+ * ToDo:    —
+ */
 import { Routes } from '@angular/router';
 import { roleGuard } from '../../core/auth/role.guard';
 

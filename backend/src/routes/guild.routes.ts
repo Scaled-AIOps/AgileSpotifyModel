@@ -1,3 +1,9 @@
+/**
+ * Purpose: Express router for Guild CRUD + self-join membership.
+ * Usage:   Mounted at `/api/v1/guilds`. List / get / create / update / delete plus `:id/members/:memberId` add/remove (self-only for non-TribeLeads).
+ * Goal:    HTTP surface for opt-in cross-cutting interest groups; the only routes where Members can mutate their own membership.
+ * ToDo:    —
+ */
 import { Router } from 'express';
 import { authenticate } from '../middleware/auth';
 import { authorize } from '../middleware/authorize';

@@ -1,3 +1,9 @@
+/**
+ * Purpose: Typed HTTP client for /org aggregations (tree + headcount).
+ * Usage:   Injected by org-tree, dashboard, admin-dashboard.
+ * Goal:    One client for the cross-cutting org aggregates.
+ * ToDo:    —
+ */
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiService } from './api.service';

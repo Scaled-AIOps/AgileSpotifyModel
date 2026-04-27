@@ -1,3 +1,9 @@
+/**
+ * Purpose: Redis-backed CRUD for Squad + member management.
+ * Usage:   Called from squad.routes.ts. Maintains tribe↔squad and squad↔member bidirectional sets, plus the `squad:key:{key}` index for slug lookup. Enforces unique squad keys on update.
+ * Goal:    Persistence layer for the smallest org unit and its membership graph.
+ * ToDo:    Same `as unknown as Squad` cast cleanup as app.service.
+ */
 import redis from '../config/redis';
 import { generateId } from '../lib/id';
 import { createError } from '../middleware/errorHandler';

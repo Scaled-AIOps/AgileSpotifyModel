@@ -1,3 +1,9 @@
+/**
+ * Purpose: Guild detail + self-join page.
+ * Usage:   Routed at /org/guilds/:id. Shows description, owner, members, plus a join / leave action for the current user.
+ * Goal:    Single place where Members can mutate their own guild membership.
+ * ToDo:    —
+ */
 import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { firstValueFrom } from 'rxjs';

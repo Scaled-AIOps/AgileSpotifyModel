@@ -1,3 +1,9 @@
+/**
+ * Purpose: Application registry list page.
+ * Usage:   Routed at /apps. Sortable / searchable / paged table with column toggle and CSV / JSON / YAML export.
+ * Goal:    Browse and triage the entire app catalogue from one screen.
+ * ToDo:    Coverage gap: virtual-scroll for >1000 apps; add column for description.
+ */
 import { Component, OnInit, inject } from '@angular/core';
 import { RouterLink, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';

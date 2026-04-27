@@ -1,3 +1,9 @@
+/**
+ * Purpose: ioredis client singleton.
+ * Usage:   Default-exports the connected client; `connectRedis()` is called once at boot from index.ts before any service touches Redis.
+ * Goal:    Centralise Redis connection management so there is one shared connection pool for the entire backend.
+ * ToDo:    —
+ */
 import Redis from 'ioredis';
 import { env } from './env';
 

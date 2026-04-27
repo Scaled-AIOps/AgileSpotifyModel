@@ -1,3 +1,9 @@
+/**
+ * Purpose: Express router for InfraCluster CRUD.
+ * Usage:   Mounted at `/api/v1/infra`. Exposes list / get / delete on infrastructure platforms (OpenShift / EKS / etc.) referenced by application deployments.
+ * Goal:    Lightweight catalogue of where applications run; populated from config/infra.yaml at startup.
+ * ToDo:    —
+ */
 import { Router } from 'express';
 import { authenticate } from '../middleware/auth';
 import { authorize } from '../middleware/authorize';

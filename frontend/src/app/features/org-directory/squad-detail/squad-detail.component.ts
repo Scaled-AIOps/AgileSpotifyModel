@@ -1,3 +1,9 @@
+/**
+ * Purpose: Squad detail page.
+ * Usage:   Routed at /org/squads/:id. Shows mission, tier badge, link grid, members table (with inline manage), apps section.
+ * Goal:    Drill into a single squad — covers both browsing and member management.
+ * ToDo:    Show edit affordance for the squad's own jira/confluence/github/mailingList arrays.
+ */
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';

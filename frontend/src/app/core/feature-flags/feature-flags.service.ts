@@ -1,3 +1,9 @@
+/**
+ * Purpose: Client-side feature flag store, persisted to localStorage.
+ * Usage:   `isEnabled(flag)` is read by guards, components and templates; the admin feature-flags page calls `enable / disable / toggle`.
+ * Goal:    Allow per-user runtime toggling of UI features (currently `appRegistry`) without a backend round-trip.
+ * ToDo:    Sync flags across browser tabs via the storage event.
+ */
 import { Injectable, signal } from '@angular/core';
 import { environment } from '../../../environments/environment';
 

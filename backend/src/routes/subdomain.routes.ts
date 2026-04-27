@@ -1,3 +1,9 @@
+/**
+ * Purpose: Express router for SubDomain CRUD + child tribe lookup.
+ * Usage:   Mounted at `/api/v1/subdomains`. Exposes list / get / create / update / delete plus `:id/tribes`.
+ * Goal:    HTTP surface for sub-domains, the optional middle layer between domain and tribe.
+ * ToDo:    —
+ */
 import { Router } from 'express';
 import { authenticate } from '../middleware/auth';
 import { authorize } from '../middleware/authorize';

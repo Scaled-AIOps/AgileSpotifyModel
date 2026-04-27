@@ -1,3 +1,9 @@
+/**
+ * Purpose: Functional CanActivate guard for authenticated routes.
+ * Usage:   Used in app.routes.ts on the shell route. Tries refresh + loadCurrentUser if no in-memory user; redirects to /auth/login on failure.
+ * Goal:    Recover authenticated state across hard reloads without forcing the user to re-login.
+ * ToDo:    —
+ */
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { AuthService } from './auth.service';

@@ -1,3 +1,9 @@
+/**
+ * Purpose: Role-aware home page.
+ * Usage:   Routed at /dashboard. Renders fleet / tribe / squad health depending on the current user's role; offers a global search and quick links.
+ * Goal:    First page after login, surfacing the most useful info for each role.
+ * ToDo:    —
+ */
 import { Component, OnInit, inject, HostListener } from '@angular/core';
 import { RouterLink, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';

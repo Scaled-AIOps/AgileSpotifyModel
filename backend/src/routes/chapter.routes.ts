@@ -1,3 +1,9 @@
+/**
+ * Purpose: Express router for Chapter CRUD + member management + lead assignment.
+ * Usage:   Mounted at `/api/v1/chapters`. Mirrors the Squad route shape but for the discipline-aligned chapters that span squads.
+ * Goal:    HTTP surface for the cross-squad practice grouping in the Spotify Model.
+ * ToDo:    —
+ */
 import { Router } from 'express';
 import { z } from 'zod';
 import { authenticate } from '../middleware/auth';

@@ -1,3 +1,9 @@
+/**
+ * Purpose: Route table for the admin feature module.
+ * Usage:   Lazy-loaded by app.routes.ts under /admin (gated by roleGuard('TribeLead')).
+ * Goal:    Group all administrator-only screens.
+ * ToDo:    —
+ */
 import { Routes } from '@angular/router';
 import { roleGuard } from '../../core/auth/role.guard';
 

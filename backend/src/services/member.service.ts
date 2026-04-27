@@ -1,3 +1,9 @@
+/**
+ * Purpose: Redis-backed CRUD for Member + cross-entity assignment lookups.
+ * Usage:   Called from member.routes.ts. Stores member hashes and provides `getAssignments(id)` rolling up squad / chapter / guild membership.
+ * Goal:    Persistence layer for the identity / people directory.
+ * ToDo:    —
+ */
 import redis from '../config/redis';
 import { generateId } from '../lib/id';
 import { hashPassword } from '../lib/crypto';

@@ -1,3 +1,9 @@
+/**
+ * Purpose: Global error handler + `createError` helper.
+ * Usage:   Mounted last via `app.use(errorHandler)`. Services throw `createError(msg, code)` to short-circuit out of a request with a specific HTTP status.
+ * Goal:    Hide internal stack traces from clients (returns `Internal server error` for 500s, exact message otherwise) and keep error response shape uniform.
+ * ToDo:    Add a request-id correlator so 500 logs can be matched to client reports.
+ */
 import { Request, Response, NextFunction } from 'express';
 
 export interface AppError extends Error {

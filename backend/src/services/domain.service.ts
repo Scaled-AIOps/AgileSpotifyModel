@@ -1,3 +1,9 @@
+/**
+ * Purpose: Redis-backed CRUD for Domain.
+ * Usage:   Called from domain.routes.ts. Keys: `domain:{id}`, `domains:all`, `domain:{id}:subdomains`, `domain:{id}:tribes`. JSON-serialises Link[] fields via lib/links.ts.
+ * Goal:    Persistence layer for the top of the org hierarchy.
+ * ToDo:    Same `as unknown as Domain` cast cleanup as app.service.
+ */
 import redis from '../config/redis';
 import { generateId } from '../lib/id';
 import { createError } from '../middleware/errorHandler';

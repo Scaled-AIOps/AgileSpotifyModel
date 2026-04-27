@@ -1,3 +1,9 @@
+/**
+ * Purpose: Role-rank-based CanActivate guard factory.
+ * Usage:   Used as `canActivate: [roleGuard('TribeLead')]` on protected routes (currently /admin).
+ * Goal:    Mirror the backend's authorize() role hierarchy on the frontend so unfit users never see the admin chrome.
+ * ToDo:    —
+ */
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { AuthService } from './auth.service';

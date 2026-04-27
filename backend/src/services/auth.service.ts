@@ -1,3 +1,9 @@
+/**
+ * Purpose: Authentication service — login, refresh, register, password change.
+ * Usage:   Called from auth.routes.ts. Persists users in Redis (`user:{id}`, `user:email:{email}`) and refresh tokens with TTL (`refresh:{userId}`).
+ * Goal:    Centralise credential handling, JWT signing, and refresh-token rotation.
+ * ToDo:    Add audit logging for failed login attempts and refresh-token rotation events.
+ */
 import jwt from 'jsonwebtoken';
 import { env } from '../config/env';
 import redis from '../config/redis';

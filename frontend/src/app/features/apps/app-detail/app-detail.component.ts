@@ -1,3 +1,9 @@
+/**
+ * Purpose: Application detail + inline edit page.
+ * Usage:   Routed at /apps/:appId. Read view shows status, tags, links (Link[]), tools row, deployment timeline, audit log; edit mode shows the same fields as forms / repeaters.
+ * Goal:    One screen to view, mutate, and audit a single application.
+ * ToDo:    Add inline edit for the four Link[] sections shown in read mode (currently edit panel is below).
+ */
 import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';

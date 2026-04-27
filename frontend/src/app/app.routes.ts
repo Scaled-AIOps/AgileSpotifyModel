@@ -1,3 +1,9 @@
+/**
+ * Purpose: Top-level route table for the SPA.
+ * Usage:   Imported by app.config.ts via `provideRouter(routes, ...)`. Defines /auth (no guard) plus the authenticated shell with /dashboard, /apps, /org, /admin children.
+ * Goal:    Keep the URL layout in one file; lazy-loads each feature module.
+ * ToDo:    —
+ */
 import { Routes } from '@angular/router';
 import { authGuard } from './core/auth/auth.guard';
 import { roleGuard } from './core/auth/role.guard';

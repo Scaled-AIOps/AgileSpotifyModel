@@ -1,3 +1,9 @@
+/**
+ * Purpose: JWT authentication middleware + `JwtPayload` type.
+ * Usage:   `router.use(authenticate)` is called at the top of every routes file; it verifies `Authorization: Bearer <token>` and attaches `req.user`.
+ * Goal:    Single chokepoint for token verification so every protected route gets the same parsing rules and 401 error format.
+ * ToDo:    Surface specific JWT failure causes (expired vs malformed) for clearer 401 messages.
+ */
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { env } from '../config/env';

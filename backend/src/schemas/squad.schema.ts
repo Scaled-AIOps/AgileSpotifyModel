@@ -1,3 +1,9 @@
+/**
+ * Purpose: Zod schemas for Squad create / update.
+ * Usage:   Imported by squad.routes.ts. Validates key, po, sm, tier, missionStatement and spreads `linksFields`.
+ * Goal:    Validate squad inputs at the API boundary.
+ * ToDo:    Same UUID-vs-slug mismatch on `tribeId` as tribe.schema.
+ */
 import { z } from 'zod';
 import { linksFields } from './links.schema';
 

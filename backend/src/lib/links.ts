@@ -1,3 +1,9 @@
+/**
+ * Purpose: Helpers for the {url, description} `Link[]` shape stored on Domain / SubDomain / Tribe / Squad / App.
+ * Usage:   `coerceLinks` accepts strings, arrays of strings, or arrays of objects and normalises to `Link[]`; `serialiseLinks` / `parseLinks` round-trip through Redis hash strings; `LINK_FIELDS` is the canonical field name list.
+ * Goal:    Keep one place that owns the Link serialisation contract — services and the YAML loader all delegate to it instead of inlining JSON.stringify/parse.
+ * ToDo:    Add a length cap (e.g. 20) on Link[] arrays to bound storage size.
+ */
 import type { Link } from '../models/index';
 
 /**

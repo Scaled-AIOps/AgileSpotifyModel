@@ -1,3 +1,9 @@
+/**
+ * Purpose: Redis-backed deployment-event log per (appId, env).
+ * Usage:   Called from apps.routes.ts. Each record is pushed to a capped list (`app:{id}:{env}:history`) and the latest is mirrored under `app:{id}:{env}:latest`.
+ * Goal:    Cheap rolling history of deploys without a relational schema; powers the per-environment timeline on the app detail page.
+ * ToDo:    —
+ */
 import redis from '../config/redis';
 import type { AppDeployment, DeployState } from '../models/index';
 

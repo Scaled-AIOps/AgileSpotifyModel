@@ -1,3 +1,9 @@
+/**
+ * Purpose: Typed HTTP client for the /squads endpoints (CRUD + member ops).
+ * Usage:   Injected by squad-detail, dashboard, app-list, org-context.
+ * Goal:    Single seam for squad data + membership mutations.
+ * ToDo:    —
+ */
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiService } from './api.service';

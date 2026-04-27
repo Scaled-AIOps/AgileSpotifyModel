@@ -1,3 +1,9 @@
+/**
+ * Purpose: Authenticated layout: top navigation bar + user chip + sign-out.
+ * Usage:   Loaded by the parent route in app.routes.ts; hosts the `<router-outlet>` for /dashboard, /apps, /org, /admin.
+ * Goal:    Provide a consistent global chrome around every authenticated page and show only the nav links the current role can access.
+ * ToDo:    —
+ */
 import { Component, inject } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../core/auth/auth.service';

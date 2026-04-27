@@ -1,3 +1,9 @@
+/**
+ * Purpose: Typed HTTP client for the /domains endpoints.
+ * Usage:   Injected by domain-detail and the dashboard.
+ * Goal:    Single seam for the domain hierarchy from the frontend.
+ * ToDo:    —
+ */
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiService } from './api.service';

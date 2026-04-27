@@ -1,8 +1,9 @@
 /**
- * Seed script: populates Redis from config YAML definitions.
- * Run with: npm run seed
+ * Purpose: Dev-only bootstrap script for a fresh Redis.
+ * Usage:   Run with `npm run seed`. Creates 27 demo users (with bcrypt-hashed passwords) and a populated org tree + apps. Imports services directly — not bundled into dist/.
+ * Goal:    Provide one-shot demo data including login-able users, which the YAML startup-seed cannot do because it has no password material.
+ * ToDo:    Migrate hard-coded entity IDs (`business`, `infrastructure`, …) to generated UUIDs to match the YAML loader.
  */
-
 import dotenv from 'dotenv';
 import path from 'path';
 const CONFIG_DIR = process.env.CONFIG_DIR || path.resolve(process.cwd(), 'config');

@@ -1,3 +1,9 @@
+/**
+ * Purpose: Login screen with basic + Jira + AD options.
+ * Usage:   Routed at /auth/login. Shows whichever methods ConfigService.authConfig advertises.
+ * Goal:    Single landing page for unauthenticated users.
+ * ToDo:    —
+ */
 import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';

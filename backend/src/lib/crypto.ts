@@ -1,3 +1,9 @@
+/**
+ * Purpose: bcrypt password helpers.
+ * Usage:   `hashPassword(plain)` and `comparePassword(plain, hash)` are used by auth.service for register / login / change-password flows.
+ * Goal:    Encapsulate the bcrypt cost factor and async API in one place so future algorithm changes touch a single file.
+ * ToDo:    —
+ */
 import bcrypt from 'bcryptjs';
 
 const SALT_ROUNDS = 10;

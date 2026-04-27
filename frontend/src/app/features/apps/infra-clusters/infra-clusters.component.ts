@@ -1,3 +1,9 @@
+/**
+ * Purpose: Infra-cluster list + detail page.
+ * Usage:   Routed at /apps/infra. Browse OpenShift / EKS / etc. clusters and the apps deployed on each.
+ * Goal:    Surface the platform layer beneath the application registry.
+ * ToDo:    —
+ */
 import { Component, OnInit, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';

@@ -1,3 +1,9 @@
+/**
+ * Purpose: Tribe detail page.
+ * Usage:   Routed at /org/tribes/:id. Shows long `tribeName` with short `name` badge, description, link grid, release manager / agile coach, and the child squads + chapters cards.
+ * Goal:    Drill into a single tribe.
+ * ToDo:    Same — link arrays are read-only on this page.
+ */
 import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';

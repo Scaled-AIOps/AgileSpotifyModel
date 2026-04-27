@@ -1,3 +1,9 @@
+/**
+ * Purpose: D3 collapsible org tree visualisation.
+ * Usage:   Routed at /org/tree. Fetches the full /org/tree response and renders an SVG hierarchy with click-to-collapse + click-to-navigate.
+ * Goal:    Single picture of the entire organisation, useful for orientation and onboarding.
+ * ToDo:    Persist collapse state across navigations; add a search-to-highlight input.
+ */
 import { Component, OnInit, OnDestroy, ElementRef, ViewChild, inject, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
 import * as d3 from 'd3';

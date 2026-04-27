@@ -1,9 +1,9 @@
 /**
- * YAML-driven idempotent seed.
- * Called at server startup when NODE_ENV !== 'production'.
- * Reads config YAML files and creates any missing entities — never overwrites.
+ * Purpose: Idempotent YAML startup seed.
+ * Usage:   `seedFromYaml()` is called from index.ts on every non-production boot. It reads tribedomains / subdomains / tribes / squads / infra / appinfo / appstatus YAML files from CONFIG_DIR and creates any missing entities — never overwriting existing ones.
+ * Goal:    Guarantee a known set of demo / staging entities exist after a deploy without requiring a destructive flush, and let ops teams iterate the config/*.yaml files via PRs.
+ * ToDo:    Cover the YAML loader with vitest tests (per-entity create + skip-on-duplicate).
  */
-
 import path from 'path';
 import fs from 'fs';
 import yaml from 'js-yaml';

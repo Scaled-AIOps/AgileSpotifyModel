@@ -1,3 +1,9 @@
+/**
+ * Purpose: Express router for Squad CRUD + member management + apps lookup.
+ * Usage:   Mounted at `/api/v1/squads`. Exposes list / get / create / update / delete, `:id/members`, `:id/members/:memberId` (self / TribeLead+ guarded), `:id/members/:memberId/role`, `:id/lead`, `:id/apps`.
+ * Goal:    HTTP surface for squads — the smallest team unit that owns applications.
+ * ToDo:    PO PATCH should additionally enforce squad ownership (currently only authorize('PO') rank check).
+ */
 import { Router, Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
 import { authenticate } from '../middleware/auth';

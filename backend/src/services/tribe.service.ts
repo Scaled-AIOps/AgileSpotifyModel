@@ -1,3 +1,9 @@
+/**
+ * Purpose: Redis-backed CRUD for Tribe.
+ * Usage:   Called from tribe.routes.ts. Stores both `name` (short) and `tribeName` (long form). Maintains domain↔tribe / subdomain↔tribe bidirectional set membership.
+ * Goal:    Persistence layer for tribes.
+ * ToDo:    Same `as unknown as Tribe` cast cleanup as app.service.
+ */
 import redis from '../config/redis';
 import { generateId } from '../lib/id';
 import { createError } from '../middleware/errorHandler';

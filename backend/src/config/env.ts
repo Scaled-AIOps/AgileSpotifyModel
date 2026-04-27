@@ -1,3 +1,9 @@
+/**
+ * Purpose: Validated environment configuration.
+ * Usage:   Imported as `import { env } from './config/env'` anywhere a config value is needed. Exits early with a clear error if required variables are missing or malformed.
+ * Goal:    Catch misconfiguration at boot time rather than failing at request time, and give the rest of the codebase a typed `env` object to consume.
+ * ToDo:    —
+ */
 import { z } from 'zod';
 
 const schema = z.object({

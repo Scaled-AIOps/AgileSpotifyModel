@@ -1,3 +1,9 @@
+/**
+ * Purpose: Admin dashboard landing page.
+ * Usage:   Routed at /admin. Shows headcount roll-ups and management shortcuts.
+ * Goal:    Top-level admin view with the most-used summaries.
+ * ToDo:    —
+ */
 import { Component, OnInit, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';

@@ -1,3 +1,9 @@
+/**
+ * Purpose: Express router for Tribe CRUD + member-of-tribe lookups.
+ * Usage:   Mounted at `/api/v1/tribes`. Exposes list / get / create / update / delete, `:id/squads`, `:id/chapters`, `:id/lead`.
+ * Goal:    HTTP surface for tribes — the unit that owns squads + chapters and gets a short `name` (e.g. INF) plus long `tribeName`.
+ * ToDo:    TribeLead PATCH should be limited to the tribes the lead actually owns.
+ */
 import { Router } from 'express';
 import { authenticate } from '../middleware/auth';
 import { authorize } from '../middleware/authorize';

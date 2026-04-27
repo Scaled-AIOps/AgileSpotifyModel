@@ -1,3 +1,9 @@
+/**
+ * Purpose: Role-rank-based authorisation middleware factory.
+ * Usage:   `authorize('TribeLead')` returns a guard that admits any role whose rank ≥ TribeLead. Used per-route, e.g. `router.post('/', authorize('TribeLead'), ...)`.
+ * Goal:    Encode the role hierarchy (Admin = AgileCoach > TribeLead > PO = ReleaseManager > Member) once and reuse it across routes.
+ * ToDo:    —
+ */
 import { Request, Response, NextFunction } from 'express';
 import { JwtPayload } from './auth';
 

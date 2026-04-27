@@ -1,3 +1,9 @@
+/**
+ * Purpose: All TypeScript interfaces and shared enums for backend entities.
+ * Usage:   Imported across services, routes, and schemas via `import type { ... } from '../models/index'`.
+ * Goal:    Single source of truth for entity shapes — the frontend mirrors these in its own `core/models/index.ts`.
+ * ToDo:    —
+ */
 export type Role = 'Admin' | 'TribeLead' | 'PO' | 'AgileCoach' | 'ReleaseManager' | 'Member';
 
 export interface User {

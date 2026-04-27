@@ -1,3 +1,9 @@
+/**
+ * Purpose: Express router for organisation-wide aggregations.
+ * Usage:   Mounted at `/api/v1/org`. `GET /tree` returns the full domain → tribe → squad nested tree; `GET /headcount` returns per-tribe member counts.
+ * Goal:    Read-only roll-ups that stitch together multiple entity types in one request, used by the dashboard and the D3 org tree.
+ * ToDo:    —
+ */
 import { Router } from 'express';
 import { authenticate } from '../middleware/auth';
 import { authorize } from '../middleware/authorize';

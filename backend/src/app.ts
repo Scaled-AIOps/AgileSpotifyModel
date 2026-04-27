@@ -1,3 +1,9 @@
+/**
+ * Purpose: Express application factory.
+ * Usage:   Wires global middleware (helmet, cors, compression, morgan, rate limit, auth-route rate limit) and mounts the /api/v1 router. Imported by index.ts.
+ * Goal:    Keep transport / cross-cutting concerns separate from the bootstrap so the same `app` object can be re-used by supertest in unit tests.
+ * ToDo:    Tighten Helmet HSTS (max-age >= 63072000, includeSubDomains, preload).
+ */
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';

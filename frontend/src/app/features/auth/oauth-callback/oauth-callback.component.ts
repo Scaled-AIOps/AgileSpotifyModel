@@ -1,3 +1,9 @@
+/**
+ * Purpose: OAuth callback screen.
+ * Usage:   Routed at /auth/callback by the backend after Jira / Microsoft redirect.
+ * Goal:    Bridge from the SSO flow into the SPA — exchanges the URL token for the in-memory access token and navigates to /apps.
+ * ToDo:    —
+ */
 import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../../core/auth/auth.service';

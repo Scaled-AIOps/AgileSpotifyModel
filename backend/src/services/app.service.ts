@@ -1,3 +1,9 @@
+/**
+ * Purpose: Redis-backed CRUD for Application records.
+ * Usage:   Called from apps.routes.ts. Stores tags / platforms / urls as JSON-encoded strings and link arrays via lib/links.ts. Update returns a `diff` for the audit log.
+ * Goal:    Persistence layer for the application registry; intentionally records what changed, not just the new value, to feed the audit trail.
+ * ToDo:    Replace the `as unknown as App` casts in fromHash/toHash with a proper type guard.
+ */
 import redis from '../config/redis';
 import { createError } from '../middleware/errorHandler';
 import { coerceLinks, parseLinks, serialiseLinks } from '../lib/links';

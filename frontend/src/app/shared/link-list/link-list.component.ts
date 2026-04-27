@@ -1,3 +1,9 @@
+/**
+ * Purpose: Read-only renderer for a `Link[]` (jira / confluence / github / mailing).
+ * Usage:   `<app-link-list label='Jira' [links]='entity.jira'>` — used on tribe-, squad-, domain-, and app-detail pages.
+ * Goal:    Centralise the link-list DOM so the same look-and-feel covers every entity that exposes Link arrays.
+ * ToDo:    Tooltip / popover with full URL on hover for long entries.
+ */
 import { Component, Input } from '@angular/core';
 import type { Link } from '../../core/models/index';
 

@@ -1,3 +1,9 @@
+/**
+ * Purpose: Guild directory list page.
+ * Usage:   Routed at /org/guilds. Browse all guilds with member counts.
+ * Goal:    Find a guild to join.
+ * ToDo:    —
+ */
 import { Component, OnInit, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
