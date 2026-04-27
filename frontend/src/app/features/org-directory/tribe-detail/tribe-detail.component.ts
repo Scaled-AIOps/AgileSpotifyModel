@@ -3,12 +3,13 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { TribeApi } from '../../../core/api/tribe.api';
 import { ApiService } from '../../../core/api/api.service';
+import { LinkListComponent } from '../../../shared/link-list/link-list.component';
 import type { Tribe, Squad, Chapter } from '../../../core/models/index';
 
 @Component({
   selector: 'app-tribe-detail',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, LinkListComponent],
   template: `
     @if (loading) { <div class="loading-block"><span class="spinner spinner-lg"></span></div> }
     @else if (tribe) {
@@ -21,11 +22,6 @@ import type { Tribe, Squad, Chapter } from '../../../core/models/index';
             }
           </h1>
           <div class="page-sub">{{ tribe.description }}</div>
-        </div>
-        <div style="display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center">
-          @if (tribe.confluence) {
-            <a class="btn btn-ghost btn-sm" [href]="tribe.confluence" target="_blank" rel="noopener">Confluence ↗</a>
-          }
         </div>
       </div>
       <div class="meta-row">
@@ -46,6 +42,15 @@ import type { Tribe, Squad, Chapter } from '../../../core/models/index';
           <div class="meta-value">{{ squads.length }}</div>
         </div>
       </div>
+
+      @if (hasLinks(tribe)) {
+        <div class="link-grid">
+          <app-link-list label="Jira"        [links]="tribe.jira"></app-link-list>
+          <app-link-list label="Confluence"  [links]="tribe.confluence"></app-link-list>
+          <app-link-list label="GitHub"      [links]="tribe.github"></app-link-list>
+          <app-link-list label="Mailing list" [links]="tribe.mailingList"></app-link-list>
+        </div>
+      }
 
       <h3>Squads ({{ squads.length }})</h3>
       <div class="card-grid">
@@ -85,6 +90,7 @@ import type { Tribe, Squad, Chapter } from '../../../core/models/index';
   styles: [`
     .tribe-code { font-size: 0.7em; font-weight: 600; color: var(--text-muted); background: var(--surface-card); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 2px 8px; margin-left: 8px; vertical-align: middle; letter-spacing: 0.05em; font-family: var(--font-mono, monospace); }
     .meta-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 1.5rem; }
+    .link-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-bottom: 1.5rem; padding: 14px 16px; background: var(--surface-card); border: 1px solid var(--border); border-radius: var(--radius); }
     .meta-card { background: var(--surface-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 16px; }
     .meta-label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 4px; }
     .meta-value { font-size: 0.88rem; font-weight: 600; color: var(--text-strong); }
@@ -110,5 +116,10 @@ export class TribeDetailComponent implements OnInit {
     this.squads = await Promise.all(squadIds.map((sid: string) => firstValueFrom(this.api.get<Squad>(`/squads/${sid}`))));
     this.chapters = await Promise.all(chapterIds.map((cid: string) => firstValueFrom(this.api.get<Chapter>(`/chapters/${cid}`))));
     this.loading = false;
+  }
+
+  hasLinks(t: Tribe): boolean {
+    return (t.jira?.length ?? 0) + (t.confluence?.length ?? 0) +
+           (t.github?.length ?? 0) + (t.mailingList?.length ?? 0) > 0;
   }
 }

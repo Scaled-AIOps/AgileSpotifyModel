@@ -2,12 +2,13 @@ import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { DomainApi } from '../../../core/api/domain.api';
+import { LinkListComponent } from '../../../shared/link-list/link-list.component';
 import type { OrgTreeDomain } from '../../../core/models/index';
 
 @Component({
   selector: 'app-domain-detail',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, LinkListComponent],
   template: `
     @if (loading) { <div class="loading-block"><span class="spinner spinner-lg"></span></div> }
     @else if (domain) {
@@ -17,6 +18,15 @@ import type { OrgTreeDomain } from '../../../core/models/index';
           <div class="page-sub">{{ domain.description }}</div>
         </div>
       </div>
+
+      @if (hasLinks(domain)) {
+        <div class="link-grid">
+          <app-link-list label="Jira"        [links]="domain.jira"></app-link-list>
+          <app-link-list label="Confluence"  [links]="domain.confluence"></app-link-list>
+          <app-link-list label="GitHub"      [links]="domain.github"></app-link-list>
+          <app-link-list label="Mailing list" [links]="domain.mailingList"></app-link-list>
+        </div>
+      }
 
       @if (domain.subdomains.length) {
         <h3 style="margin:0 0 12px;color:var(--text-strong)">Sub-Domains</h3>
@@ -54,6 +64,9 @@ import type { OrgTreeDomain } from '../../../core/models/index';
       }
     }
   `,
+  styles: [`
+    .link-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-bottom: 1.5rem; padding: 14px 16px; background: var(--surface-card); border: 1px solid var(--border); border-radius: var(--radius); }
+  `],
 })
 export class DomainDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
@@ -66,5 +79,10 @@ export class DomainDetailComponent implements OnInit {
     const id = this.route.snapshot.paramMap.get('id')!;
     this.domain = await firstValueFrom(this.domainApi.getTree(id));
     this.loading = false;
+  }
+
+  hasLinks(d: OrgTreeDomain): boolean {
+    return (d.jira?.length ?? 0) + (d.confluence?.length ?? 0) +
+           (d.github?.length ?? 0) + (d.mailingList?.length ?? 0) > 0;
   }
 }

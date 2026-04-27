@@ -32,7 +32,7 @@ const DEFAULT_COLS: ColDef[] = [
   { key: 'java',         label: 'Java',         visible: true  },
   { key: 'pillar',       label: 'Pillar',       visible: true  },
   { key: 'criticality',  label: 'Criticality',  visible: true  },
-  { key: 'gitRepo',      label: 'Git Repo',     visible: false },
+  { key: 'github',       label: 'GitHub',       visible: false },
   { key: 'artifactory',  label: 'Artifactory',  visible: false },
   { key: 'splunk',       label: 'Splunk',       visible: false },
 ];
@@ -175,8 +175,8 @@ const PAGE_SIZES = [10, 25, 50, 100];
                   Criticality {{ sortIcon('criticality') }}
                 </th>
               }
-              @if (col('gitRepo').visible) {
-                <th>Git Repo</th>
+              @if (col('github').visible) {
+                <th>GitHub</th>
               }
               @if (col('artifactory').visible) {
                 <th>Artifactory</th>
@@ -221,10 +221,13 @@ const PAGE_SIZES = [10, 25, 50, 100];
                 @if (col('criticality').visible) {
                   <td><span class="badge {{ critClass(app) }}">{{ crit(app) }}</span></td>
                 }
-                @if (col('gitRepo').visible) {
+                @if (col('github').visible) {
                   <td>
-                    @if (app.gitRepo) {
-                      <a class="link-muted" [href]="app.gitRepo" target="_blank" rel="noopener">{{ repoShort(app.gitRepo) }}</a>
+                    @if (app.github?.length) {
+                      @for (g of app.github; track g.url; let i = $index) {
+                        @if (i > 0) { <span class="text-muted">, </span> }
+                        <a class="link-muted" [href]="g.url" target="_blank" rel="noopener" [title]="g.url">{{ g.description || repoShort(g.url) }}</a>
+                      }
                     } @else { <span class="text-muted">—</span> }
                   </td>
                 }
@@ -529,7 +532,7 @@ export class AppListComponent implements OnInit {
         javaComplianceStatus: a.javaComplianceStatus ?? '',
         pillar:              t['pillar'] ?? '',
         criticality:         t['criticality'] ?? '',
-        gitRepo:             a.gitRepo ?? '',
+        github:              (a.github ?? []).map((l) => l.url).join('; '),
         artifactoryUrl:      a.artifactoryUrl ?? '',
         splunkUrl:           a.splunkUrl ?? '',
       };
@@ -540,7 +543,7 @@ export class AppListComponent implements OnInit {
     let ext: string;
 
     if (format === 'csv') {
-      const headers = ['appId', 'name', 'squadKey', 'status', 'javaVersion', 'javaComplianceStatus', 'pillar', 'criticality', 'gitRepo', 'artifactoryUrl', 'splunkUrl'];
+      const headers = ['appId', 'squadKey', 'status', 'javaVersion', 'javaComplianceStatus', 'pillar', 'criticality', 'github', 'artifactoryUrl', 'splunkUrl'];
       const escape  = (v: string) => `"${v.replace(/"/g, '""')}"`;
       content = [headers.join(','), ...rows.map((r) => headers.map((h) => escape((r as any)[h])).join(','))].join('\r\n');
       mime = 'text/csv';

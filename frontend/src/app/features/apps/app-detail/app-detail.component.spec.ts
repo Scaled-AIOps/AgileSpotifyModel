@@ -6,8 +6,10 @@ import { AppsApi } from '../../../core/api/apps.api';
 import type { AppWithDeploys } from '../../../core/models/index';
 
 const APP: AppWithDeploys = {
-  id: 'a1', appId: 'APP-001', name: 'Alpha', squadId: 's1', squadKey: 'sq-a',
-  status: 'active' as any, gitRepo: 'https://github.com/org/repo',
+  id: 'a1', appId: 'APP-001', name: 'Alpha', description: 'desc', squadId: 's1', squadKey: 'sq-a',
+  status: 'active' as any,
+  jira: [{ url: 'https://jira.io/x', description: 'Main' }],
+  confluence: [], github: [{ url: 'https://github.com/org/repo', description: '' }], mailingList: [],
   javaVersion: '17', javaComplianceStatus: 'compliant',
   artifactoryUrl: 'https://art.io/a', xrayUrl: 'https://xray.io/a',
   compositionViewerUrl: '', splunkUrl: '',
@@ -52,12 +54,12 @@ describe('AppDetailComponent', () => {
   });
 
   describe('getters', () => {
-    it('hasTools returns true when gitRepo is set', () => {
+    it('hasTools returns true when artifactoryUrl is set', () => {
       expect(component.hasTools).toBeTrue();
     });
 
-    it('hasTools returns false when no tools', () => {
-      component.app = { ...APP, gitRepo: '', artifactoryUrl: '', xrayUrl: '', compositionViewerUrl: '', splunkUrl: '' } as any;
+    it('hasTools returns false when no tool URLs', () => {
+      component.app = { ...APP, artifactoryUrl: '', xrayUrl: '', compositionViewerUrl: '', splunkUrl: '' } as any;
       expect(component.hasTools).toBeFalse();
     });
 
@@ -138,26 +140,29 @@ describe('AppDetailComponent', () => {
       component.enterEdit();
       expect(component.editMode).toBeTrue();
       expect(component.ef.status).toBe('active' as any);
-      expect(component.ef.gitRepo).toBe('https://github.com/org/repo');
+      expect(component.ef.github.length).toBe(1);
+      expect(component.ef.github[0].url).toBe('https://github.com/org/repo');
     });
 
     it('enterEdit uses empty string fallbacks for null fields', () => {
       component.app = {
         ...APP,
-        gitRepo: null as any,
+        description: null as any,
         javaVersion: null as any,
         javaComplianceStatus: null as any,
         artifactoryUrl: null as any,
         xrayUrl: null as any,
         compositionViewerUrl: null as any,
         splunkUrl: null as any,
+        jira: null as any, confluence: null as any, github: null as any, mailingList: null as any,
         tags: JSON.stringify({}),
       } as any;
       component.enterEdit();
-      expect(component.ef.gitRepo).toBe('');
+      expect(component.ef.description).toBe('');
       expect(component.ef.javaVersion).toBe('');
       expect(component.ef.criticality).toBe('');
       expect(component.ef.pillar).toBe('');
+      expect(component.ef.github).toEqual([]);
     });
 
     it('cancelEdit resets editMode', () => {

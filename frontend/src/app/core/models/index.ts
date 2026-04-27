@@ -14,6 +14,12 @@ export const SQUAD_ROLES = [
   'Data Engineer', 'ML Engineer', 'SRE', 'Tech Lead', 'Architect',
 ] as const;
 
+/** A single labelled link. Used in arrays of jira/confluence/github/mailingList. */
+export interface Link {
+  url: string;
+  description: string;
+}
+
 export interface Member {
   id: string;
   name: string;
@@ -29,6 +35,10 @@ export interface Domain {
   id: string;
   name: string;
   description: string;
+  jira: Link[];
+  confluence: Link[];
+  github: Link[];
+  mailingList: Link[];
   createdAt: string;
   updatedAt: string;
 }
@@ -38,6 +48,10 @@ export interface SubDomain {
   name: string;
   description: string;
   domainId: string;
+  jira: Link[];
+  confluence: Link[];
+  github: Link[];
+  mailingList: Link[];
 }
 
 export interface Tribe {
@@ -50,7 +64,10 @@ export interface Tribe {
   leadMemberId: string;
   releaseManager: string;
   agileCoach: string;
-  confluence: string;
+  jira: Link[];
+  confluence: Link[];
+  github: Link[];
+  mailingList: Link[];
 }
 
 export interface Squad {
@@ -63,9 +80,10 @@ export interface Squad {
   key: string;
   po: string;
   sm: string;
-  jira: string;
-  confluence: string;
-  mailingList: string;
+  jira: Link[];
+  confluence: Link[];
+  github: Link[];
+  mailingList: Link[];
   tier: string;
   memberCount?: number;
 }
@@ -73,6 +91,7 @@ export interface Squad {
 export interface Chapter {
   id: string;
   name: string;
+  description: string;
   discipline: string;
   tribeId: string;
   leadMemberId: string;
@@ -92,13 +111,17 @@ export type DeployState = 'success' | 'failed' | 'pending' | 'rolledback';
 
 export interface App {
   appId: string;
-  gitRepo: string;
+  description: string;
   squadId: string;
   squadKey: string;
   status: AppStatus;
   tags: string;
   platforms: string;
   urls: string;
+  jira: Link[];
+  confluence: Link[];
+  github: Link[];
+  mailingList: Link[];
   probeHealth: string;
   probeInfo: string;
   probeLiveness: string;
@@ -146,6 +169,7 @@ export interface AuditEntry {
 export interface InfraCluster {
   platformId: string;
   name: string;
+  description: string;
   clusterId: string;
   environment: string;
   host: string;
@@ -158,7 +182,6 @@ export interface InfraCluster {
 }
 
 // ── Org tree node shape returned by GET /org/tree ─────────────────────────────
-// (was "Org tree node shape returned by GET /org/tree")
 export interface OrgTreeSquad extends Squad {
   memberCount: number;
   appCount: number;

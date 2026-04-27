@@ -3,7 +3,9 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
 import { AppsApi } from '../../../core/api/apps.api';
-import type { AppWithDeploys, AppDeployment, AppStatus, DeployState, AuditEntry } from '../../../core/models/index';
+import { LinkListComponent } from '../../../shared/link-list/link-list.component';
+import { LinkRepeaterComponent } from '../../../shared/link-repeater/link-repeater.component';
+import type { AppWithDeploys, AppDeployment, AppStatus, DeployState, AuditEntry, Link } from '../../../core/models/index';
 
 const STATUS_CLASS: Record<AppStatus, string> = {
   'active':                    'badge-success',
@@ -24,7 +26,7 @@ const ENVS = ['local', 'dev', 'int', 'uat', 'prd'] as const;
 @Component({
   selector: 'app-app-detail',
   standalone: true,
-  imports: [RouterLink, FormsModule],
+  imports: [RouterLink, FormsModule, LinkListComponent, LinkRepeaterComponent],
   template: `
     @if (loading) { <div class="loading-block"><span class="spinner spinner-lg"></span></div> }
     @else if (app) {
@@ -98,11 +100,6 @@ const ENVS = ['local', 'dev', 'int', 'uat', 'prd'] as const;
         <!-- Tools & Links -->
         @if (hasTools) {
           <div class="tools-row">
-            @if (app.gitRepo) {
-              <a class="tool-btn" [href]="app.gitRepo" target="_blank" rel="noopener">
-                <span class="tool-icon">⎇</span> Git Repo
-              </a>
-            }
             @if (app.artifactoryUrl) {
               <a class="tool-btn" [href]="app.artifactoryUrl" target="_blank" rel="noopener">
                 <span class="tool-icon">📦</span> Artifactory
@@ -125,6 +122,15 @@ const ENVS = ['local', 'dev', 'int', 'uat', 'prd'] as const;
             }
           </div>
         }
+
+        @if (hasLinks) {
+          <div class="link-grid">
+            <app-link-list label="Jira"        [links]="app.jira"></app-link-list>
+            <app-link-list label="Confluence"  [links]="app.confluence"></app-link-list>
+            <app-link-list label="GitHub"      [links]="app.github"></app-link-list>
+            <app-link-list label="Mailing list" [links]="app.mailingList"></app-link-list>
+          </div>
+        }
       }
 
       <!-- Edit mode: inline form -->
@@ -141,9 +147,9 @@ const ENVS = ['local', 'dev', 'int', 'uat', 'prd'] as const;
                 <option value="failed">Failed</option>
               </select>
             </label>
-            <label class="edit-field">
-              <span>Git Repo</span>
-              <input class="value-input" type="url" [(ngModel)]="ef.gitRepo" placeholder="https://github.com/…" />
+            <label class="edit-field" style="grid-column:1 / -1">
+              <span>Description</span>
+              <textarea class="value-input" rows="2" [(ngModel)]="ef.description" placeholder="Short description of what this app does"></textarea>
             </label>
           </div>
 
@@ -204,6 +210,18 @@ const ENVS = ['local', 'dev', 'int', 'uat', 'prd'] as const;
               <span>Splunk Logs URL</span>
               <input class="value-input" type="url" [(ngModel)]="ef.splunkUrl" placeholder="https://…" />
             </label>
+          </div>
+
+          <div class="edit-section-title" style="margin-top:1rem">Documentation & Repos</div>
+          <div class="repeater-stack">
+            <app-link-repeater label="Jira"        urlPlaceholder="https://jira.example.com/projects/…"
+              [links]="ef.jira"        (linksChange)="ef.jira = $event"></app-link-repeater>
+            <app-link-repeater label="Confluence"  urlPlaceholder="https://confluence.example.com/display/…"
+              [links]="ef.confluence"  (linksChange)="ef.confluence = $event"></app-link-repeater>
+            <app-link-repeater label="GitHub"      urlPlaceholder="https://github.com/org/repo"
+              [links]="ef.github"      (linksChange)="ef.github = $event"></app-link-repeater>
+            <app-link-repeater label="Mailing list" urlPlaceholder="team@example.com"
+              [links]="ef.mailingList" (linksChange)="ef.mailingList = $event"></app-link-repeater>
           </div>
         </div>
       }
@@ -335,6 +353,8 @@ const ENVS = ['local', 'dev', 'int', 'uat', 'prd'] as const;
 
     .edit-form { margin-top: 0.75rem; padding: 1.25rem 1.5rem; }
     .edit-section-title { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 0.6rem; }
+    .repeater-stack { display: flex; flex-direction: column; gap: 14px; }
+    .link-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-top: 1.25rem; padding: 14px 16px; background: var(--surface-card); border: 1px solid var(--border); border-radius: var(--radius); }
     .edit-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 0.75rem; }
     .edit-field { display: flex; flex-direction: column; gap: 4px; span { font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); } }
 
@@ -370,7 +390,7 @@ export class AppDetailComponent implements OnInit {
 
   ef = {
     status: '' as AppStatus,
-    gitRepo: '',
+    description: '',
     criticality: '',
     pillar: '',
     sunset: '',
@@ -380,10 +400,21 @@ export class AppDetailComponent implements OnInit {
     xrayUrl: '',
     compositionViewerUrl: '',
     splunkUrl: '',
+    jira:        [] as Link[],
+    confluence:  [] as Link[],
+    github:      [] as Link[],
+    mailingList: [] as Link[],
   };
 
   get hasTools() {
-    return !!(this.app?.gitRepo || this.app?.artifactoryUrl || this.app?.xrayUrl || this.app?.compositionViewerUrl || this.app?.splunkUrl);
+    return !!(this.app?.artifactoryUrl || this.app?.xrayUrl || this.app?.compositionViewerUrl || this.app?.splunkUrl);
+  }
+
+  get hasLinks(): boolean {
+    const a = this.app;
+    if (!a) return false;
+    return (a.jira?.length ?? 0) + (a.confluence?.length ?? 0) +
+           (a.github?.length ?? 0) + (a.mailingList?.length ?? 0) > 0;
   }
 
   get tags(): Record<string, string> {
@@ -418,7 +449,7 @@ export class AppDetailComponent implements OnInit {
     const t = this.tags;
     this.ef = {
       status:               this.app!.status,
-      gitRepo:              this.app!.gitRepo ?? '',
+      description:          this.app!.description ?? '',
       criticality:          t['criticality'] ?? '',
       pillar:               t['pillar'] ?? '',
       sunset:               t['sunset'] ?? '',
@@ -428,6 +459,10 @@ export class AppDetailComponent implements OnInit {
       xrayUrl:              this.app!.xrayUrl ?? '',
       compositionViewerUrl: this.app!.compositionViewerUrl ?? '',
       splunkUrl:            this.app!.splunkUrl ?? '',
+      jira:        [...(this.app!.jira ?? [])],
+      confluence:  [...(this.app!.confluence ?? [])],
+      github:      [...(this.app!.github ?? [])],
+      mailingList: [...(this.app!.mailingList ?? [])],
     };
     this.saveError = '';
     this.editMode = true;
@@ -449,7 +484,7 @@ export class AppDetailComponent implements OnInit {
 
       const patch: Record<string, unknown> = {
         status:               this.ef.status,
-        gitRepo:              this.ef.gitRepo,
+        description:          this.ef.description,
         javaVersion:          this.ef.javaVersion,
         javaComplianceStatus: this.ef.javaComplianceStatus,
         artifactoryUrl:       this.ef.artifactoryUrl,
@@ -457,6 +492,10 @@ export class AppDetailComponent implements OnInit {
         compositionViewerUrl: this.ef.compositionViewerUrl,
         splunkUrl:            this.ef.splunkUrl,
         tags:                 existingTags,
+        jira:                 this.ef.jira,
+        confluence:           this.ef.confluence,
+        github:               this.ef.github,
+        mailingList:          this.ef.mailingList,
       };
 
       const updated = await firstValueFrom(this.appsApi.updateApp(this.app!.appId, patch));

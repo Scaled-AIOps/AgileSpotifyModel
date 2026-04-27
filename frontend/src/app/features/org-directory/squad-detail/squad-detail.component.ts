@@ -8,6 +8,7 @@ import { AppsApi } from '../../../core/api/apps.api';
 import { AuthService } from '../../../core/auth/auth.service';
 import { FeatureFlagsService } from '../../../core/feature-flags/feature-flags.service';
 import { ConfigService } from '../../../core/config/config.service';
+import { LinkListComponent } from '../../../shared/link-list/link-list.component';
 import { SQUAD_ROLES } from '../../../core/models/index';
 import type { Squad, Member, App, AppStatus } from '../../../core/models/index';
 
@@ -21,7 +22,7 @@ const APP_STATUS_CLASS: Record<AppStatus, string> = {
 @Component({
   selector: 'app-squad-detail',
   standalone: true,
-  imports: [RouterLink, FormsModule],
+  imports: [RouterLink, FormsModule, LinkListComponent],
   template: `
     @if (loading) { <div class="loading-block"><span class="spinner spinner-lg"></span></div> }
     @else if (squad) {
@@ -29,10 +30,6 @@ const APP_STATUS_CLASS: Record<AppStatus, string> = {
         <div class="page-title">
           <h1>{{ squad.name }}</h1>
           <div class="page-sub">{{ squad.missionStatement }}</div>
-        </div>
-        <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
-          @if (squad.jira) { <a class="btn btn-ghost btn-sm" [href]="squad.jira" target="_blank" rel="noopener">Jira ↗</a> }
-          @if (squad.confluence) { <a class="btn btn-ghost btn-sm" [href]="squad.confluence" target="_blank" rel="noopener">Confluence ↗</a> }
         </div>
       </div>
 
@@ -55,13 +52,16 @@ const APP_STATUS_CLASS: Record<AppStatus, string> = {
             <div class="meta-value"><span class="badge {{ tierClass(squad.tier) }}">Tier {{ squad.tier }}</span></div>
           </div>
         }
-        @if (squad.mailingList) {
-          <div class="meta-card">
-            <div class="meta-label">Mailing List</div>
-            <div class="meta-value mono">{{ squad.mailingList }}</div>
-          </div>
-        }
       </div>
+
+      @if (hasLinks()) {
+        <div class="link-grid">
+          <app-link-list label="Jira"        [links]="squad.jira"></app-link-list>
+          <app-link-list label="Confluence"  [links]="squad.confluence"></app-link-list>
+          <app-link-list label="GitHub"      [links]="squad.github"></app-link-list>
+          <app-link-list label="Mailing list" [links]="squad.mailingList"></app-link-list>
+        </div>
+      }
 
       <!-- Members section -->
       <div class="section-header">
@@ -191,6 +191,7 @@ const APP_STATUS_CLASS: Record<AppStatus, string> = {
   `,
   styles: [`
     .meta-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 1.5rem; }
+    .link-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-bottom: 1.5rem; padding: 14px 16px; background: var(--surface-card); border: 1px solid var(--border); border-radius: var(--radius); }
     .meta-card { background: var(--surface-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 16px; }
     .meta-label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 4px; }
     .meta-value { font-size: 0.88rem; font-weight: 600; color: var(--text-strong); }
@@ -375,5 +376,12 @@ export class SquadDetailComponent implements OnInit {
 
   tierClass(t: string) {
     return t === '0' ? 'badge-danger' : t === '1' ? 'badge-warn' : 'badge-muted';
+  }
+
+  hasLinks(): boolean {
+    const s = this.squad;
+    if (!s) return false;
+    return (s.jira?.length ?? 0) + (s.confluence?.length ?? 0) +
+           (s.github?.length ?? 0) + (s.mailingList?.length ?? 0) > 0;
   }
 }

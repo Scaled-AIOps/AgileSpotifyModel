@@ -4,12 +4,13 @@ import { FormsModule } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
 import { AppsApi } from '../../../core/api/apps.api';
 import { SquadApi } from '../../../core/api/squad.api';
-import type { Squad } from '../../../core/models/index';
+import { LinkRepeaterComponent } from '../../../shared/link-repeater/link-repeater.component';
+import type { Squad, Link } from '../../../core/models/index';
 
 @Component({
   selector: 'app-app-form',
   standalone: true,
-  imports: [RouterLink, FormsModule],
+  imports: [RouterLink, FormsModule, LinkRepeaterComponent],
   template: `
     @if (loading) { <div class="loading-block"><span class="spinner spinner-lg"></span></div> }
     @else {
@@ -53,9 +54,9 @@ import type { Squad } from '../../../core/models/index';
               <option value="failed">Failed</option>
             </select>
           </label>
-          <label class="edit-field">
-            <span>Git Repo</span>
-            <input class="value-input" type="url" [(ngModel)]="f.gitRepo" placeholder="https://github.com/…" />
+          <label class="edit-field" style="grid-column:1 / -1">
+            <span>Description</span>
+            <input class="value-input" type="text" [(ngModel)]="f.description" placeholder="Short description of what this app does" />
           </label>
         </div>
 
@@ -134,6 +135,18 @@ import type { Squad } from '../../../core/models/index';
           </label>
         </div>
 
+        <div class="edit-section-title" style="margin-top:1rem">Documentation & Repos</div>
+        <div class="repeater-stack">
+          <app-link-repeater label="Jira"        urlPlaceholder="https://jira.example.com/projects/…"
+            [links]="f.jira"        (linksChange)="f.jira = $event"></app-link-repeater>
+          <app-link-repeater label="Confluence"  urlPlaceholder="https://confluence.example.com/display/…"
+            [links]="f.confluence"  (linksChange)="f.confluence = $event"></app-link-repeater>
+          <app-link-repeater label="GitHub"      urlPlaceholder="https://github.com/org/repo"
+            [links]="f.github"      (linksChange)="f.github = $event"></app-link-repeater>
+          <app-link-repeater label="Mailing list" urlPlaceholder="team@example.com"
+            [links]="f.mailingList" (linksChange)="f.mailingList = $event"></app-link-repeater>
+        </div>
+
         <div class="form-actions" style="margin-top:1.5rem">
           <button class="btn btn-primary" [disabled]="saving || !f.appId || !f.squadId" (click)="submit()">
             @if (saving) { <span class="spinner"></span> } Register App
@@ -152,6 +165,7 @@ import type { Squad } from '../../../core/models/index';
     .alert-error { margin: 0.5rem 0 1rem; padding: 0.6rem 0.9rem; background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; color: #991b1b; font-size: 0.85rem; }
     .edit-form { padding: 1.5rem; max-width: 860px; }
     .edit-section-title { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 0.6rem; }
+    .repeater-stack { display: flex; flex-direction: column; gap: 14px; }
     .edit-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 0.75rem; }
     .edit-field { display: flex; flex-direction: column; gap: 4px; }
     .edit-field span { font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); }
@@ -171,11 +185,15 @@ export class AppFormComponent implements OnInit {
   error    = '';
 
   f = {
-    appId: '', squadId: '', status: 'active' as const, gitRepo: '',
+    appId: '', squadId: '', status: 'active' as const, description: '',
     criticality: '', pillar: '',
     javaVersion: '', javaComplianceStatus: '',
     artifactoryUrl: '', xrayUrl: '', compositionViewerUrl: '', splunkUrl: '',
     probeHealth: '', probeInfo: '', probeLiveness: '', probeReadiness: '',
+    jira:        [] as Link[],
+    confluence:  [] as Link[],
+    github:      [] as Link[],
+    mailingList: [] as Link[],
   };
 
   async ngOnInit() {
@@ -195,8 +213,12 @@ export class AppFormComponent implements OnInit {
         appId:                this.f.appId.trim(),
         squadId:              this.f.squadId,
         status:               this.f.status,
+        description:          this.f.description,
         tags,
-        ...(this.f.gitRepo              ? { gitRepo:              this.f.gitRepo }              : {}),
+        ...(this.f.jira.length        ? { jira:        this.f.jira }        : {}),
+        ...(this.f.confluence.length  ? { confluence:  this.f.confluence }  : {}),
+        ...(this.f.github.length      ? { github:      this.f.github }      : {}),
+        ...(this.f.mailingList.length ? { mailingList: this.f.mailingList } : {}),
         ...(this.f.javaVersion          ? { javaVersion:          this.f.javaVersion }          : {}),
         ...(this.f.javaComplianceStatus ? { javaComplianceStatus: this.f.javaComplianceStatus } : {}),
         ...(this.f.artifactoryUrl       ? { artifactoryUrl:       this.f.artifactoryUrl }       : {}),

@@ -53,17 +53,20 @@ describe('AppFormComponent', () => {
     const router = TestBed.inject(Router);
     spyOn(router, 'navigate');
     component.f = {
-      appId: 'APP-FULL', squadId: 's1', status: 'active',
-      gitRepo: 'https://github.com/repo', criticality: 'high', pillar: 'data',
+      appId: 'APP-FULL', squadId: 's1', status: 'active', description: 'Full app',
+      criticality: 'high', pillar: 'data',
       javaVersion: '17', javaComplianceStatus: 'compliant',
       artifactoryUrl: 'https://art', xrayUrl: 'https://xray',
       compositionViewerUrl: 'https://cv', splunkUrl: 'https://splunk',
       probeHealth: '/health', probeInfo: '/info',
       probeLiveness: '/live', probeReadiness: '/ready',
+      jira: [], confluence: [],
+      github: [{ url: 'https://github.com/repo', description: '' }],
+      mailingList: [],
     };
     await component.submit();
     expect(appsSpy.createApp).toHaveBeenCalledWith(jasmine.objectContaining({
-      gitRepo: 'https://github.com/repo',
+      github: [{ url: 'https://github.com/repo', description: '' }],
       javaVersion: '17',
     }));
   });
