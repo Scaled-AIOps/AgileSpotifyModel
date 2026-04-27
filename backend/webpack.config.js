@@ -1,3 +1,17 @@
+/**
+ * Purpose: Webpack configuration that bundles the backend into a single
+ *          dist/server.js for production deployment.
+ * Usage:   Invoked by `npm run build` (production) and `npm run build:dev`.
+ *          Targets node, externalises everything in node_modules via
+ *          webpack-node-externals so dependencies are referenced at runtime
+ *          rather than bundled. Source maps are emitted in both modes.
+ * Goal:    Replace tsc's tree of dist/*.js with one self-contained entry point
+ *          so production only needs `node dist/server.js`. Config files
+ *          (config/*.yaml + config/.env) are intentionally NOT bundled — the
+ *          deploy pipeline mounts `config/` next to `dist/` at runtime.
+ * ToDo:    Enable minification (`optimization.minimize: true`) and consider
+ *          terser keep_classnames so the audit log's class names stay readable.
+ */
 const path = require('path');
 const nodeExternals = require('webpack-node-externals');
 
