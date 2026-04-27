@@ -9,8 +9,7 @@
     "typecheck": "tsc --noEmit",
     "start": "node dist/server.js",
     "test": "vitest run",
-    "seed": "ts-node seeds/seed.ts",
-    "seed:yaml": "ts-node seeds/seed-yaml.ts"
+    "seed": "ts-node scripts/seed.ts"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
