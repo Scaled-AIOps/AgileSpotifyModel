@@ -8,14 +8,14 @@
 
 import dotenv from 'dotenv';
 import path from 'path';
-dotenv.config({ path: path.resolve(__dirname, '../../config/.env') });
-import '../config/env';
-import { connectRedis } from '../config/redis';
-import * as infraService from '../services/infra.service';
-import * as appService from '../services/app.service';
-import * as appstatusService from '../services/appstatus.service';
-import * as squadService from '../services/squad.service';
-import type { DeployState } from '../models/index';
+dotenv.config({ path: path.resolve(__dirname, '../config/.env') });
+import '../src/config/env';
+import { connectRedis } from '../src/config/redis';
+import * as infraService from '../src/services/infra.service';
+import * as appService from '../src/services/app.service';
+import * as appstatusService from '../src/services/appstatus.service';
+import * as squadService from '../src/services/squad.service';
+import type { DeployState } from '../src/models/index';
 
 // ── Infra clusters (from infra.yaml) ────────────────────────────────────────
 

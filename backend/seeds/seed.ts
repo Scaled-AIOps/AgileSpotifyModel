@@ -5,20 +5,20 @@
 
 import dotenv from 'dotenv';
 import path from 'path';
-dotenv.config({ path: path.resolve(__dirname, '../../config/.env') });
-import '../config/env';
-import { connectRedis } from '../config/redis';
-import redis from '../config/redis';
-import * as authService from '../services/auth.service';
-import * as domainService from '../services/domain.service';
-import * as subdomainService from '../services/subdomain.service';
-import * as tribeService from '../services/tribe.service';
-import * as squadService from '../services/squad.service';
-import * as chapterService from '../services/chapter.service';
-import * as guildService from '../services/guild.service';
-import * as backlogService from '../services/backlog.service';
-import * as sprintService from '../services/sprint.service';
-import * as appService from '../services/app.service';
+dotenv.config({ path: path.resolve(__dirname, '../config/.env') });
+import '../src/config/env';
+import { connectRedis } from '../src/config/redis';
+import redis from '../src/config/redis';
+import * as authService from '../src/services/auth.service';
+import * as domainService from '../src/services/domain.service';
+import * as subdomainService from '../src/services/subdomain.service';
+import * as tribeService from '../src/services/tribe.service';
+import * as squadService from '../src/services/squad.service';
+import * as chapterService from '../src/services/chapter.service';
+import * as guildService from '../src/services/guild.service';
+import * as backlogService from '../src/services/backlog.service';
+import * as sprintService from '../src/services/sprint.service';
+import * as appService from '../src/services/app.service';
 
 function daysFromNow(days: number) {
   return new Date(Date.now() + days * 86_400_000).toISOString();

@@ -7,8 +7,9 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "test": "vitest run",
-    "seed": "ts-node src/scripts/seed.ts",
-    "seed:aiops": "ts-node src/scripts/seed-aiops.ts"
+    "seed": "ts-node seeds/seed.ts",
+    "seed:aiops": "ts-node seeds/seed-aiops.ts",
+    "seed:yaml": "ts-node seeds/seed-yaml.ts"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -20,6 +21,7 @@
     "express-rate-limit": "^7.3.1",
     "helmet": "^7.1.0",
     "ioredis": "^5.3.2",
+    "js-yaml": "^4.1.1",
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",
     "uuid": "^14.0.0",
@@ -31,6 +33,7 @@
     "@types/cookie-parser": "^1.4.7",
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
+    "@types/js-yaml": "^4.0.9",
     "@types/jsonwebtoken": "^9.0.6",
     "@types/morgan": "^1.9.9",
     "@types/node": "^20.14.0",
