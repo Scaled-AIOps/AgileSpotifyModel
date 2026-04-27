@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, computed } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { CdkDragDrop, CdkDropList, CdkDrag, transferArrayItem, moveItemInArray } from '@angular/cdk/drag-drop';
 import { firstValueFrom } from 'rxjs';
 import { SquadApi } from '../../../core/api/squad.api';
@@ -21,7 +21,7 @@ const MANAGER_ROLES: Role[] = ['Admin', 'AgileCoach', 'TribeLead', 'PO'];
 @Component({
   selector: 'app-sprint-board',
   standalone: true,
-  imports: [CdkDropList, CdkDrag],
+  imports: [CdkDropList, CdkDrag, RouterLink],
   template: `
     @if (loading) { <div class="loading-block"><span class="spinner spinner-lg"></span></div> }
     @else {
@@ -31,7 +31,7 @@ const MANAGER_ROLES: Role[] = ['Admin', 'AgileCoach', 'TribeLead', 'PO'];
           @if (sprint) {
             <div class="page-sub">{{ sprint.name }} — {{ sprint.goal }}</div>
           } @else {
-            <div class="page-sub" style="color:var(--warn)">No active sprint. Start one from the squad page.</div>
+            <div class="page-sub" style="color:var(--warn)">No active sprint. <a [routerLink]="['/work/squads', squadId, 'backlog']" style="color:var(--primary)">Go to Backlog →</a></div>
           }
         </div>
         @if (sprint?.status === 'Active' && canManageSprint()) {
