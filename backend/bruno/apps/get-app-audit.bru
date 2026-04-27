@@ -1,11 +1,11 @@
 meta {
-  name: Start Sprint
+  name: Get App Audit Log
   type: http
   seq: 6
 }
 
-post {
-  url: {{baseUrl}}/api/v1/squads/{{squadId}}/sprints/{{sprintId}}/start
+get {
+  url: {{baseUrl}}/api/v1/apps/{{appId}}/audit
   body: none
   auth: bearer
 }

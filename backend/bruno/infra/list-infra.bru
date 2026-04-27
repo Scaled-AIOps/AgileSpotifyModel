@@ -1,0 +1,21 @@
+meta {
+  name: List Infra Clusters
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/v1/infra
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+script:post-response {
+  if (res.status === 200 && res.body.length > 0) {
+    bru.setVar("platformId", res.body[0].platformId);
+  }
+}

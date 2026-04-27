@@ -38,7 +38,7 @@ describe('DashboardComponent', () => {
 
   beforeEach(() => {
     memberSpy = jasmine.createSpyObj('MemberApi', ['getAll', 'getById']);
-    squadSpy = jasmine.createSpyObj('SquadApi', ['getAll', 'getById', 'getMembers', 'getActiveSprint', 'getBacklog']);
+    squadSpy = jasmine.createSpyObj('SquadApi', ['getAll', 'getById', 'getMembers']);
     tribeSpy = jasmine.createSpyObj('TribeApi', ['getAll', 'getById', 'getSquads']);
     orgSpy = jasmine.createSpyObj('OrgApi', ['getTree', 'getHeadcount']);
     appsSpy = jasmine.createSpyObj('AppsApi', ['getAll', 'getBySquad']);
@@ -48,8 +48,6 @@ describe('DashboardComponent', () => {
     squadSpy.getAll.and.returnValue(of([]));
     squadSpy.getById.and.returnValue(of(null as any));
     squadSpy.getMembers.and.returnValue(of([]));
-    squadSpy.getActiveSprint.and.returnValue(of(null as any));
-    squadSpy.getBacklog.and.returnValue(of([]));
     tribeSpy.getAll.and.returnValue(of([]));
     tribeSpy.getById.and.returnValue(of(null as any));
     tribeSpy.getSquads.and.returnValue(of([]));
@@ -325,8 +323,8 @@ describe('DashboardComponent', () => {
 
     it('tribeHealth aggregates apps from all squad rows', () => {
       (component as any).tribeSquads = [
-        { squad: {}, sprint: null, memberCount: 2, apps: [makeApp({ status: 'active' })] },
-        { squad: {}, sprint: null, memberCount: 1, apps: [makeApp({ status: 'failed' })] },
+        { squad: {}, memberCount: 2, apps: [makeApp({ status: 'active' })] },
+        { squad: {}, memberCount: 1, apps: [makeApp({ status: 'failed' })] },
       ];
       expect(component.tribeHealth.failed).toBe(1);
       expect(component.tribeHealth.active).toBe(1);
@@ -350,7 +348,7 @@ describe('DashboardComponent branch coverage', () => {
 
   beforeEach(() => {
     memberSpy = jasmine.createSpyObj('MemberApi', ['getAll', 'getById']);
-    squadSpy = jasmine.createSpyObj('SquadApi', ['getAll', 'getById', 'getMembers', 'getActiveSprint', 'getBacklog']);
+    squadSpy = jasmine.createSpyObj('SquadApi', ['getAll', 'getById', 'getMembers']);
     tribeSpy = jasmine.createSpyObj('TribeApi', ['getAll', 'getById', 'getSquads']);
     orgSpy = jasmine.createSpyObj('OrgApi', ['getTree', 'getHeadcount']);
     appsSpy = jasmine.createSpyObj('AppsApi', ['getAll', 'getBySquad']);
@@ -360,8 +358,6 @@ describe('DashboardComponent branch coverage', () => {
     squadSpy.getAll.and.returnValue(of([]));
     squadSpy.getById.and.returnValue(of(null as any));
     squadSpy.getMembers.and.returnValue(of([]));
-    squadSpy.getActiveSprint.and.returnValue(of(null as any));
-    squadSpy.getBacklog.and.returnValue(of([]));
     tribeSpy.getAll.and.returnValue(of([]));
     tribeSpy.getById.and.returnValue(of(null as any));
     tribeSpy.getSquads.and.returnValue(of([]));

@@ -1,11 +1,11 @@
 meta {
-  name: Get Active Sprint
+  name: Get Deploy History
   type: http
-  seq: 3
+  seq: 7
 }
 
 get {
-  url: {{baseUrl}}/api/v1/squads/{{squadId}}/sprints/active
+  url: {{baseUrl}}/api/v1/apps/{{appId}}/prod/deploys
   body: none
   auth: bearer
 }

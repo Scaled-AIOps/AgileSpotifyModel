@@ -1,0 +1,27 @@
+meta {
+  name: Record Deploy
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{baseUrl}}/api/v1/apps/{{appId}}/prod/deploys
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "version": "1.2.3",
+    "commitId": "abc123def456",
+    "branch": "main",
+    "deployedBy": "ci-pipeline",
+    "state": "success",
+    "deployedAt": "2026-04-27T10:00:00.000Z",
+    "notes": "Hotfix for payment timeout"
+  }
+}

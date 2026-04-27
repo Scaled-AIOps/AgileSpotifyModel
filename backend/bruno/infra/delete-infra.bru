@@ -1,11 +1,11 @@
 meta {
-  name: Get Backlog Item
+  name: Delete Infra Cluster
   type: http
   seq: 3
 }
 
-get {
-  url: {{baseUrl}}/api/v1/squads/{{squadId}}/backlog/{{backlogItemId}}
+delete {
+  url: {{baseUrl}}/api/v1/infra/{{platformId}}
   body: none
   auth: bearer
 }

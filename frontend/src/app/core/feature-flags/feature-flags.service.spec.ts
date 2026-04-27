@@ -22,23 +22,23 @@ describe('FeatureFlagsService', () => {
   });
 
   it('enable sets a flag to true', () => {
-    service.disable('workTracking');
-    service.enable('workTracking');
-    expect(service.isEnabled('workTracking')).toBeTrue();
+    service.disable('appRegistry');
+    service.enable('appRegistry');
+    expect(service.isEnabled('appRegistry')).toBeTrue();
   });
 
   it('disable sets a flag to false', () => {
-    service.enable('workTracking');
-    service.disable('workTracking');
-    expect(service.isEnabled('workTracking')).toBeFalse();
+    service.enable('appRegistry');
+    service.disable('appRegistry');
+    expect(service.isEnabled('appRegistry')).toBeFalse();
   });
 
   it('toggle flips a flag', () => {
-    const initial = service.isEnabled('workTracking');
-    service.toggle('workTracking');
-    expect(service.isEnabled('workTracking')).toBe(!initial);
-    service.toggle('workTracking');
-    expect(service.isEnabled('workTracking')).toBe(initial);
+    const initial = service.isEnabled('appRegistry');
+    service.toggle('appRegistry');
+    expect(service.isEnabled('appRegistry')).toBe(!initial);
+    service.toggle('appRegistry');
+    expect(service.isEnabled('appRegistry')).toBe(initial);
   });
 
   it('all signal returns all current flags', () => {
@@ -48,9 +48,9 @@ describe('FeatureFlagsService', () => {
   });
 
   it('all signal reflects updates', () => {
-    service.enable('workTracking');
-    expect(service.all()['workTracking']).toBeTrue();
-    service.disable('workTracking');
-    expect(service.all()['workTracking']).toBeFalse();
+    service.enable('appRegistry');
+    expect(service.all()['appRegistry']).toBeTrue();
+    service.disable('appRegistry');
+    expect(service.all()['appRegistry']).toBeFalse();
   });
 });

@@ -1,11 +1,11 @@
 meta {
-  name: List OKRs
+  name: Get Infra Cluster
   type: http
-  seq: 1
+  seq: 2
 }
 
 get {
-  url: {{baseUrl}}/api/v1/squads/{{squadId}}/okrs
+  url: {{baseUrl}}/api/v1/infra/{{platformId}}
   body: none
   auth: bearer
 }

@@ -1,11 +1,11 @@
 meta {
-  name: Delete OKR
+  name: Delete App
   type: http
-  seq: 8
+  seq: 5
 }
 
 delete {
-  url: {{baseUrl}}/api/v1/squads/{{squadId}}/okrs/{{okrId}}
+  url: {{baseUrl}}/api/v1/apps/{{appId}}
   body: none
   auth: bearer
 }

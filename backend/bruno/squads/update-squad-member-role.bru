@@ -1,0 +1,21 @@
+meta {
+  name: Update Squad Member Role
+  type: http
+  seq: 10
+}
+
+patch {
+  url: {{baseUrl}}/api/v1/squads/{{squadId}}/members/{{memberId}}/role
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "squadRole": "lead"
+  }
+}

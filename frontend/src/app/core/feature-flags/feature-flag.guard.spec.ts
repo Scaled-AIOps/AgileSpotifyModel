@@ -23,15 +23,15 @@ describe('featureFlagGuard', () => {
 
   it('returns true when flag is enabled', () => {
     flagsSpy.isEnabled.and.returnValue(true);
-    const guard = featureFlagGuard('workTracking');
+    const guard = featureFlagGuard('appRegistry');
     const result = TestBed.runInInjectionContext(() => guard({} as any, {} as any));
     expect(result).toBeTrue();
-    expect(flagsSpy.isEnabled).toHaveBeenCalledWith('workTracking');
+    expect(flagsSpy.isEnabled).toHaveBeenCalledWith('appRegistry');
   });
 
   it('returns UrlTree when flag is disabled', () => {
     flagsSpy.isEnabled.and.returnValue(false);
-    const guard = featureFlagGuard('workTracking');
+    const guard = featureFlagGuard('appRegistry');
     const result = TestBed.runInInjectionContext(() => guard({} as any, {} as any));
     expect(result).toBe(orgTree);
     expect(routerSpy.createUrlTree).toHaveBeenCalledWith(['/org']);

@@ -1,11 +1,11 @@
 meta {
-  name: Get Sprint
+  name: Get App
   type: http
-  seq: 4
+  seq: 3
 }
 
 get {
-  url: {{baseUrl}}/api/v1/squads/{{squadId}}/sprints/{{sprintId}}
+  url: {{baseUrl}}/api/v1/apps/{{appId}}
   body: none
   auth: bearer
 }

@@ -1,0 +1,22 @@
+meta {
+  name: Update App
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{baseUrl}}/api/v1/apps/{{appId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "status": "active",
+    "gitRepo": "https://github.com/example/my-service-updated"
+  }
+}

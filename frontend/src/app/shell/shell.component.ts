@@ -24,6 +24,14 @@ import { AuthService } from '../core/auth/auth.service';
             </svg>
             <span class="nav-label">Dashboard</span>
           </a>
+          <a class="topnav-item" routerLink="/apps" routerLinkActive="active" title="Applications">
+            <svg class="nav-svg" viewBox="0 0 20 20" fill="currentColor">
+              <rect x="2" y="4" width="16" height="2.5" rx="1.25"/>
+              <rect x="2" y="8.75" width="16" height="2.5" rx="1.25"/>
+              <rect x="2" y="13.5" width="10" height="2.5" rx="1.25"/>
+            </svg>
+            <span class="nav-label">Apps</span>
+          </a>
           <a class="topnav-item" routerLink="/org" routerLinkActive="active" title="Org Directory">
             <svg class="nav-svg" viewBox="0 0 20 20" fill="currentColor">
               <circle cx="10" cy="4" r="2.2"/>
