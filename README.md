@@ -202,6 +202,16 @@ curl -X PATCH -H "Authorization: Bearer $TOKEN" -H 'Content-Type: application/js
 
 The repo ships a Bruno collection under [`backend/bruno/`](backend/bruno/) covering every route. Open it in Bruno (https://usebruno.com) and select the `local` environment to run requests against `http://localhost:3000` with whichever access token you paste in.
 
+To run the whole collection headless from a terminal or CI:
+
+```bash
+cd backend
+npm run test:bruno                                  # uses environments/local.bru
+BACKEND_URL=http://1.2.3.4:3000 npm run test:bruno  # override baseUrl
+```
+
+The script (`backend/scripts/bruno-test.sh`) shells out to the `@usebruno/cli` runner against the live backend, writes an HTML report to `backend/bruno-report.html`, and exits non-zero on failure.
+
 ---
 
 ## Project Structure
