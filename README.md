@@ -57,6 +57,22 @@ cd backend && npx vitest run
 cd frontend && npx ng test --watch=false --browsers=ChromeHeadless
 ```
 
+### 5. Lint
+
+```bash
+cd backend  && npm run lint     # eslint api/ + scripts/
+cd frontend && npm run lint     # eslint src/
+# add `:fix` to either to auto-correct
+```
+
+### 6. Production build
+
+`npm run build` (in `backend/`) compiles `api/` to a single
+`dist/server.js` via webpack, then the `BytenodePlugin` recompiles it
+to V8 bytecode (`dist/server.jsc`) and replaces `server.js` with a
+3-line loader. The deploy artefact is therefore not human-readable
+JavaScript. Run with the usual `node dist/server.js` (or `npm start`).
+
 ---
 
 ## Environment Variables (`backend/config/.env`)
@@ -231,11 +247,13 @@ AgileSpotifyModel/
 │   │   ├── infra.yaml
 │   │   ├── appinfo.yaml
 │   │   └── appstatus.yaml
-│   ├── webpack.config.js      ← bundles src/ → dist/server.js
+│   ├── webpack.config.js      ← bundles api/ → dist/server.{js,jsc}
 │   ├── bruno/                 Bruno API collection (one folder per entity)
 │   ├── scripts/seed.ts        dev-only: seeds demo users + org
-│   ├── dist/                  webpack output (single bundled server.js)
-│   └── src/
+│   ├── scripts/bruno-test.sh  headless Bruno collection runner (CI-friendly)
+│   ├── eslint.config.js       backend lint config (TypeScript + node)
+│   ├── dist/                  webpack output: server.jsc (V8 bytecode) + tiny server.js loader
+│   └── api/
 │       ├── config/            env.ts (Zod-validated), redis.ts
 │       ├── lib/               id.ts (UUID v4), crypto.ts (bcrypt),
 │       │                       links.ts (Link[] serialise/parse helpers),

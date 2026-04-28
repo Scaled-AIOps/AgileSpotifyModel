@@ -18,6 +18,35 @@ const { execSync } = require('child_process');
 const nodeExternals = require('webpack-node-externals');
 
 /**
+ * Webpack plugin that, after webpack emits dist/server.js, compiles it to
+ * V8 bytecode (dist/server.jsc) using bytenode and replaces server.js with
+ * a tiny loader that `require`s the .jsc. The result is a production
+ * artefact whose JS source is no longer human-readable. Only runs when
+ * mode === 'production' — dev/test builds keep the plain JS for stack traces.
+ */
+class BytenodePlugin {
+  constructor(opts) { this.opts = opts || {}; }
+  apply(compiler) {
+    compiler.hooks.afterEmit.tapPromise('BytenodePlugin', async (compilation) => {
+      if (this.opts.mode !== 'production') return;
+      const bytenode = require('bytenode');
+      const outDir = compiler.options.output.path;
+      const jsPath  = path.join(outDir, 'server.js');
+      const jscPath = path.join(outDir, 'server.jsc');
+      if (!fs.existsSync(jsPath)) return;
+      // Compile the emitted bundle to V8 bytecode.
+      bytenode.compileFile({ filename: jsPath, output: jscPath, compileAsModule: true });
+      // Replace server.js with a 4-line loader.
+      const loader = `// Auto-generated loader. Real bundle is server.jsc (V8 bytecode).\n`
+        + `require('bytenode');\n`
+        + `require('./server.jsc');\n`;
+      fs.writeFileSync(jsPath, loader);
+      compilation.getLogger('BytenodePlugin').info(`Compiled ${path.basename(jscPath)} (${(fs.statSync(jscPath).size / 1024).toFixed(1)} KB)`);
+    });
+  }
+}
+
+/**
  * Webpack plugin that emits dist/package.json with build-time metadata
  * (name, version, commitId, branch, buildTime). Read at runtime by the
  * /info endpoint.
@@ -63,7 +92,7 @@ module.exports = (_env, argv) => {
   return {
     target: 'node',
     mode: isProd ? 'production' : 'development',
-    entry: './src/index.ts',
+    entry: './api/index.ts',
     devtool: isProd ? 'source-map' : 'inline-source-map',
     output: {
       path: path.resolve(__dirname, 'dist'),
@@ -83,7 +112,7 @@ module.exports = (_env, argv) => {
       ],
     },
     externals: [nodeExternals()],
-    plugins: [new BuildInfoPlugin()],
+    plugins: [new BuildInfoPlugin(), new BytenodePlugin({ mode: argv.mode })],
     optimization: {
       minimize: false,
     },

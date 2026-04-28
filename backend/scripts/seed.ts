@@ -8,15 +8,15 @@ import dotenv from 'dotenv';
 import path from 'path';
 const CONFIG_DIR = process.env.CONFIG_DIR || path.resolve(process.cwd(), 'config');
 dotenv.config({ path: path.join(CONFIG_DIR, '.env') });
-import '../src/config/env';
-import { connectRedis } from '../src/config/redis';
-import redis from '../src/config/redis';
-import * as authService from '../src/services/auth.service';
-import * as domainService from '../src/services/domain.service';
-import * as subdomainService from '../src/services/subdomain.service';
-import * as tribeService from '../src/services/tribe.service';
-import * as squadService from '../src/services/squad.service';
-import * as appService from '../src/services/app.service';
+import '../api/config/env';
+import { connectRedis } from '../api/config/redis';
+import redis from '../api/config/redis';
+import * as authService from '../api/services/auth.service';
+import * as domainService from '../api/services/domain.service';
+import * as subdomainService from '../api/services/subdomain.service';
+import * as tribeService from '../api/services/tribe.service';
+import * as squadService from '../api/services/squad.service';
+import * as appService from '../api/services/app.service';
 
 async function seed() {
   await connectRedis();

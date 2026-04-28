@@ -2,7 +2,7 @@
  * Purpose: Vitest configuration for the backend test suite.
  * Usage:   Picked up by `vitest run` (the `npm test` script). Sets up the test
  *          environment vars (JWT signing keys, Redis URL, etc.), points coverage at
- *          src/ excluding tests/scripts/index/models/schemas, and pins
+ *          api/ excluding tests/scripts/index/models/schemas, and pins
  *          coverage thresholds (80% lines/funcs/statements, 75% branches).
  * Goal:    Single source of truth for how the backend is tested locally and in
  *          CI — keeps test env isolated from dev env and enforces a coverage
@@ -16,8 +16,8 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'node',
-    include: ['src/tests/**/*.test.ts'],
-    setupFiles: ['src/tests/setup.ts'],
+    include: ['api/tests/**/*.test.ts'],
+    setupFiles: ['api/tests/setup.ts'],
     env: {
       NODE_ENV: 'test',
       JWT_SIGNING_KEY: 'test-jwt-signing-key-32-charsxxx',
@@ -31,13 +31,13 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'lcov', 'html'],
-      include: ['src/**/*.ts'],
+      include: ['api/**/*.ts'],
       exclude: [
-        'src/tests/**',
-        'src/scripts/**',
-        'src/index.ts',
-        'src/models/**',
-        'src/schemas/**',
+        'api/tests/**',
+        'api/scripts/**',
+        'api/index.ts',
+        'api/models/**',
+        'api/schemas/**',
       ],
       thresholds: {
         lines: 80,
