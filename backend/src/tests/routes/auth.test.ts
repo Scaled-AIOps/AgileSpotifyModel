@@ -37,7 +37,7 @@ describe('POST /api/v1/auth/register', () => {
     const res = await request(app)
       .post('/api/v1/auth/register')
       .set('Authorization', `Bearer ${adminToken()}`)
-      .send({ email: 'new@example.com', signet: 'Password1!', name: 'New User', role: 'Member' });
+      .send({ email: 'new@example.com', signet: 'Tinkwort1!', name: 'New User', role: 'Member' });
 
     expect(res.status).toBe(201);
     expect(res.body.accessToken).toBe('mock-access-token');
@@ -47,7 +47,7 @@ describe('POST /api/v1/auth/register', () => {
     const res = await request(app)
       .post('/api/v1/auth/register')
       .set('Authorization', `Bearer ${memberToken()}`)
-      .send({ email: 'new@example.com', signet: 'Password1!', name: 'New', role: 'Member' });
+      .send({ email: 'new@example.com', signet: 'Tinkwort1!', name: 'New', role: 'Member' });
     expect(res.status).toBe(403);
   });
 
@@ -70,7 +70,7 @@ describe('POST /api/v1/auth/login', () => {
     (authService.login as any).mockResolvedValue(mockResult);
     const res = await request(app)
       .post('/api/v1/auth/login')
-      .send({ email: 'test@example.com', signet: 'Password1!' });
+      .send({ email: 'test@example.com', signet: 'Tinkwort1!' });
     expect(res.status).toBe(200);
     expect(res.body.accessToken).toBe('mock-access-token');
   });

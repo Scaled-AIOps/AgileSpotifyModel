@@ -39,7 +39,7 @@ describe('register', () => {
   });
 
   it('creates a user and returns access + refresh tokens', async () => {
-    const result = await register('alice@example.com', 'Password1!', 'Alice', 'Admin');
+    const result = await register('alice@example.com', 'Tinkwort1!', 'Alice', 'Admin');
     expect(result.accessToken).toBeTruthy();
     expect(result.refreshToken).toBeTruthy();
     expect(result.user.email).toBe('alice@example.com');
@@ -48,11 +48,11 @@ describe('register', () => {
 
   it('throws 409 when email is already registered', async () => {
     (redis.get as any).mockResolvedValue('existing-user-id');
-    await expect(register('taken@example.com', 'Password1!', 'Bob', 'Member')).rejects.toMatchObject({ statusCode: 409 });
+    await expect(register('taken@example.com', 'Tinkwort1!', 'Bob', 'Member')).rejects.toMatchObject({ statusCode: 409 });
   });
 
   it('stores refresh token in redis', async () => {
-    await register('alice@example.com', 'Password1!', 'Alice', 'Admin');
+    await register('alice@example.com', 'Tinkwort1!', 'Alice', 'Admin');
     expect(redis.set).toHaveBeenCalled();
   });
 });
