@@ -567,7 +567,12 @@ export class AppDetailComponent implements OnInit {
       this.auditLog = await firstValueFrom(this.appsApi.getAuditLog(this.app!.appId));
       this.editMode = false;
     } catch (err: any) {
-      this.saveError = err?.error?.error ?? 'Save failed. Please try again.';
+      const apiErr  = err?.error?.error ?? '';
+      const details = err?.error?.details;
+      const detail  = details && typeof details === 'object'
+        ? Object.entries(details).map(([k, v]) => `${k}: ${(v as string[])?.join('; ') ?? v}`).join(' • ')
+        : '';
+      this.saveError = [apiErr, detail].filter(Boolean).join(' — ') || 'Save failed. Please try again.';
     } finally {
       this.saving = false;
     }

@@ -244,7 +244,12 @@ export class AppFormComponent implements OnInit {
       const created = await firstValueFrom(this.appsApi.createApp(payload));
       this.router.navigate(['/apps', created.appId]);
     } catch (err: any) {
-      this.error = err?.error?.error ?? 'Failed to register app. Please try again.';
+      const apiErr  = err?.error?.error ?? '';
+      const details = err?.error?.details;
+      const detail  = details && typeof details === 'object'
+        ? Object.entries(details).map(([k, v]) => `${k}: ${(v as string[])?.join('; ') ?? v}`).join(' • ')
+        : '';
+      this.error = [apiErr, detail].filter(Boolean).join(' — ') || 'Failed to register app. Please try again.';
     } finally {
       this.saving = false;
     }

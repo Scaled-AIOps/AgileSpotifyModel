@@ -158,7 +158,13 @@ export class MemberFormComponent implements OnInit {
       }
       this.router.navigate(['/admin/members']);
     } catch (err: unknown) {
-      this.error = (err as { error?: { error?: string } })?.error?.error ?? 'An error occurred';
+      const e = err as { error?: { error?: string; details?: Record<string, string[]> } };
+      const apiErr = e?.error?.error ?? '';
+      const details = e?.error?.details;
+      const detail = details && typeof details === 'object'
+        ? Object.entries(details).map(([k, v]) => `${k}: ${(v as string[])?.join('; ') ?? v}`).join(' • ')
+        : '';
+      this.error = [apiErr, detail].filter(Boolean).join(' — ') || 'An error occurred';
     } finally {
       this.saving = false;
     }
