@@ -10,6 +10,9 @@ const schema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   PORT: z.coerce.number().default(3000),
   REDIS_URL: z.string().default('redis://localhost:6379'),
+  /** Set REDIS_MOCK=true (or REDIS_URL=mock) for an in-memory ioredis-mock instance —
+   *  handy for local dev / demos without a running Redis. Production rejects this. */
+  REDIS_MOCK: z.string().optional(),
   JWT_SIGNING_KEY: z.string().min(16),
   JWT_REFRESH_KEY: z.string().min(16),
   JWT_EXPIRES_IN: z.string().default('15m'),
