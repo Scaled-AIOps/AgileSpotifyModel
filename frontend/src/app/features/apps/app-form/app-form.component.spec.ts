@@ -63,6 +63,7 @@ describe('AppFormComponent', () => {
       jira: [], confluence: [],
       github: [{ url: 'https://github.com/repo', description: '' }],
       mailingList: [],
+      links: [],
     };
     await component.submit();
     expect(appsSpy.createApp).toHaveBeenCalledWith(jasmine.objectContaining({

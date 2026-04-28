@@ -40,6 +40,7 @@ interface YamlPlatformBlock {
   buildChart?: string; chart?: string;
 }
 interface YamlApp extends YamlLinks, YamlPlatformBlock {
+  links?: unknown;
   appId: string; description?: string; gitRepo?: string; squad: string; status: AppStatus; tags?: Record<string, string>;
   ocp?: YamlPlatformBlock;
   gcp?: YamlPlatformBlock;
@@ -176,6 +177,7 @@ export async function seedFromYaml(): Promise<void> {
         platforms, urls,
         ocp: a.ocp ?? {}, gcp: a.gcp ?? {},
         jira: a.jira, confluence: a.confluence, github: githubLinks, mailingList: a.mailingList,
+        links: a.links,
         probeHealth: a.probeHealth, probeInfo: a.probeInfo,
         probeLiveness: a.probeLiveness, probeReadiness: a.probeReadiness,
         javaVersion: a.javaVersion, javaComplianceStatus: a.javaComplianceStatus,

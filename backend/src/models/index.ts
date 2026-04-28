@@ -158,6 +158,8 @@ export interface App {
   confluence: Link[];
   github: Link[];
   mailingList: Link[];
+  /** Generic / miscellaneous labelled links (architecture docs, pipelines, dashboards, etc.). */
+  links: Link[];
   probeHealth: string;
   probeInfo: string;
   probeLiveness: string;

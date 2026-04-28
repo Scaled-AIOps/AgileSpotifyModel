@@ -12,6 +12,11 @@
 
 - appId: auth-api
   gitRepo: https://github.com/example/auth-api
+  links: 
+    - url: https://confluence.com/auth-api
+      description: Architecture document
+    - url: https://my-pipeline.com/auth-api
+      description: pipeline link
   squad: platform
   ocp:
     intPlatform: backend-int-cluster
@@ -60,6 +65,11 @@
   probeLiveness: /health/liveness
   probeReadiness: /health/readiness
   status: active
+  links:
+    - url: https://confluence.example.com/config-service
+      description: Architecture document
+    - url: https://pipeline.example.com/config-service
+      description: pipeline link
   tags: { criticality: high, pillar: platform }
 
 - appId: health-checker
@@ -82,6 +92,11 @@
   probeLiveness: /health/liveness
   probeReadiness: /health/readiness
   status: active
+  links:
+    - url: https://confluence.example.com/health-checker
+      description: Architecture document
+    - url: https://pipeline.example.com/health-checker
+      description: pipeline link
   tags: { criticality: medium, pillar: platform }
 
 - appId: payments-api
@@ -108,6 +123,11 @@
   probeLiveness: /health/liveness
   probeReadiness: /health/readiness
   status: active
+  links:
+    - url: https://confluence.example.com/payments-api
+      description: Architecture document
+    - url: https://pipeline.example.com/payments-api
+      description: pipeline link
   tags: { criticality: high, pillar: commerce, pci: true }
 
 - appId: invoice-service
@@ -134,6 +154,11 @@
   probeLiveness: /health/liveness
   probeReadiness: /health/readiness
   status: active
+  links:
+    - url: https://confluence.example.com/invoice-service
+      description: Architecture document
+    - url: https://pipeline.example.com/invoice-service
+      description: pipeline link
   tags: { criticality: high, pillar: commerce }
 
 - appId: refund-worker
@@ -160,6 +185,11 @@
   probeLiveness: /health/liveness
   probeReadiness: /health/readiness
   status: active
+  links:
+    - url: https://confluence.example.com/refund-worker
+      description: Architecture document
+    - url: https://pipeline.example.com/refund-worker
+      description: pipeline link
   tags: { criticality: high, pillar: commerce }
 
 - appId: payments-admin-ui
@@ -182,6 +212,11 @@
   probeLiveness: /health/liveness
   probeReadiness: /health/readiness
   status: active
+  links:
+    - url: https://confluence.example.com/payments-admin-ui
+      description: Architecture document
+    - url: https://pipeline.example.com/payments-admin-ui
+      description: pipeline link
   tags: { criticality: medium, pillar: commerce }
 
 - appId: checkout-web
@@ -204,6 +239,11 @@
   probeLiveness: /health/liveness
   probeReadiness: /health/readiness
   status: active
+  links:
+    - url: https://confluence.example.com/checkout-web
+      description: Architecture document
+    - url: https://pipeline.example.com/checkout-web
+      description: pipeline link
   tags: { criticality: high, pillar: commerce }
 
 - appId: cart-service
@@ -230,6 +270,11 @@
   probeLiveness: /health/liveness
   probeReadiness: /health/readiness
   status: active
+  links:
+    - url: https://confluence.example.com/cart-service
+      description: Architecture document
+    - url: https://pipeline.example.com/cart-service
+      description: pipeline link
   tags: { criticality: high, pillar: commerce }
 
 - appId: checkout-legacy
@@ -248,6 +293,11 @@
   probeLiveness: /health/liveness
   probeReadiness: /health/readiness
   status: marked-for-decommissioning
+  links:
+    - url: https://confluence.example.com/checkout-legacy
+      description: Architecture document
+    - url: https://pipeline.example.com/checkout-legacy
+      description: pipeline link
   tags: { criticality: low, sunset: 2026-Q3 }
 
 - appId: auth-gateway
@@ -274,6 +324,11 @@
   probeLiveness: /health/liveness
   probeReadiness: /health/readiness
   status: active
+  links:
+    - url: https://confluence.example.com/auth-gateway
+      description: Architecture document
+    - url: https://pipeline.example.com/auth-gateway
+      description: pipeline link
   tags: { criticality: high, pillar: security }
 
 - appId: user-directory
@@ -300,6 +355,11 @@
   probeLiveness: /health/liveness
   probeReadiness: /health/readiness
   status: active
+  links:
+    - url: https://confluence.example.com/user-directory
+      description: Architecture document
+    - url: https://pipeline.example.com/user-directory
+      description: pipeline link
   tags: { criticality: medium, pillar: security }
 
 - appId: sso-bridge
@@ -318,6 +378,11 @@
   probeLiveness: /health/liveness
   probeReadiness: /health/readiness
   status: inactive
+  links:
+    - url: https://confluence.example.com/sso-bridge
+      description: Architecture document
+    - url: https://pipeline.example.com/sso-bridge
+      description: pipeline link
   tags: { criticality: low, pillar: security }
 
 - appId: search-api
@@ -344,6 +409,11 @@
   probeLiveness: /health/liveness
   probeReadiness: /health/readiness
   status: active
+  links:
+    - url: https://confluence.example.com/search-api
+      description: Architecture document
+    - url: https://pipeline.example.com/search-api
+      description: pipeline link
   tags: { criticality: high, pillar: discovery }
 
 - appId: indexer
@@ -366,6 +436,11 @@
   probeLiveness: /health/liveness
   probeReadiness: /health/readiness
   status: active
+  links:
+    - url: https://confluence.example.com/indexer
+      description: Architecture document
+    - url: https://pipeline.example.com/indexer
+      description: pipeline link
   tags: { criticality: medium, pillar: discovery }
 
 - appId: search-suggest
@@ -392,6 +467,11 @@
   probeLiveness: /health/liveness
   probeReadiness: /health/readiness
   status: active
+  links:
+    - url: https://confluence.example.com/search-suggest
+      description: Architecture document
+    - url: https://pipeline.example.com/search-suggest
+      description: pipeline link
   tags: { criticality: medium, pillar: discovery }
 
 - appId: recs-api
@@ -418,6 +498,11 @@
   probeLiveness: /health/liveness
   probeReadiness: /health/readiness
   status: active
+  links:
+    - url: https://confluence.example.com/recs-api
+      description: Architecture document
+    - url: https://pipeline.example.com/recs-api
+      description: pipeline link
   tags: { criticality: high, pillar: discovery }
 
 - appId: recs-feature-store
@@ -448,6 +533,11 @@
   probeLiveness: /health/liveness
   probeReadiness: /health/readiness
   status: active
+  links:
+    - url: https://confluence.example.com/recs-feature-store
+      description: Architecture document
+    - url: https://pipeline.example.com/recs-feature-store
+      description: pipeline link
   tags: { criticality: medium, pillar: discovery }
 
 - appId: ranking-trainer
@@ -470,6 +560,11 @@
   probeLiveness: /health/liveness
   probeReadiness: /health/readiness
   status: active
+  links:
+    - url: https://confluence.example.com/ranking-trainer
+      description: Architecture document
+    - url: https://pipeline.example.com/ranking-trainer
+      description: pipeline link
   tags: { criticality: medium, pillar: discovery, kind: batch }
 
 - appId: recs-admin
@@ -488,6 +583,11 @@
   probeLiveness: /health/liveness
   probeReadiness: /health/readiness
   status: inactive
+  links:
+    - url: https://confluence.example.com/recs-admin
+      description: Architecture document
+    - url: https://pipeline.example.com/recs-admin
+      description: pipeline link
   tags: { criticality: low, pillar: discovery }
 
 - appId: ios-app
@@ -498,6 +598,11 @@
   probeLiveness: /health/liveness
   probeReadiness: /health/readiness
   status: active
+  links:
+    - url: https://confluence.example.com/ios-app
+      description: Architecture document
+    - url: https://pipeline.example.com/ios-app
+      description: pipeline link
   tags: { criticality: high, pillar: apps, store: app-store }
 
 - appId: android-app
@@ -508,6 +613,11 @@
   probeLiveness: /health/liveness
   probeReadiness: /health/readiness
   status: active
+  links:
+    - url: https://confluence.example.com/android-app
+      description: Architecture document
+    - url: https://pipeline.example.com/android-app
+      description: pipeline link
   tags: { criticality: high, pillar: apps, store: play-store }
 
 - appId: mobile-bff
@@ -534,6 +644,11 @@
   probeLiveness: /health/liveness
   probeReadiness: /health/readiness
   status: active
+  links:
+    - url: https://confluence.example.com/mobile-bff
+      description: Architecture document
+    - url: https://pipeline.example.com/mobile-bff
+      description: pipeline link
   tags: { criticality: high, pillar: apps }
 
 - appId: marketing-site
@@ -556,6 +671,11 @@
   probeLiveness: /health/liveness
   probeReadiness: /health/readiness
   status: active
+  links:
+    - url: https://confluence.example.com/marketing-site
+      description: Architecture document
+    - url: https://pipeline.example.com/marketing-site
+      description: pipeline link
   tags: { criticality: medium, pillar: apps }
 
 - appId: customer-portal
@@ -578,6 +698,11 @@
   probeLiveness: /health/liveness
   probeReadiness: /health/readiness
   status: active
+  links:
+    - url: https://confluence.example.com/customer-portal
+      description: Architecture document
+    - url: https://pipeline.example.com/customer-portal
+      description: pipeline link
   tags: { criticality: high, pillar: apps }
 
 - appId: legacy-cms
@@ -596,6 +721,11 @@
   probeLiveness: /health/liveness
   probeReadiness: /health/readiness
   status: failed
+  links:
+    - url: https://confluence.example.com/legacy-cms
+      description: Architecture document
+    - url: https://pipeline.example.com/legacy-cms
+      description: pipeline link
   tags: { criticality: low, pillar: apps, incident: INC-9923 }
 
 - appId: datalake-loader
@@ -618,6 +748,11 @@
   probeLiveness: /health/liveness
   probeReadiness: /health/readiness
   status: active
+  links:
+    - url: https://confluence.example.com/datalake-loader
+      description: Architecture document
+    - url: https://pipeline.example.com/datalake-loader
+      description: pipeline link
   tags: { criticality: high, pillar: data, kind: batch }
 
 - appId: kafka-bridge
@@ -642,6 +777,11 @@
   probeLiveness: /health/liveness
   probeReadiness: /health/readiness
   status: active
+  links:
+    - url: https://confluence.example.com/kafka-bridge
+      description: Architecture document
+    - url: https://pipeline.example.com/kafka-bridge
+      description: pipeline link
   tags: { criticality: high, pillar: data }
 
 - appId: dbt-runner
@@ -662,6 +802,11 @@
   probeLiveness: /health/liveness
   probeReadiness: /health/readiness
   status: active
+  links:
+    - url: https://confluence.example.com/dbt-runner
+      description: Architecture document
+    - url: https://pipeline.example.com/dbt-runner
+      description: pipeline link
   tags: { criticality: medium, pillar: data, kind: batch }
 
 - appId: looker-metrics
@@ -680,6 +825,11 @@
   probeLiveness: /health/liveness
   probeReadiness: /health/readiness
   status: active
+  links:
+    - url: https://confluence.example.com/looker-metrics
+      description: Architecture document
+    - url: https://pipeline.example.com/looker-metrics
+      description: pipeline link
   tags: { criticality: medium, pillar: data }
 
 - appId: events-pipeline
@@ -700,6 +850,11 @@
   probeLiveness: /health/liveness
   probeReadiness: /health/readiness
   status: active
+  links:
+    - url: https://confluence.example.com/events-pipeline
+      description: Architecture document
+    - url: https://pipeline.example.com/events-pipeline
+      description: pipeline link
   tags: { criticality: high, pillar: data, kind: stream }
 
 - appId: ab-results-worker
@@ -718,6 +873,11 @@
   probeLiveness: /health/liveness
   probeReadiness: /health/readiness
   status: active
+  links:
+    - url: https://confluence.example.com/ab-results-worker
+      description: Architecture document
+    - url: https://pipeline.example.com/ab-results-worker
+      description: pipeline link
   tags: { criticality: medium, pillar: data }
 
 - appId: email-worker
@@ -744,6 +904,11 @@
   probeLiveness: /health/liveness
   probeReadiness: /health/readiness
   status: active
+  links:
+    - url: https://confluence.example.com/email-worker
+      description: Architecture document
+    - url: https://pipeline.example.com/email-worker
+      description: pipeline link
   tags: { criticality: high, pillar: messaging }
 
 - appId: sms-gateway
@@ -770,6 +935,11 @@
   probeLiveness: /health/liveness
   probeReadiness: /health/readiness
   status: active
+  links:
+    - url: https://confluence.example.com/sms-gateway
+      description: Architecture document
+    - url: https://pipeline.example.com/sms-gateway
+      description: pipeline link
   tags: { criticality: high, pillar: messaging }
 
 - appId: push-hub
@@ -796,6 +966,11 @@
   probeLiveness: /health/liveness
   probeReadiness: /health/readiness
   status: active
+  links:
+    - url: https://confluence.example.com/push-hub
+      description: Architecture document
+    - url: https://pipeline.example.com/push-hub
+      description: pipeline link
   tags: { criticality: medium, pillar: messaging }
 
 - appId: legacy-pager
@@ -814,6 +989,11 @@
   probeLiveness: /health/liveness
   probeReadiness: /health/readiness
   status: marked-for-decommissioning
+  links:
+    - url: https://confluence.example.com/legacy-pager
+      description: Architecture document
+    - url: https://pipeline.example.com/legacy-pager
+      description: pipeline link
   tags: { criticality: low, sunset: 2026-Q2 }
 
 - appId: log-pipeline
@@ -836,6 +1016,11 @@
   probeLiveness: /health/liveness
   probeReadiness: /health/readiness
   status: active
+  links:
+    - url: https://confluence.example.com/log-pipeline
+      description: Architecture document
+    - url: https://pipeline.example.com/log-pipeline
+      description: pipeline link
   tags: { criticality: high, pillar: platform }
 
 - appId: metrics-agent
@@ -856,6 +1041,11 @@
   probeLiveness: /health/liveness
   probeReadiness: /health/readiness
   status: active
+  links:
+    - url: https://confluence.example.com/metrics-agent
+      description: Architecture document
+    - url: https://pipeline.example.com/metrics-agent
+      description: pipeline link
   tags: { criticality: high, pillar: platform }
 
 - appId: trace-collector
@@ -880,6 +1070,11 @@
   probeLiveness: /health/liveness
   probeReadiness: /health/readiness
   status: active
+  links:
+    - url: https://confluence.example.com/trace-collector
+      description: Architecture document
+    - url: https://pipeline.example.com/trace-collector
+      description: pipeline link
   tags: { criticality: medium, pillar: platform }
 
 - appId: ci-runner
@@ -898,6 +1093,11 @@
   probeLiveness: /health/liveness
   probeReadiness: /health/readiness
   status: active
+  links:
+    - url: https://confluence.example.com/ci-runner
+      description: Architecture document
+    - url: https://pipeline.example.com/ci-runner
+      description: pipeline link
   tags: { criticality: high, pillar: platform }
 
 - appId: build-cache
@@ -916,6 +1116,11 @@
   probeLiveness: /health/liveness
   probeReadiness: /health/readiness
   status: active
+  links:
+    - url: https://confluence.example.com/build-cache
+      description: Architecture document
+    - url: https://pipeline.example.com/build-cache
+      description: pipeline link
   tags: { criticality: medium, pillar: platform }
 
 - appId: cli-tools
@@ -926,6 +1131,11 @@
   probeLiveness: /health/liveness
   probeReadiness: /health/readiness
   status: active
+  links:
+    - url: https://confluence.example.com/cli-tools
+      description: Architecture document
+    - url: https://pipeline.example.com/cli-tools
+      description: pipeline link
   tags: { criticality: medium, pillar: platform, kind: cli }
 
 - appId: risk-api
@@ -952,6 +1162,11 @@
   probeLiveness: /health/liveness
   probeReadiness: /health/readiness
   status: active
+  links:
+    - url: https://confluence.example.com/risk-api
+      description: Architecture document
+    - url: https://pipeline.example.com/risk-api
+      description: pipeline link
   tags: { criticality: high, pillar: security }
 
 - appId: rules-engine
@@ -978,6 +1193,11 @@
   probeLiveness: /health/liveness
   probeReadiness: /health/readiness
   status: active
+  links:
+    - url: https://confluence.example.com/rules-engine
+      description: Architecture document
+    - url: https://pipeline.example.com/rules-engine
+      description: pipeline link
   tags: { criticality: high, pillar: security }
 
 - appId: fraud-legacy
@@ -996,6 +1216,11 @@
   probeLiveness: /health/liveness
   probeReadiness: /health/readiness
   status: marked-for-decommissioning
+  links:
+    - url: https://confluence.example.com/fraud-legacy
+      description: Architecture document
+    - url: https://pipeline.example.com/fraud-legacy
+      description: pipeline link
   tags: { criticality: low, sunset: 2026-Q3 }
 
 - appId: agent-console
@@ -1018,6 +1243,11 @@
   probeLiveness: /health/liveness
   probeReadiness: /health/readiness
   status: active
+  links:
+    - url: https://confluence.example.com/agent-console
+      description: Architecture document
+    - url: https://pipeline.example.com/agent-console
+      description: pipeline link
   tags: { criticality: medium, pillar: apps }
 
 - appId: case-manager
@@ -1044,6 +1274,11 @@
   probeLiveness: /health/liveness
   probeReadiness: /health/readiness
   status: active
+  links:
+    - url: https://confluence.example.com/case-manager
+      description: Architecture document
+    - url: https://pipeline.example.com/case-manager
+      description: pipeline link
   tags: { criticality: medium, pillar: apps }
 
 - appId: broken-old-tool
@@ -1062,6 +1297,11 @@
   probeLiveness: /health/liveness
   probeReadiness: /health/readiness
   status: failed
+  links:
+    - url: https://confluence.example.com/broken-old-tool
+      description: Architecture document
+    - url: https://pipeline.example.com/broken-old-tool
+      description: pipeline link
   tags: { criticality: low, incident: INC-9912 }
 
 - appId: ab-test-service
@@ -1088,6 +1328,11 @@
   probeLiveness: /health/liveness
   probeReadiness: /health/readiness
   status: active
+  links:
+    - url: https://confluence.example.com/ab-test-service
+      description: Architecture document
+    - url: https://pipeline.example.com/ab-test-service
+      description: pipeline link
   tags: { criticality: medium, pillar: growth }
 
 - appId: feature-flags
@@ -1114,6 +1359,11 @@
   probeLiveness: /health/liveness
   probeReadiness: /health/readiness
   status: active
+  links:
+    - url: https://confluence.example.com/feature-flags
+      description: Architecture document
+    - url: https://pipeline.example.com/feature-flags
+      description: pipeline link
   tags: { criticality: high, pillar: growth }
 
 - appId: legacy-flags
@@ -1132,6 +1382,11 @@
   probeLiveness: /health/liveness
   probeReadiness: /health/readiness
   status: inactive
+  links:
+    - url: https://confluence.example.com/legacy-flags
+      description: Architecture document
+    - url: https://pipeline.example.com/legacy-flags
+      description: pipeline link
   tags: { criticality: low, pillar: growth }
 
 - appId: legacy-feature-flags
@@ -1154,4 +1409,9 @@
   probeLiveness: /health/liveness
   probeReadiness: /health/readiness
   status: marked-for-decommissioning
+  links:
+    - url: https://confluence.example.com/legacy-feature-flags
+      description: Architecture document
+    - url: https://pipeline.example.com/legacy-feature-flags
+      description: pipeline link
   tags: { criticality: low, sunset: 2026-Q4 }

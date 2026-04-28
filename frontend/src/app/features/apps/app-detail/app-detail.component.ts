@@ -136,6 +136,7 @@ const ENVS = ['local', 'dev', 'int', 'uat', 'prd'] as const;
             <app-link-list label="Confluence"  [links]="app.confluence"></app-link-list>
             <app-link-list label="GitHub"      [links]="app.github"></app-link-list>
             <app-link-list label="Mailing list" [links]="app.mailingList"></app-link-list>
+            <app-link-list label="Links"       [links]="app.links"></app-link-list>
           </div>
         }
       }
@@ -229,6 +230,8 @@ const ENVS = ['local', 'dev', 'int', 'uat', 'prd'] as const;
               [links]="ef.github"      (linksChange)="ef.github = $event"></app-link-repeater>
             <app-link-repeater label="Mailing list" urlPlaceholder="team@example.com"
               [links]="ef.mailingList" (linksChange)="ef.mailingList = $event"></app-link-repeater>
+            <app-link-repeater label="Links" urlPlaceholder="https://confluence.example.com/page"
+              [links]="ef.links" (linksChange)="ef.links = $event"></app-link-repeater>
           </div>
         </div>
       }
@@ -446,6 +449,7 @@ export class AppDetailComponent implements OnInit {
     confluence:  [] as Link[],
     github:      [] as Link[],
     mailingList: [] as Link[],
+    links:       [] as Link[],
   };
 
   get hasTools() {
@@ -456,7 +460,8 @@ export class AppDetailComponent implements OnInit {
     const a = this.app;
     if (!a) return false;
     return (a.jira?.length ?? 0) + (a.confluence?.length ?? 0) +
-           (a.github?.length ?? 0) + (a.mailingList?.length ?? 0) > 0;
+           (a.github?.length ?? 0) + (a.mailingList?.length ?? 0) +
+           (a.links?.length ?? 0) > 0;
   }
 
   get tags(): Record<string, string> {
@@ -505,6 +510,7 @@ export class AppDetailComponent implements OnInit {
       confluence:  [...(this.app!.confluence ?? [])],
       github:      [...(this.app!.github ?? [])],
       mailingList: [...(this.app!.mailingList ?? [])],
+      links:       [...(this.app!.links ?? [])],
     };
     this.saveError = '';
     this.editMode = true;
@@ -538,6 +544,7 @@ export class AppDetailComponent implements OnInit {
         confluence:           this.ef.confluence,
         github:               this.ef.github,
         mailingList:          this.ef.mailingList,
+        links:                this.ef.links,
       };
 
       const updated = await firstValueFrom(this.appsApi.updateApp(this.app!.appId, patch));

@@ -151,6 +151,8 @@ import type { Squad, Link } from '../../../core/models/index';
             [links]="f.github"      (linksChange)="f.github = $event"></app-link-repeater>
           <app-link-repeater label="Mailing list" urlPlaceholder="team@example.com"
             [links]="f.mailingList" (linksChange)="f.mailingList = $event"></app-link-repeater>
+          <app-link-repeater label="Links" urlPlaceholder="https://confluence.example.com/page"
+            [links]="f.links" (linksChange)="f.links = $event"></app-link-repeater>
         </div>
 
         <div class="form-actions" style="margin-top:1.5rem">
@@ -200,6 +202,7 @@ export class AppFormComponent implements OnInit {
     confluence:  [] as Link[],
     github:      [] as Link[],
     mailingList: [] as Link[],
+    links:       [] as Link[],
   };
 
   async ngOnInit() {
@@ -225,6 +228,7 @@ export class AppFormComponent implements OnInit {
         ...(this.f.confluence.length  ? { confluence:  this.f.confluence }  : {}),
         ...(this.f.github.length      ? { github:      this.f.github }      : {}),
         ...(this.f.mailingList.length ? { mailingList: this.f.mailingList } : {}),
+        ...(this.f.links.length       ? { links:       this.f.links }       : {}),
         ...(this.f.javaVersion          ? { javaVersion:          this.f.javaVersion }          : {}),
         ...(this.f.javaComplianceStatus ? { javaComplianceStatus: this.f.javaComplianceStatus } : {}),
         ...(this.f.artifactoryUrl       ? { artifactoryUrl:       this.f.artifactoryUrl }       : {}),

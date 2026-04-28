@@ -24,6 +24,7 @@ function fromHash(h: Record<string, string>): App {
     confluence:  parseLinks(h.confluence),
     github:      parseLinks(h.github),
     mailingList: parseLinks(h.mailingList),
+    links:       parseLinks(h.links),
     ocp:         safeParseCloud(h.ocp),
     gcp:         safeParseCloud(h.gcp),
   };
@@ -36,6 +37,7 @@ function toHash(a: App): Record<string, string> {
     confluence:  serialiseLinks(a.confluence),
     github:      serialiseLinks(a.github),
     mailingList: serialiseLinks(a.mailingList),
+    links:       serialiseLinks(a.links),
     ocp:         JSON.stringify(a.ocp ?? {}),
     gcp:         JSON.stringify(a.gcp ?? {}),
   };
@@ -56,6 +58,7 @@ export async function create(data: {
   confluence?: unknown;
   github?: unknown;
   mailingList?: unknown;
+  links?: unknown;
   probeHealth?: string;
   probeInfo?: string;
   probeLiveness?: string;
@@ -82,6 +85,7 @@ export async function create(data: {
     confluence:           coerceLinks(data.confluence),
     github:               coerceLinks(data.github),
     mailingList:          coerceLinks(data.mailingList),
+    links:                coerceLinks(data.links),
     probeHealth:          data.probeHealth          ?? '',
     probeInfo:            data.probeInfo            ?? '',
     probeLiveness:        data.probeLiveness        ?? '',
@@ -145,6 +149,7 @@ type UpdateData = Partial<{
   confluence: Link[];
   github: Link[];
   mailingList: Link[];
+  links: Link[];
 }>;
 
 function safeParseTags(raw: string): Record<string, string> {
@@ -184,7 +189,7 @@ export async function update(appId: string, data: UpdateData): Promise<{ app: Ap
     merged.tags = JSON.stringify(newTags);
   }
 
-  for (const field of ['jira', 'confluence', 'github', 'mailingList'] as const) {
+  for (const field of ['jira', 'confluence', 'github', 'mailingList', 'links'] as const) {
     if (data[field] !== undefined) {
       const oldLinks = existing[field];
       const newLinks = coerceLinks(data[field]);

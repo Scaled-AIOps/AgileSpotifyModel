@@ -44,3 +44,7 @@ export const linksFields = {
   github:      makeLinkArraySchema(linkSchema),
   mailingList: makeLinkArraySchema(mailingListLinkSchema),
 };
+
+/** Generic / miscellaneous labelled links — a single zod field, currently used
+ *  on App for things like architecture docs, pipelines, dashboards. */
+export const genericLinksField = makeLinkArraySchema(linkSchema);

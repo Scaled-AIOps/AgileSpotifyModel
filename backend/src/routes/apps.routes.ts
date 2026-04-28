@@ -14,7 +14,7 @@ import * as appstatusService from '../services/appstatus.service';
 import * as auditService from '../services/audit.service';
 import * as memberService from '../services/member.service';
 import * as squadService from '../services/squad.service';
-import { linksFields } from '../schemas/links.schema';
+import { linksFields, genericLinksField } from '../schemas/links.schema';
 import redis from '../config/redis';
 import type { JwtPayload } from '../middleware/auth';
 
@@ -80,6 +80,7 @@ const createAppSchema = z.object({
   probeLiveness:        z.string().optional(),
   probeReadiness:       z.string().optional(),
   ...linksFields,
+  links:                genericLinksField,
 });
 
 // ── Deploy schema ─────────────────────────────────────────────────────────────
@@ -125,6 +126,7 @@ router.post('/', authorize('TribeLead'), validate(createAppSchema), async (req, 
       confluence:           req.body.confluence,
       github:               req.body.github,
       mailingList:          req.body.mailingList,
+      links:                req.body.links,
       javaVersion:          req.body.javaVersion,
       javaComplianceStatus: req.body.javaComplianceStatus,
       artifactoryUrl:       req.body.artifactoryUrl,

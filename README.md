@@ -282,7 +282,7 @@ Each application tracks:
 | `tags.sunset` | planned decommission date |
 | Probe URLs | `probeHealth`, `probeLiveness`, `probeReadiness`, `probeInfo` |
 | Tool links | `artifactoryUrl`, `splunkUrl`, `xrayUrl`, `compositionViewerUrl` |
-| `jira[]` · `confluence[]` · `github[]` · `mailingList[]` | Each is a list of `{url, description}` (see Multi-link arrays below) |
+| `jira[]` · `confluence[]` · `github[]` · `mailingList[]` · `links[]` | Each is a list of `{url, description}` (see Multi-link arrays below). `links[]` is a generic miscellaneous bucket for architecture docs, pipelines, dashboards, etc. |
 | Platform deployments | Per-cloud `ocp:` and `gcp:` blocks, each with `{env}Platform`, `{env}Url` (env ∈ local/dev/int/uat/prd), `buildChart`, `chart`. The seed loader namespaces them as `ocp.int`, `gcp.uat`, etc. on the App's `platforms` / `urls` maps. |
 
 ### App YAML shape
@@ -321,7 +321,7 @@ The legacy flat `intPlatform` / `intUrl` / … fields at the app level are still
 
 ## Multi-link arrays
 
-Five entity types — `Domain`, `SubDomain`, `Tribe`, `Squad`, `App` — each carry four labelled link arrays: `jira`, `confluence`, `github`, `mailingList`. Each entry is a `Link` object:
+Five entity types — `Domain`, `SubDomain`, `Tribe`, `Squad`, `App` — each carry four labelled link arrays: `jira`, `confluence`, `github`, `mailingList`. Apps carry an additional generic `links` array for things that don't fit those buckets (architecture docs, pipelines, dashboards). Each entry is a `Link` object:
 
 ```ts
 interface Link {
