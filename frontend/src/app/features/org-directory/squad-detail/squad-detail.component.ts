@@ -341,7 +341,6 @@ export class SquadDetailComponent implements OnInit {
           role: 'Member',
           avatarUrl: '',
           squadId: '',
-          chapterId: '',
         } as any));
         memberId = created.id;
         if (pass) this.tempPassword = pass;

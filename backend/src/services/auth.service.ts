@@ -37,7 +37,7 @@ export async function register(email: string, password: string, name: string, ro
   pipeline.sadd('users:all', id);
   // Create corresponding member record
   pipeline.hset(`member:${memberId}`, {
-    id: memberId, name, email, avatarUrl: '', role, squadId: '', squadRole: '', chapterId: '', createdAt: now, updatedAt: now,
+    id: memberId, name, email, avatarUrl: '', role, squadId: '', squadRole: '', createdAt: now, updatedAt: now,
   });
   pipeline.set(`member:email:${email}`, memberId);
   pipeline.sadd('members:all', memberId);

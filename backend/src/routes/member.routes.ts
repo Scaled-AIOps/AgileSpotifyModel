@@ -1,6 +1,6 @@
 /**
  * Purpose: Express router for Member CRUD + assignments lookup.
- * Usage:   Mounted at `/api/v1/members`. Exposes list / get / create / update / delete and `:id/assignments` (squads / chapters / guilds the member belongs to).
+ * Usage:   Mounted at `/api/v1/members`. Exposes list / get / create / update / delete and `:id/assignments` (the squad the member belongs to).
  * Goal:    HTTP surface for the people directory — the single source of identity for everything else (squads etc. reference members by id).
  * ToDo:    —
  */

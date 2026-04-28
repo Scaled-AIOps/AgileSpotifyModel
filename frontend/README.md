@@ -36,7 +36,7 @@ npx ng test --watch=false --browsers=ChromeHeadless
 | `/auth/login` | Login | Basic + optional Jira/AD SSO |
 | `/auth/callback` | OAuth callback | Receives token from SSO redirect |
 | `/dashboard` | Dashboard | Role-aware: Admin / TribeLead / PO+Member |
-| `/org` | Org Directory | D3 collapsible tree, domain/tribe/squad/chapter/guild views |
+| `/org` | Org Directory | D3 collapsible tree, domain/tribe/squad views |
 | `/apps` | Applications | List (CSV/JSON/YAML export), detail, registration |
 | `/admin` | Admin | Member CRUD, headcount chart, feature flags (TribeLead+) |
 

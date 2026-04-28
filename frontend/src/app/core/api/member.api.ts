@@ -18,7 +18,7 @@ export class MemberApi {
   create(data: Partial<Member> & { password: string }): Observable<Member> { return this.api.post('/members', data); }
   update(id: string, data: Partial<Member>): Observable<Member> { return this.api.patch(`/members/${id}`, data); }
   delete(id: string): Observable<void> { return this.api.delete(`/members/${id}`); }
-  getAssignments(id: string): Observable<{ squadId: string; chapterId: string; guildIds: string[] }> {
+  getAssignments(id: string): Observable<{ squadId: string }> {
     return this.api.get(`/members/${id}/assignments`);
   }
 }

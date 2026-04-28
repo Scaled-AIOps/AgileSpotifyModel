@@ -1,5 +1,5 @@
 /**
- * Batch CRUD tests covering domain, tribe, chapter, guild, subdomain, infra
+ * Batch CRUD tests covering domain, tribe, subdomain, infra
  * services. These services all follow the same Redis Hash+Set pattern so
  * a single shared mock covers them all.
  */
@@ -32,8 +32,6 @@ vi.mock('../../lib/id', () => ({ generateId: vi.fn().mockReturnValue('gen-id') }
 import redis from '../../config/redis';
 import * as domainSvc    from '../../services/domain.service';
 import * as tribeSvc     from '../../services/tribe.service';
-import * as chapterSvc   from '../../services/chapter.service';
-import * as guildSvc     from '../../services/guild.service';
 import * as subdomainSvc from '../../services/subdomain.service';
 import * as infraSvc     from '../../services/infra.service';
 
@@ -175,160 +173,9 @@ describe('tribe.service', () => {
     expect(await tribeSvc.getSquads('gen-id')).toContain('sq-1');
   });
 
-  it('getChapters: returns chapter ids', async () => {
-    (redis.smembers as any).mockResolvedValue(['ch-1']);
-    expect(await tribeSvc.getChapters('gen-id')).toContain('ch-1');
-  });
-
   it('assignLead: sets leadMemberId', async () => {
     const t = await tribeSvc.assignLead('gen-id', 'm-lead');
     expect(t.leadMemberId).toBe('m-lead');
-  });
-});
-
-// ── Chapter ─────────────────────────────────────────────────────────────────
-
-describe('chapter.service', () => {
-  const stored = { id: 'gen-id', name: 'Frontend Chapter', discipline: 'Frontend', tribeId: 't-1', leadMemberId: '' };
-
-  beforeEach(() => {
-    (redis.hgetall as any).mockResolvedValue(stored);
-    (redis.exists as any).mockResolvedValue(1);
-  });
-
-  it('create: creates chapter', async () => {
-    const c = await chapterSvc.create({ name: 'Frontend', discipline: 'Frontend', tribeId: 't-1' });
-    expect(c.name).toBe('Frontend');
-  });
-
-  it('create: throws 404 when tribe not found', async () => {
-    (redis.exists as any).mockResolvedValue(0);
-    await expect(chapterSvc.create({ name: 'X', discipline: 'X', tribeId: 'missing' })).rejects.toMatchObject({ statusCode: 404 });
-  });
-
-  it('findById: returns null when missing', async () => {
-    (redis.hgetall as any).mockResolvedValue({});
-    expect(await chapterSvc.findById('x')).toBeNull();
-  });
-
-  it('update: updates chapter', async () => {
-    const c = await chapterSvc.update('gen-id', { name: 'Updated' });
-    expect(c.name).toBe('Updated');
-  });
-
-  it('update: throws 404', async () => {
-    (redis.hgetall as any).mockResolvedValue({});
-    await expect(chapterSvc.update('x', {})).rejects.toMatchObject({ statusCode: 404 });
-  });
-
-  it('getMembers: returns member ids', async () => {
-    (redis.smembers as any).mockResolvedValue(['m-1']);
-    expect(await chapterSvc.getMembers('gen-id')).toContain('m-1');
-  });
-
-  it('findAll: returns empty when no chapters', async () => {
-    (redis.smembers as any).mockResolvedValue([]);
-    expect(await chapterSvc.findAll()).toEqual([]);
-  });
-
-  it('remove: removes chapter and clears member assignments', async () => {
-    (redis.smembers as any).mockResolvedValue(['m-1']);
-    await chapterSvc.remove('gen-id');
-    expect(mockPipeline.hset).toHaveBeenCalledWith('member:m-1', 'chapterId', '');
-    expect(mockPipeline.del).toHaveBeenCalledWith('chapter:gen-id');
-  });
-
-  it('remove: throws 404 when not found', async () => {
-    (redis.hgetall as any).mockResolvedValue({});
-    await expect(chapterSvc.remove('missing')).rejects.toMatchObject({ statusCode: 404 });
-  });
-
-  it('addMember: adds member to chapter', async () => {
-    await chapterSvc.addMember('gen-id', 'm-1');
-    expect(mockPipeline.sadd).toHaveBeenCalledWith('chapter:gen-id:members', 'm-1');
-    expect(mockPipeline.hset).toHaveBeenCalledWith('member:m-1', 'chapterId', 'gen-id');
-  });
-
-  it('addMember: throws 404 when chapter not found', async () => {
-    (redis.exists as any).mockResolvedValueOnce(0).mockResolvedValue(1);
-    await expect(chapterSvc.addMember('missing', 'm-1')).rejects.toMatchObject({ statusCode: 404 });
-  });
-
-  it('addMember: throws 404 when member not found', async () => {
-    (redis.exists as any).mockResolvedValueOnce(1).mockResolvedValue(0);
-    await expect(chapterSvc.addMember('gen-id', 'missing')).rejects.toMatchObject({ statusCode: 404 });
-  });
-
-  it('removeMember: removes member from chapter', async () => {
-    await chapterSvc.removeMember('gen-id', 'm-1');
-    expect(mockPipeline.srem).toHaveBeenCalledWith('chapter:gen-id:members', 'm-1');
-  });
-
-  it('assignLead: sets leadMemberId on chapter', async () => {
-    const c = await chapterSvc.assignLead('gen-id', 'm-lead');
-    expect(c.leadMemberId).toBe('m-lead');
-  });
-});
-
-// ── Guild ────────────────────────────────────────────────────────────────────
-
-describe('guild.service', () => {
-  const stored = { id: 'gen-id', name: 'Platform Guild', description: '', ownerMemberId: 'm-1' };
-
-  beforeEach(() => {
-    (redis.hgetall as any).mockResolvedValue(stored);
-  });
-
-  it('create: creates guild', async () => {
-    const g = await guildSvc.create({ name: 'Platform Guild', description: '', ownerMemberId: 'm-1' });
-    expect(g.name).toBe('Platform Guild');
-  });
-
-  it('findAll: returns empty', async () => {
-    (redis.smembers as any).mockResolvedValue([]);
-    expect(await guildSvc.findAll()).toEqual([]);
-  });
-
-  it('findById: returns null', async () => {
-    (redis.hgetall as any).mockResolvedValue({});
-    expect(await guildSvc.findById('x')).toBeNull();
-  });
-
-  it('update: updates guild', async () => {
-    const g = await guildSvc.update('gen-id', { name: 'New Name' });
-    expect(g.name).toBe('New Name');
-  });
-
-  it('update: throws 404', async () => {
-    (redis.hgetall as any).mockResolvedValue({});
-    await expect(guildSvc.update('x', {})).rejects.toMatchObject({ statusCode: 404 });
-  });
-
-  it('remove: removes guild', async () => {
-    (redis.smembers as any).mockResolvedValue([]);
-    await guildSvc.remove('gen-id');
-    expect(mockPipeline.del).toHaveBeenCalledWith('guild:gen-id');
-  });
-
-  it('remove: throws 404', async () => {
-    (redis.hgetall as any).mockResolvedValue({});
-    await expect(guildSvc.remove('x')).rejects.toMatchObject({ statusCode: 404 });
-  });
-
-  it('addMember: adds member to guild', async () => {
-    (redis.exists as any).mockResolvedValue(1);
-    await guildSvc.addMember('gen-id', 'm-2');
-    expect(mockPipeline.sadd).toHaveBeenCalledWith('guild:gen-id:members', 'm-2');
-  });
-
-  it('removeMember: removes member from guild', async () => {
-    await guildSvc.removeMember('gen-id', 'm-1');
-    expect(mockPipeline.srem).toHaveBeenCalledWith('guild:gen-id:members', 'm-1');
-  });
-
-  it('getMembers: returns member ids', async () => {
-    (redis.smembers as any).mockResolvedValue(['m-1', 'm-2']);
-    expect(await guildSvc.getMembers('gen-id')).toHaveLength(2);
   });
 });
 

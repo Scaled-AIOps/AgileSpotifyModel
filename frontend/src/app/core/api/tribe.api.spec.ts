@@ -48,11 +48,6 @@ describe('TribeApi', () => {
     expect(svc.get).toHaveBeenCalledWith('/tribes/t1/squads');
   });
 
-  it('getChapters() calls GET /tribes/:id/chapters', () => {
-    api.getChapters('t1').subscribe();
-    expect(svc.get).toHaveBeenCalledWith('/tribes/t1/chapters');
-  });
-
   it('assignLead() calls PATCH /tribes/:id/lead', () => {
     api.assignLead('t1', 'm1').subscribe();
     expect(svc.patch).toHaveBeenCalledWith('/tribes/t1/lead', { leadMemberId: 'm1' });

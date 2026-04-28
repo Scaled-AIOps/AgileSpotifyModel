@@ -1,7 +1,7 @@
 /**
  * Purpose: Express router for Tribe CRUD + member-of-tribe lookups.
- * Usage:   Mounted at `/api/v1/tribes`. Exposes list / get / create / update / delete, `:id/squads`, `:id/chapters`, `:id/lead`.
- * Goal:    HTTP surface for tribes — the unit that owns squads + chapters and gets a short `name` (e.g. INF) plus long `tribeName`.
+ * Usage:   Mounted at `/api/v1/tribes`. Exposes list / get / create / update / delete, `:id/squads`, `:id/lead`.
+ * Goal:    HTTP surface for tribes — the unit that owns squads and gets a short `name` (e.g. INF) plus long `tribeName`.
  * ToDo:    TribeLead PATCH should be limited to the tribes the lead actually owns.
  */
 import { Router } from 'express';
@@ -41,10 +41,6 @@ router.delete('/:id', authorize('Admin'), async (req, res, next) => {
 
 router.get('/:id/squads', async (req, res, next) => {
   try { res.json(await tribeService.getSquads(req.params.id)); } catch (e) { next(e); }
-});
-
-router.get('/:id/chapters', async (req, res, next) => {
-  try { res.json(await tribeService.getChapters(req.params.id)); } catch (e) { next(e); }
 });
 
 router.patch('/:id/lead', authorize('Admin'), validate(z.object({ leadMemberId: z.string().uuid() })), async (req, res, next) => {

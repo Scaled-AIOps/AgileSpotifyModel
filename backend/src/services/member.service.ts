@@ -1,6 +1,6 @@
 /**
- * Purpose: Redis-backed CRUD for Member + cross-entity assignment lookups.
- * Usage:   Called from member.routes.ts. Stores member hashes and provides `getAssignments(id)` rolling up squad / chapter / guild membership.
+ * Purpose: Redis-backed CRUD for Member + assignment lookup.
+ * Usage:   Called from member.routes.ts. Stores member hashes and provides `getAssignments(id)` returning the squad the member belongs to.
  * Goal:    Persistence layer for the identity / people directory.
  * ToDo:    —
  */
@@ -15,7 +15,7 @@ function fromHash(h: Record<string, string>): Member {
 }
 
 export async function create(data: {
-  name: string; email: string; password?: string; role: Role; avatarUrl: string; squadId: string; chapterId: string;
+  name: string; email: string; password?: string; role: Role; avatarUrl: string; squadId: string;
 }): Promise<Member> {
   const existing = await redis.get(`member:email:${data.email}`);
   if (existing) throw createError('Email already in use', 409);
@@ -23,7 +23,7 @@ export async function create(data: {
   const id = generateId();
   const now = new Date().toISOString();
 
-  const member: Member = { id, name: data.name, email: data.email, avatarUrl: data.avatarUrl, role: data.role, squadId: data.squadId, squadRole: '', chapterId: data.chapterId, createdAt: now, updatedAt: now };
+  const member: Member = { id, name: data.name, email: data.email, avatarUrl: data.avatarUrl, role: data.role, squadId: data.squadId, squadRole: '', createdAt: now, updatedAt: now };
 
   const pipeline = redis.pipeline();
   pipeline.hset(`member:${id}`, member as unknown as Record<string, string>);
@@ -37,7 +37,6 @@ export async function create(data: {
     pipeline.sadd('users:all', userId);
   }
   if (data.squadId) pipeline.sadd(`squad:${data.squadId}:members`, id);
-  if (data.chapterId) pipeline.sadd(`chapter:${data.chapterId}:members`, id);
   await pipeline.exec();
   return member;
 }
@@ -68,13 +67,9 @@ export async function remove(id: string): Promise<void> {
   const existing = await findById(id);
   if (!existing) throw createError('Member not found', 404);
 
-  const guildIds = await redis.smembers(`member:${id}:guilds`);
   const pipeline = redis.pipeline();
   if (existing.squadId) pipeline.srem(`squad:${existing.squadId}:members`, id);
-  if (existing.chapterId) pipeline.srem(`chapter:${existing.chapterId}:members`, id);
-  guildIds.forEach((gid) => pipeline.srem(`guild:${gid}:members`, id));
   pipeline.del(`member:${id}`);
-  pipeline.del(`member:${id}:guilds`);
   pipeline.del(`member:email:${existing.email}`);
   pipeline.srem('members:all', id);
   // Also remove user auth record
@@ -88,9 +83,8 @@ export async function remove(id: string): Promise<void> {
   await pipeline.exec();
 }
 
-export async function getAssignments(id: string): Promise<{ squadId: string; chapterId: string; guildIds: string[] }> {
+export async function getAssignments(id: string): Promise<{ squadId: string }> {
   const member = await findById(id);
   if (!member) throw createError('Member not found', 404);
-  const guildIds = await redis.smembers(`member:${id}:guilds`);
-  return { squadId: member.squadId, chapterId: member.chapterId, guildIds };
+  return { squadId: member.squadId };
 }

@@ -34,7 +34,6 @@ export interface Member {
   role: Role;
   squadId: string;
   squadRole: string;
-  chapterId: string;
 }
 
 export interface Domain {
@@ -92,22 +91,6 @@ export interface Squad {
   mailingList: Link[];
   tier: string;
   memberCount?: number;
-}
-
-export interface Chapter {
-  id: string;
-  name: string;
-  description: string;
-  discipline: string;
-  tribeId: string;
-  leadMemberId: string;
-}
-
-export interface Guild {
-  id: string;
-  name: string;
-  description: string;
-  ownerMemberId: string;
 }
 
 // ── AIOps / App Registry ──────────────────────────────────────────────────────

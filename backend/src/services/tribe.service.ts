@@ -104,7 +104,6 @@ export async function remove(id: string): Promise<void> {
   const pipeline = redis.pipeline();
   pipeline.del(`tribe:${id}`);
   pipeline.del(`tribe:${id}:squads`);
-  pipeline.del(`tribe:${id}:chapters`);
   pipeline.srem('tribes:all', id);
   if (existing.subdomainId) {
     pipeline.srem(`subdomain:${existing.subdomainId}:tribes`, id);
@@ -116,10 +115,6 @@ export async function remove(id: string): Promise<void> {
 
 export async function getSquads(id: string): Promise<string[]> {
   return redis.smembers(`tribe:${id}:squads`);
-}
-
-export async function getChapters(id: string): Promise<string[]> {
-  return redis.smembers(`tribe:${id}:chapters`);
 }
 
 export async function assignLead(id: string, leadMemberId: string): Promise<Tribe> {

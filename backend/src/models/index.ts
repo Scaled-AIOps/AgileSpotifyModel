@@ -37,7 +37,6 @@ export interface Member {
   role: Role;
   squadId: string;
   squadRole: string;
-  chapterId: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -100,26 +99,6 @@ export interface Squad {
   github: Link[];
   mailingList: Link[];
   tier: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface Chapter {
-  id: string;
-  name: string;
-  description: string;
-  discipline: string;
-  tribeId: string;
-  leadMemberId: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface Guild {
-  id: string;
-  name: string;
-  description: string;
-  ownerMemberId: string;
   createdAt: string;
   updatedAt: string;
 }

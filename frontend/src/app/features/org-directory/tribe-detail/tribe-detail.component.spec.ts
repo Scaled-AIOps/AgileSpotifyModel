@@ -10,12 +10,11 @@ describe('TribeDetailComponent', () => {
   let apiSpy: jasmine.SpyObj<ApiService>;
 
   beforeEach(async () => {
-    tribeSpy = jasmine.createSpyObj('TribeApi', ['getById', 'getSquads', 'getChapters', 'update', 'assignLead']);
+    tribeSpy = jasmine.createSpyObj('TribeApi', ['getById', 'getSquads', 'update', 'assignLead']);
     apiSpy = jasmine.createSpyObj('ApiService', ['get', 'post', 'patch', 'delete']);
 
     tribeSpy.getById.and.returnValue(of({ id: 't1', name: 'Tribe A' } as any));
     tribeSpy.getSquads.and.returnValue(of([]));
-    tribeSpy.getChapters.and.returnValue(of([]));
     apiSpy.get.and.returnValue(of([]));
 
     await TestBed.configureTestingModule({

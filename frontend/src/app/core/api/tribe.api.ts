@@ -19,6 +19,5 @@ export class TribeApi {
   update(id: string, data: Partial<Tribe>): Observable<Tribe> { return this.api.patch(`/tribes/${id}`, data); }
   delete(id: string): Observable<void> { return this.api.delete(`/tribes/${id}`); }
   getSquads(id: string): Observable<string[]> { return this.api.get(`/tribes/${id}/squads`); }
-  getChapters(id: string): Observable<string[]> { return this.api.get(`/tribes/${id}/chapters`); }
   assignLead(id: string, leadMemberId: string): Observable<Tribe> { return this.api.patch(`/tribes/${id}/lead`, { leadMemberId }); }
 }

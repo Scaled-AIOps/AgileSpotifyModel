@@ -13,7 +13,6 @@ export const createMemberSchema = z.object({
   role: z.enum(['Admin', 'TribeLead', 'PO', 'AgileCoach', 'ReleaseManager', 'Member']).default('Member'),
   avatarUrl: z.string().default(''),
   squadId: z.string().optional().default(''),
-  chapterId: z.string().optional().default(''),
 });
 
 export const updateMemberSchema = createMemberSchema.omit({ password: true }).partial();

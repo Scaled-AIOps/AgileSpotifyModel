@@ -16,8 +16,6 @@ import * as domainService from '../src/services/domain.service';
 import * as subdomainService from '../src/services/subdomain.service';
 import * as tribeService from '../src/services/tribe.service';
 import * as squadService from '../src/services/squad.service';
-import * as chapterService from '../src/services/chapter.service';
-import * as guildService from '../src/services/guild.service';
 import * as appService from '../src/services/app.service';
 
 async function seed() {
@@ -146,57 +144,6 @@ async function seed() {
 
   await squadService.addMember(notifSquad.id,      uQuinn.memberId,  'SM');
 
-  // ── Chapters ───────────────────────────────────────────────────────────
-  const feChapter      = await chapterService.create({ name: 'Frontend Chapter',         discipline: 'Frontend',         tribeId: discoveryTribe.id, leadMemberId: uCarol.memberId });
-  const beChapter      = await chapterService.create({ name: 'Backend Chapter',          discipline: 'Backend',          tribeId: discoveryTribe.id, leadMemberId: uBob.memberId });
-  const dataEngChapter = await chapterService.create({ name: 'Data Engineering Chapter', discipline: 'Data Engineering', tribeId: dataTribe.id,      leadMemberId: uHenry.memberId });
-  const devopsChapter  = await chapterService.create({ name: 'DevOps Chapter',           discipline: 'DevOps',           tribeId: infraTribe.id,     leadMemberId: uJames.memberId });
-  const qaChapter      = await chapterService.create({ name: 'QA Chapter',               discipline: 'Quality Assurance',tribeId: infraTribe.id });
-  const mlChapter      = await chapterService.create({ name: 'ML Engineering Chapter',   discipline: 'Machine Learning', tribeId: dataTribe.id });
-
-  await chapterService.addMember(feChapter.id, uCarol.memberId);
-  await chapterService.addMember(feChapter.id, uMaya.memberId);
-  await chapterService.addMember(feChapter.id, uOlivia.memberId);
-  await chapterService.addMember(beChapter.id, uBob.memberId);
-  await chapterService.addMember(beChapter.id, uDave.memberId);
-  await chapterService.addMember(beChapter.id, uQuinn.memberId);
-  await chapterService.addMember(beChapter.id, uRaj.memberId);
-  await chapterService.addMember(dataEngChapter.id, uHenry.memberId);
-  await chapterService.addMember(dataEngChapter.id, uNoah.memberId);
-  await chapterService.addMember(devopsChapter.id, uJames.memberId);
-  await chapterService.addMember(devopsChapter.id, uPeter.memberId);
-  await chapterService.addMember(qaChapter.id, uSofia.memberId);
-  await chapterService.addMember(qaChapter.id, uTom.memberId);
-  await chapterService.addMember(mlChapter.id, uRaj.memberId);
-
-  // ── Guilds ─────────────────────────────────────────────────────────────
-  const graphqlGuild       = await guildService.create({ name: 'GraphQL Guild',       description: 'GraphQL practitioners across all tribes',          ownerMemberId: uBob.memberId });
-  const accessibilityGuild = await guildService.create({ name: 'Accessibility Guild', description: 'A11y champions driving inclusive design',           ownerMemberId: uCarol.memberId });
-  const securityGuild      = await guildService.create({ name: 'Security Guild',      description: 'Security champions and threat modelling advocates', ownerMemberId: uSofia.memberId });
-  const testingGuild       = await guildService.create({ name: 'Testing Guild',       description: 'TDD, BDD, and quality culture evangelists',         ownerMemberId: uTom.memberId });
-  const mlGuild            = await guildService.create({ name: 'ML & AI Guild',       description: 'Machine learning and AI practitioners',             ownerMemberId: uRaj.memberId });
-  const agileGuild         = await guildService.create({ name: 'Agile Practitioners', description: 'Coaches and leads sharing agile best practices',    ownerMemberId: uKate.memberId });
-
-  await guildService.addMember(graphqlGuild.id, uBob.memberId);
-  await guildService.addMember(graphqlGuild.id, uDave.memberId);
-  await guildService.addMember(graphqlGuild.id, uQuinn.memberId);
-  await guildService.addMember(accessibilityGuild.id, uCarol.memberId);
-  await guildService.addMember(accessibilityGuild.id, uMaya.memberId);
-  await guildService.addMember(accessibilityGuild.id, uOlivia.memberId);
-  await guildService.addMember(securityGuild.id, uSofia.memberId);
-  await guildService.addMember(securityGuild.id, uTom.memberId);
-  await guildService.addMember(securityGuild.id, uPeter.memberId);
-  await guildService.addMember(testingGuild.id, uTom.memberId);
-  await guildService.addMember(testingGuild.id, uSofia.memberId);
-  await guildService.addMember(testingGuild.id, uGrace.memberId);
-  await guildService.addMember(mlGuild.id, uRaj.memberId);
-  await guildService.addMember(mlGuild.id, uNoah.memberId);
-  await guildService.addMember(mlGuild.id, uIsabel.memberId);
-  await guildService.addMember(agileGuild.id, uKate.memberId);
-  await guildService.addMember(agileGuild.id, uRosa.memberId);
-  await guildService.addMember(agileGuild.id, uAlice.memberId);
-  await guildService.addMember(agileGuild.id, uEva.memberId);
-
   // ── Apps ───────────────────────────────────────────────────────────────
   await appService.create({ appId: 'payment-gateway',       github: ['git@github.com:org/payment-gateway'],       squadId: paymentsSquad.id,  squadKey: 'payments',       status: 'active',                      tags: { criticality: 'critical', pillar: 'commerce', sunset: '' },   platforms: { java: '17' }, urls: { prod: 'https://payment-gateway.prod.example.com' }, javaVersion: '17', javaComplianceStatus: 'compliant',     xrayUrl: 'https://xray.example.com/payment-gateway',       artifactoryUrl: 'https://artifactory.example.com/payment-gateway',    splunkUrl: 'https://splunk.example.com/payment-gateway',       probeHealth: '/actuator/health', probeLiveness: '/actuator/liveness', probeReadiness: '/actuator/readiness', probeInfo: '/actuator/info' });
   await appService.create({ appId: 'payment-reconciler',    github: ['git@github.com:org/payment-reconciler'],    squadId: paymentsSquad.id,  squadKey: 'payments',       status: 'active',                      tags: { criticality: 'critical', pillar: 'commerce', sunset: '' },   platforms: { java: '11' }, urls: { prod: 'https://payment-reconciler.prod.example.com' }, javaVersion: '11', javaComplianceStatus: 'non-compliant', xrayUrl: '',                                                        artifactoryUrl: 'https://artifactory.example.com/payment-reconciler', splunkUrl: 'https://splunk.example.com/payment-reconciler',    probeHealth: '/actuator/health', probeLiveness: '/actuator/liveness', probeReadiness: '/actuator/readiness', probeInfo: '/actuator/info' });
@@ -242,8 +189,6 @@ async function seed() {
   console.log(` ${'subdomains'.padEnd(14)} 15`);
   console.log(` ${'tribes'.padEnd(14)} 8`);
   console.log(` ${'squads'.padEnd(14)} 16`);
-  console.log(` ${'chapters'.padEnd(14)} 6`);
-  console.log(` ${'guilds'.padEnd(14)} 6`);
   console.log(` ${'apps'.padEnd(14)} 24`);
   console.log('\nLogin: admin@example.com / Admin1234!');
   process.exit(0);

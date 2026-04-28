@@ -41,7 +41,7 @@ describe('MemberFormComponent', () => {
 
     memberSpy.create.and.returnValue(of({} as Member));
     memberSpy.update.and.returnValue(of({} as Member));
-    memberSpy.getById.and.returnValue(of({ id: 'm1', name: 'Alice', email: 'a@test.com', role: 'Member', squadId: '', chapterId: '' } as any));
+    memberSpy.getById.and.returnValue(of({ id: 'm1', name: 'Alice', email: 'a@test.com', role: 'Member', squadId: '' } as any));
     squadSpy.getAll.and.returnValue(of([]));
     apiSpy.get.and.returnValue(of([]));
   });
@@ -84,7 +84,7 @@ describe('MemberFormComponent', () => {
     const c = fixture.componentInstance;
     const router = TestBed.inject(Router);
     spyOn(router, 'navigate');
-    c.form.setValue({ name: 'Bob', email: 'bob@test.com', password: 'pass1234', role: 'Member', squadId: '', chapterId: '' });
+    c.form.setValue({ name: 'Bob', email: 'bob@test.com', password: 'pass1234', role: 'Member', squadId: '' });
     await c.submit();
     expect(memberSpy.create).toHaveBeenCalled();
     expect(router.navigate).toHaveBeenCalledWith(['/admin/members']);

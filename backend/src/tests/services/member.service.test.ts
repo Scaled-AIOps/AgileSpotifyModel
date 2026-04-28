@@ -32,8 +32,8 @@ beforeEach(() => {
   (redis.pipeline as any).mockReturnValue(mockPipeline);
 });
 
-const baseMember = { name: 'Alice', email: 'alice@example.com', role: 'Member' as const, avatarUrl: '', squadId: 'sq-1', chapterId: 'ch-1' };
-const storedMember = { id: 'gen-id', name: 'Alice', email: 'alice@example.com', role: 'Member', avatarUrl: '', squadId: 'sq-1', squadRole: '', chapterId: 'ch-1' };
+const baseMember = { name: 'Alice', email: 'alice@example.com', role: 'Member' as const, avatarUrl: '', squadId: 'sq-1' };
+const storedMember = { id: 'gen-id', name: 'Alice', email: 'alice@example.com', role: 'Member', avatarUrl: '', squadId: 'sq-1', squadRole: '' };
 
 describe('create', () => {
   beforeEach(() => { (redis.get as any).mockResolvedValue(null); });
@@ -103,7 +103,6 @@ describe('update', () => {
 describe('remove', () => {
   it('removes member and cleans up related sets', async () => {
     (redis.hgetall as any).mockResolvedValue(storedMember);
-    (redis.smembers as any).mockResolvedValue([]); // no guilds
     (redis.get as any).mockResolvedValue(null); // no user record
     await remove('gen-id');
     expect(mockPipeline.del).toHaveBeenCalledWith('member:gen-id');
@@ -117,7 +116,6 @@ describe('remove', () => {
 
   it('removes user auth record when user exists', async () => {
     (redis.hgetall as any).mockResolvedValue(storedMember);
-    (redis.smembers as any).mockResolvedValue([]);
     (redis.get as any).mockResolvedValue('user-id-1');
     await remove('gen-id');
     expect(mockPipeline.del).toHaveBeenCalledWith('user:user-id-1');
@@ -125,12 +123,10 @@ describe('remove', () => {
 });
 
 describe('getAssignments', () => {
-  it('returns squad, chapter and guild assignments', async () => {
+  it('returns squad assignment', async () => {
     (redis.hgetall as any).mockResolvedValue(storedMember);
-    (redis.smembers as any).mockResolvedValue(['guild-1']);
     const result = await getAssignments('gen-id');
     expect(result.squadId).toBe('sq-1');
-    expect(result.guildIds).toContain('guild-1');
   });
 
   it('throws 404 when member not found', async () => {

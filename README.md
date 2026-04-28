@@ -1,6 +1,6 @@
 # Agile Spotify Model
 
-Management tool for organisations running the Spotify Agile Model. Covers the full entity hierarchy (Domains → Sub-Domains → Tribes → Squads / Chapters / Guilds / Members), application health monitoring, and admin headcount management. Sprint and backlog tracking is delegated to Jira; this app links out to it.
+Management tool for organisations running the Spotify Agile Model. Covers the entity hierarchy (Domains → Sub-Domains → Tribes → Squads → Members), application health monitoring, and admin headcount management. Sprint and backlog tracking is delegated to Jira; this app links out to it.
 
 ## Stack
 
@@ -43,7 +43,7 @@ cd backend
 npm run seed                    # creates 27 demo users + populates the org
 ```
 
-Demo data: 27 users · 4 domains · 15 sub-domains · 8 tribes · 16 squads · 6 chapters · 6 guilds · ~50 applications
+Demo data: 27 users · 4 domains · 15 sub-domains · 8 tribes · 16 squads · ~50 applications
 
 Default login: **admin@example.com / Admin1234!**
 
@@ -144,7 +144,7 @@ The role hierarchy used by `authorize()`:
 | `TribeLead` | 3 | Can create squads / apps, modify squads in own tribe |
 | `PO` | 2 | Can update own squad |
 | `ReleaseManager` | 2 | Can record deploys |
-| `Member` | 1 | Read-only, plus self-join/leave guilds, squad-role updates |
+| `Member` | 1 | Read-only, plus squad-role updates |
 
 `authorize('TribeLead')` admits any role with rank ≥ 3.
 
@@ -251,7 +251,7 @@ AgileSpotifyModel/
             ├── auth/          login page, OAuth callback
             ├── dashboard/     role-aware fleet/tribe/squad health
             ├── apps/          application list (CSV/JSON/YAML export), detail, registration form, infra clusters
-            ├── org-directory/ D3 collapsible tree, domain/tribe/squad/chapter/guild views
+            ├── org-directory/ D3 collapsible tree, domain/tribe/squad views
             └── admin/         member CRUD, headcount chart, feature flags
 ```
 

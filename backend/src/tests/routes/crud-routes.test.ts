@@ -1,5 +1,5 @@
 /**
- * Route-level integration tests for domain, tribe, chapter, guild,
+ * Route-level integration tests for domain, tribe,
  * member, subdomain, infra, and org routes.
  * All services are mocked; only the HTTP layer is exercised.
  */
@@ -29,31 +29,7 @@ vi.mock('../../services/tribe.service', () => ({
   update:     vi.fn(),
   remove:     vi.fn(),
   getSquads:  vi.fn().mockResolvedValue([]),
-  getChapters:vi.fn().mockResolvedValue([]),
   assignLead: vi.fn(),
-}));
-
-vi.mock('../../services/chapter.service', () => ({
-  findAll:     vi.fn().mockResolvedValue([]),
-  findById:    vi.fn(),
-  create:      vi.fn(),
-  update:      vi.fn(),
-  remove:      vi.fn(),
-  getMembers:  vi.fn().mockResolvedValue([]),
-  addMember:   vi.fn(),
-  removeMember:vi.fn(),
-  assignLead:  vi.fn(),
-}));
-
-vi.mock('../../services/guild.service', () => ({
-  findAll:     vi.fn().mockResolvedValue([]),
-  findById:    vi.fn(),
-  create:      vi.fn(),
-  update:      vi.fn(),
-  remove:      vi.fn(),
-  getMembers:  vi.fn().mockResolvedValue([]),
-  addMember:   vi.fn(),
-  removeMember:vi.fn(),
 }));
 
 vi.mock('../../services/member.service', () => ({
@@ -92,8 +68,6 @@ vi.mock('../../config/redis', () => ({
 
 import * as domainSvc    from '../../services/domain.service';
 import * as tribeSvc     from '../../services/tribe.service';
-import * as chapterSvc   from '../../services/chapter.service';
-import * as guildSvc     from '../../services/guild.service';
 import * as memberSvc    from '../../services/member.service';
 import * as subdomainSvc from '../../services/subdomain.service';
 import * as infraSvc     from '../../services/infra.service';
@@ -229,11 +203,6 @@ describe('tribe routes', () => {
     expect(res.status).toBe(200);
   });
 
-  it('GET /tribes/:id/chapters returns chapter ids', async () => {
-    const res = await request(app).get('/api/v1/tribes/t-1/chapters').set('Authorization', `Bearer ${tok()}`);
-    expect(res.status).toBe(200);
-  });
-
   it('PATCH /tribes/:id/lead assigns lead (Admin)', async () => {
     (tribeSvc.assignLead as any).mockResolvedValue({ ...tribe, leadMemberId: '00000000-0000-0000-0000-000000000001' });
     const res = await request(app).patch('/api/v1/tribes/t-1/lead').set('Authorization', `Bearer ${tok('Admin')}`).send({ leadMemberId: '00000000-0000-0000-0000-000000000001' });
@@ -241,136 +210,10 @@ describe('tribe routes', () => {
   });
 });
 
-// ── Chapter routes ────────────────────────────────────────────────────────────
-
-describe('chapter routes', () => {
-  const chapter = { id: 'ch-1', name: 'Frontend', discipline: 'Frontend', tribeId: 't-1', leadMemberId: '', createdAt: '', updatedAt: '' };
-
-  it('GET /chapters returns list', async () => {
-    (chapterSvc.findAll as any).mockResolvedValue([chapter]);
-    const res = await request(app).get('/api/v1/chapters').set('Authorization', `Bearer ${tok()}`);
-    expect(res.status).toBe(200);
-  });
-
-  it('POST /chapters creates chapter (TribeLead)', async () => {
-    (chapterSvc.create as any).mockResolvedValue(chapter);
-    const res = await request(app).post('/api/v1/chapters').set('Authorization', `Bearer ${tok('TribeLead')}`).send({ name: 'Frontend', tribeId: '00000000-0000-0000-0000-000000000001' });
-    expect(res.status).toBe(201);
-  });
-
-  it('GET /chapters/:id returns chapter', async () => {
-    (chapterSvc.findById as any).mockResolvedValue(chapter);
-    const res = await request(app).get('/api/v1/chapters/ch-1').set('Authorization', `Bearer ${tok()}`);
-    expect(res.status).toBe(200);
-  });
-
-  it('GET /chapters/:id returns 404', async () => {
-    (chapterSvc.findById as any).mockResolvedValue(null);
-    const res = await request(app).get('/api/v1/chapters/missing').set('Authorization', `Bearer ${tok()}`);
-    expect(res.status).toBe(404);
-  });
-
-  it('PATCH /chapters/:id updates chapter', async () => {
-    (chapterSvc.update as any).mockResolvedValue({ ...chapter, name: 'Backend' });
-    const res = await request(app).patch('/api/v1/chapters/ch-1').set('Authorization', `Bearer ${tok('TribeLead')}`).send({ name: 'Backend' });
-    expect(res.status).toBe(200);
-  });
-
-  it('DELETE /chapters/:id deletes chapter (Admin)', async () => {
-    (chapterSvc.remove as any).mockResolvedValue(undefined);
-    const res = await request(app).delete('/api/v1/chapters/ch-1').set('Authorization', `Bearer ${tok('Admin')}`);
-    expect(res.status).toBe(204);
-  });
-
-  it('GET /chapters/:id/members returns member ids', async () => {
-    (chapterSvc.getMembers as any).mockResolvedValue(['m-1']);
-    const res = await request(app).get('/api/v1/chapters/ch-1/members').set('Authorization', `Bearer ${tok()}`);
-    expect(res.status).toBe(200);
-  });
-
-  it('POST /chapters/:id/members/:mid adds member', async () => {
-    (chapterSvc.addMember as any).mockResolvedValue(undefined);
-    const res = await request(app).post('/api/v1/chapters/ch-1/members/m-1').set('Authorization', `Bearer ${tok('TribeLead')}`);
-    expect(res.status).toBe(204);
-  });
-
-  it('DELETE /chapters/:id/members/:mid removes member', async () => {
-    (chapterSvc.removeMember as any).mockResolvedValue(undefined);
-    const res = await request(app).delete('/api/v1/chapters/ch-1/members/m-1').set('Authorization', `Bearer ${tok('TribeLead')}`);
-    expect(res.status).toBe(204);
-  });
-
-  it('PATCH /chapters/:id/lead assigns lead', async () => {
-    (chapterSvc.assignLead as any).mockResolvedValue({ ...chapter, leadMemberId: '00000000-0000-0000-0000-000000000001' });
-    const res = await request(app).patch('/api/v1/chapters/ch-1/lead').set('Authorization', `Bearer ${tok('TribeLead')}`).send({ leadMemberId: '00000000-0000-0000-0000-000000000001' });
-    expect(res.status).toBe(200);
-  });
-});
-
-// ── Guild routes ──────────────────────────────────────────────────────────────
-
-describe('guild routes', () => {
-  const guild = { id: 'g-1', name: 'Platform Guild', description: '', ownerMemberId: 'm-1' };
-
-  it('GET /guilds returns list', async () => {
-    (guildSvc.findAll as any).mockResolvedValue([guild]);
-    const res = await request(app).get('/api/v1/guilds').set('Authorization', `Bearer ${tok()}`);
-    expect(res.status).toBe(200);
-  });
-
-  it('POST /guilds creates guild', async () => {
-    (guildSvc.create as any).mockResolvedValue(guild);
-    const res = await request(app).post('/api/v1/guilds').set('Authorization', `Bearer ${tok('TribeLead')}`).send({ name: 'Platform Guild' });
-    expect(res.status).toBe(201);
-  });
-
-  it('GET /guilds/:id returns guild', async () => {
-    (guildSvc.findById as any).mockResolvedValue(guild);
-    const res = await request(app).get('/api/v1/guilds/g-1').set('Authorization', `Bearer ${tok()}`);
-    expect(res.status).toBe(200);
-  });
-
-  it('GET /guilds/:id returns 404', async () => {
-    (guildSvc.findById as any).mockResolvedValue(null);
-    const res = await request(app).get('/api/v1/guilds/missing').set('Authorization', `Bearer ${tok()}`);
-    expect(res.status).toBe(404);
-  });
-
-  it('PATCH /guilds/:id updates guild', async () => {
-    (guildSvc.update as any).mockResolvedValue({ ...guild, name: 'Updated' });
-    const res = await request(app).patch('/api/v1/guilds/g-1').set('Authorization', `Bearer ${tok('TribeLead')}`).send({ name: 'Updated' });
-    expect(res.status).toBe(200);
-  });
-
-  it('DELETE /guilds/:id deletes guild (Admin)', async () => {
-    (guildSvc.remove as any).mockResolvedValue(undefined);
-    const res = await request(app).delete('/api/v1/guilds/g-1').set('Authorization', `Bearer ${tok('Admin')}`);
-    expect(res.status).toBe(204);
-  });
-
-  it('GET /guilds/:id/members returns member ids', async () => {
-    (guildSvc.getMembers as any).mockResolvedValue(['m-1']);
-    const res = await request(app).get('/api/v1/guilds/g-1/members').set('Authorization', `Bearer ${tok()}`);
-    expect(res.status).toBe(200);
-  });
-
-  it('POST /guilds/:id/members/:mid adds member', async () => {
-    (guildSvc.addMember as any).mockResolvedValue(undefined);
-    const res = await request(app).post('/api/v1/guilds/g-1/members/m-1').set('Authorization', `Bearer ${tok()}`);
-    expect(res.status).toBe(204);
-  });
-
-  it('DELETE /guilds/:id/members/:mid removes member', async () => {
-    (guildSvc.removeMember as any).mockResolvedValue(undefined);
-    const res = await request(app).delete('/api/v1/guilds/g-1/members/m-1').set('Authorization', `Bearer ${tok()}`);
-    expect(res.status).toBe(204);
-  });
-});
-
 // ── Member routes ─────────────────────────────────────────────────────────────
 
 describe('member routes', () => {
-  const member = { id: 'm-1', name: 'Alice', email: 'alice@example.com', role: 'Member', squadId: 'sq-1', chapterId: 'ch-1' };
+  const member = { id: 'm-1', name: 'Alice', email: 'alice@example.com', role: 'Member', squadId: 'sq-1' };
 
   it('GET /members returns list', async () => {
     (memberSvc.findAll as any).mockResolvedValue([member]);
@@ -414,7 +257,7 @@ describe('member routes', () => {
   });
 
   it('GET /members/:id/assignments returns assignments', async () => {
-    (memberSvc.getAssignments as any).mockResolvedValue({ squadId: 'sq-1', chapterId: 'ch-1', guildIds: [] });
+    (memberSvc.getAssignments as any).mockResolvedValue({ squadId: 'sq-1' });
     const res = await request(app).get('/api/v1/members/m-1/assignments').set('Authorization', `Bearer ${tok()}`);
     expect(res.status).toBe(200);
   });

@@ -1,6 +1,6 @@
 /**
  * Purpose: Tribe detail page.
- * Usage:   Routed at /org/tribes/:id. Shows long `tribeName` with short `name` badge, description, link grid, release manager / agile coach, and the child squads + chapters cards.
+ * Usage:   Routed at /org/tribes/:id. Shows long `tribeName` with short `name` badge, description, link grid, release manager / agile coach, and the child squad cards.
  * Goal:    Drill into a single tribe.
  * ToDo:    Same — link arrays are read-only on this page.
  */
@@ -10,7 +10,7 @@ import { firstValueFrom } from 'rxjs';
 import { TribeApi } from '../../../core/api/tribe.api';
 import { ApiService } from '../../../core/api/api.service';
 import { LinkListComponent } from '../../../shared/link-list/link-list.component';
-import type { Tribe, Squad, Chapter } from '../../../core/models/index';
+import type { Tribe, Squad } from '../../../core/models/index';
 
 @Component({
   selector: 'app-tribe-detail',
@@ -73,24 +73,6 @@ import type { Tribe, Squad, Chapter } from '../../../core/models/index';
         }
         @empty { <p style="color:var(--text-muted)">No squads in this tribe.</p> }
       </div>
-
-      <hr style="border:none;border-top:1px solid var(--border);margin:1.5rem 0">
-
-      <h3>Chapters ({{ chapters.length }})</h3>
-      <div class="card-grid">
-        @for (ch of chapters; track ch.id) {
-          <div class="card">
-            <div class="card-body">
-              <div style="font-weight:600;margin-bottom:0.25rem">{{ ch.name }}</div>
-              <div style="color:var(--text-muted);font-size:0.85rem;margin-bottom:0.75rem">{{ ch.discipline }}</div>
-            </div>
-            <div class="card-footer-row">
-              <a class="btn btn-primary btn-sm" [routerLink]="['/org/chapters', ch.id]">View Chapter</a>
-            </div>
-          </div>
-        }
-        @empty { <p style="color:var(--text-muted)">No chapters in this tribe.</p> }
-      </div>
     }
   `,
   styles: [`
@@ -109,18 +91,13 @@ export class TribeDetailComponent implements OnInit {
 
   tribe: Tribe | null = null;
   squads: Squad[] = [];
-  chapters: Chapter[] = [];
   loading = true;
 
   async ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id')!;
     this.tribe = await firstValueFrom(this.tribeApi.getById(id));
-    const [squadIds, chapterIds] = await Promise.all([
-      firstValueFrom(this.tribeApi.getSquads(id)),
-      firstValueFrom(this.tribeApi.getChapters(id)),
-    ]);
+    const squadIds = await firstValueFrom(this.tribeApi.getSquads(id));
     this.squads = await Promise.all(squadIds.map((sid: string) => firstValueFrom(this.api.get<Squad>(`/squads/${sid}`))));
-    this.chapters = await Promise.all(chapterIds.map((cid: string) => firstValueFrom(this.api.get<Chapter>(`/chapters/${cid}`))));
     this.loading = false;
   }
 
