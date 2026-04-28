@@ -99,7 +99,7 @@ const PAGE_SIZES = [10, 25, 50, 100];
           <!-- Column chooser toggle -->
           <div class="col-chooser-wrap" (click)="$event.stopPropagation()">
             <button class="btn btn-ghost btn-sm col-chooser-btn"
-                    (click)="colMenuOpen = !colMenuOpen">
+                    (click)="colMenuOpen = !colMenuOpen; exportMenuOpen = false">
               ⊞ Columns
             </button>
             @if (colMenuOpen) {
@@ -117,7 +117,7 @@ const PAGE_SIZES = [10, 25, 50, 100];
 
           <!-- Export dropdown -->
           <div class="col-chooser-wrap" (click)="$event.stopPropagation()">
-            <button class="btn btn-ghost btn-sm" (click)="exportMenuOpen = !exportMenuOpen">
+            <button class="btn btn-ghost btn-sm" (click)="exportMenuOpen = !exportMenuOpen; colMenuOpen = false">
               ↓ Export
             </button>
             @if (exportMenuOpen) {

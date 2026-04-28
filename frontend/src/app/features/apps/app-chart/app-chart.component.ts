@@ -148,7 +148,7 @@ export class AppChartComponent implements AfterViewInit, OnChanges, OnDestroy {
     const container = this.containerRef.nativeElement;
     d3.select(container).selectAll('*').remove();
 
-    const margin = { top: 20, right: 200, bottom: 20, left: 80 };
+    const margin = { top: 20, right: 200, bottom: 20, left: 130 };
     const width  = container.clientWidth || 900;
     const treeData = this.buildTree();
     const root = d3.hierarchy<ChartNode>(treeData);
