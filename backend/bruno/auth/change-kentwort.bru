@@ -1,0 +1,22 @@
+meta {
+  name: Change Kentwort
+  type: http
+  seq: 6
+}
+
+patch {
+  url: {{baseUrl}}/api/v1/auth/me/kentwort
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "currentKentwort": "Admin1234!",
+    "newKentwort": "NewKentwort123!"
+  }
+}

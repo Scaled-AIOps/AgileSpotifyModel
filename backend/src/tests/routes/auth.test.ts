@@ -10,7 +10,7 @@ vi.mock('../../services/auth.service', () => ({
   refresh:        vi.fn(),
   logout:         vi.fn(),
   getMe:          vi.fn(),
-  changePasscode: vi.fn(),
+  changeKentwort: vi.fn(),
   loginByEmail:   vi.fn(),
 }));
 
@@ -37,7 +37,7 @@ describe('POST /api/v1/auth/register', () => {
     const res = await request(app)
       .post('/api/v1/auth/register')
       .set('Authorization', `Bearer ${adminToken()}`)
-      .send({ email: 'new@example.com', passcode: 'Password1!', name: 'New User', role: 'Member' });
+      .send({ email: 'new@example.com', kentwort: 'Password1!', name: 'New User', role: 'Member' });
 
     expect(res.status).toBe(201);
     expect(res.body.accessToken).toBe('mock-access-token');
@@ -47,7 +47,7 @@ describe('POST /api/v1/auth/register', () => {
     const res = await request(app)
       .post('/api/v1/auth/register')
       .set('Authorization', `Bearer ${memberToken()}`)
-      .send({ email: 'new@example.com', passcode: 'Password1!', name: 'New', role: 'Member' });
+      .send({ email: 'new@example.com', kentwort: 'Password1!', name: 'New', role: 'Member' });
     expect(res.status).toBe(403);
   });
 
@@ -70,7 +70,7 @@ describe('POST /api/v1/auth/login', () => {
     (authService.login as any).mockResolvedValue(mockResult);
     const res = await request(app)
       .post('/api/v1/auth/login')
-      .send({ email: 'test@example.com', passcode: 'Password1!' });
+      .send({ email: 'test@example.com', kentwort: 'Password1!' });
     expect(res.status).toBe(200);
     expect(res.body.accessToken).toBe('mock-access-token');
   });
@@ -81,7 +81,7 @@ describe('POST /api/v1/auth/login', () => {
     (authService.login as any).mockRejectedValue(err);
     const res = await request(app)
       .post('/api/v1/auth/login')
-      .send({ email: 'x@x.com', passcode: 'wrong' });
+      .send({ email: 'x@x.com', kentwort: 'wrong' });
     expect(res.status).toBe(401);
   });
 
@@ -142,19 +142,19 @@ describe('GET /api/v1/auth/me', () => {
   });
 });
 
-describe('PATCH /api/v1/auth/me/passcode', () => {
-  it('changes passcode successfully', async () => {
-    (authService.changePasscode as any).mockResolvedValue(undefined);
+describe('PATCH /api/v1/auth/me/kentwort', () => {
+  it('changes kentwort successfully', async () => {
+    (authService.changeKentwort as any).mockResolvedValue(undefined);
     const res = await request(app)
-      .patch('/api/v1/auth/me/passcode')
+      .patch('/api/v1/auth/me/kentwort')
       .set('Authorization', `Bearer ${memberToken()}`)
-      .send({ currentPasscode: 'OldPass1!', newPasscode: 'NewPass1!' });
+      .send({ currentKentwort: 'OldPass1!', newKentwort: 'NewPass1!' });
     expect(res.status).toBe(200);
   });
 
   it('returns 400 on validation failure', async () => {
     const res = await request(app)
-      .patch('/api/v1/auth/me/passcode')
+      .patch('/api/v1/auth/me/kentwort')
       .set('Authorization', `Bearer ${memberToken()}`)
       .send({});
     expect(res.status).toBe(400);

@@ -48,8 +48,8 @@ import type { Member, Squad } from '../../../core/models/index';
             </div>
             @if (!isEdit) {
               <div class="form-field">
-                <label>Passcode</label>
-                <input class="value-input" [attr.type]="maskedType" formControlName="passcode" placeholder="Min 8 characters" [attr.autocomplete]="autocompleteNew" />
+                <label>Kentwort</label>
+                <input class="value-input" [attr.type]="maskedType" formControlName="kentwort" placeholder="Min 8 characters" [attr.autocomplete]="autocompleteNew" />
               </div>
             }
             <div class="form-field">
@@ -120,7 +120,7 @@ export class MemberFormComponent implements OnInit {
   form = this.fb.group({
     name: ['', Validators.required],
     email: ['', [Validators.required, Validators.email]],
-    passcode: [''],
+    kentwort: [''],
     role: ['Member', Validators.required],
     squadId: [''],
   });
@@ -130,7 +130,7 @@ export class MemberFormComponent implements OnInit {
     this.isEdit = !!this.memberId;
 
     if (!this.isEdit) {
-      this.form.get('passcode')!.setValidators([Validators.required, Validators.minLength(8)]);
+      this.form.get('kentwort')!.setValidators([Validators.required, Validators.minLength(8)]);
     }
 
     this.squads = await firstValueFrom(this.squadApi.getAll());
@@ -156,11 +156,11 @@ export class MemberFormComponent implements OnInit {
     this.error = '';
     try {
       if (this.isEdit) {
-        const { passcode: _pc, ...updateData } = this.form.value;
+        const { kentwort: _pc, ...updateData } = this.form.value;
         void _pc;
         await firstValueFrom(this.memberApi.update(this.memberId, updateData as Partial<Member>));
       } else {
-        await firstValueFrom(this.memberApi.create(this.form.value as Member & { passcode: string }));
+        await firstValueFrom(this.memberApi.create(this.form.value as Member & { kentwort: string }));
       }
       this.router.navigate(['/admin/members']);
     } catch (err: unknown) {

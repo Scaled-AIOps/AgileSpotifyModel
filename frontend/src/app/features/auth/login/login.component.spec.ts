@@ -48,13 +48,13 @@ describe('LoginComponent', () => {
     expect(component.form.invalid).toBeTrue();
   });
 
-  it('form is valid with email and passcode', () => {
-    component.form.setValue({ email: 'admin@example.com', passcode: 'pass123' });
+  it('form is valid with email and kentwort', () => {
+    component.form.setValue({ email: 'admin@example.com', kentwort: 'pass123' });
     expect(component.form.valid).toBeTrue();
   });
 
   it('form is invalid with bad email', () => {
-    component.form.setValue({ email: 'not-an-email', passcode: 'pass123' });
+    component.form.setValue({ email: 'not-an-email', kentwort: 'pass123' });
     expect(component.form.invalid).toBeTrue();
   });
 
@@ -72,7 +72,7 @@ describe('LoginComponent', () => {
 
     it('calls auth.login and navigates on success', async () => {
       authSpy.login.and.resolveTo();
-      component.form.setValue({ email: 'admin@example.com', passcode: 'pass123' });
+      component.form.setValue({ email: 'admin@example.com', kentwort: 'pass123' });
       await component.submit();
       expect(authSpy.login).toHaveBeenCalledWith('admin@example.com', 'pass123');
       expect(routerSpy.navigate).toHaveBeenCalledWith(['/apps']);
@@ -81,7 +81,7 @@ describe('LoginComponent', () => {
 
     it('sets errorMsg on login failure', async () => {
       authSpy.login.and.rejectWith({ error: { error: 'Invalid credentials' } });
-      component.form.setValue({ email: 'bad@example.com', passcode: 'wrong' });
+      component.form.setValue({ email: 'bad@example.com', kentwort: 'wrong' });
       await component.submit();
       expect(component.errorMsg).toBe('Invalid credentials');
       expect(component.loading).toBeFalse();
@@ -89,7 +89,7 @@ describe('LoginComponent', () => {
 
     it('uses fallback error message when error has no message', async () => {
       authSpy.login.and.rejectWith({});
-      component.form.setValue({ email: 'bad@example.com', passcode: 'wrong' });
+      component.form.setValue({ email: 'bad@example.com', kentwort: 'wrong' });
       await component.submit();
       expect(component.errorMsg).toBe('Login failed');
     });

@@ -1,5 +1,5 @@
 /**
- * Purpose: Authentication service — login, refresh, register, passcode change.
+ * Purpose: Authentication service — login, refresh, register, kentwort change.
  * Usage:   Called from auth.routes.ts. Persists users in Redis (`user:{id}`, `user:email:{email}`) and refresh tokens with TTL (`refresh:{userId}`).
  * Goal:    Centralise credential handling, JWT signing, and refresh-token rotation.
  * ToDo:    Add audit logging for failed login attempts and refresh-token rotation events.
@@ -7,7 +7,7 @@
 import jwt from 'jsonwebtoken';
 import { env } from '../config/env';
 import redis from '../config/redis';
-import { hashPasscode, comparePasscode } from '../lib/crypto';
+import { hashKentwort, compareKentwort } from '../lib/crypto';
 import { generateId } from '../lib/id';
 import { createError } from '../middleware/errorHandler';
 import type { User, Role } from '../models/index';
@@ -22,17 +22,17 @@ function signRefresh(userId: string): string {
   return jwt.sign({ userId }, env.JWT_REFRESH_KEY, { expiresIn: env.JWT_REFRESH_EXPIRES_IN } as jwt.SignOptions);
 }
 
-export async function register(email: string, passcode: string, name: string, role: Role): Promise<{ accessToken: string; refreshToken: string; user: Omit<User, 'passcodeHash'> }> {
+export async function register(email: string, kentwort: string, name: string, role: Role): Promise<{ accessToken: string; refreshToken: string; user: Omit<User, 'kentwortHash'> }> {
   const existingId = await redis.get(`user:email:${email}`);
   if (existingId) throw createError('Email already registered', 409);
 
   const id = generateId();
   const memberId = generateId();
-  const passcodeHash = await hashPasscode(passcode);
+  const kentwortHash = await hashKentwort(kentwort);
   const now = new Date().toISOString();
 
   const pipeline = redis.pipeline();
-  pipeline.hset(`user:${id}`, { id, email, passcodeHash, role, memberId, createdAt: now });
+  pipeline.hset(`user:${id}`, { id, email, kentwortHash, role, memberId, createdAt: now });
   pipeline.set(`user:email:${email}`, id);
   pipeline.sadd('users:all', id);
   // Create corresponding member record
@@ -54,14 +54,14 @@ export async function register(email: string, passcode: string, name: string, ro
   };
 }
 
-export async function login(email: string, passcode: string): Promise<{ accessToken: string; refreshToken: string; user: Omit<User, 'passcodeHash'> }> {
+export async function login(email: string, kentwort: string): Promise<{ accessToken: string; refreshToken: string; user: Omit<User, 'kentwortHash'> }> {
   const userId = await redis.get(`user:email:${email}`);
   if (!userId) throw createError('Invalid credentials', 401);
 
   const data = await redis.hgetall(`user:${userId}`);
-  if (!data?.passcodeHash) throw createError('Invalid credentials', 401);
+  if (!data?.kentwortHash) throw createError('Invalid credentials', 401);
 
-  const valid = await comparePasscode(passcode, data.passcodeHash);
+  const valid = await compareKentwort(kentwort, data.kentwortHash);
   if (!valid) throw createError('Invalid credentials', 401);
 
   const role = data.role as Role;
@@ -98,13 +98,13 @@ export async function logout(userId: string): Promise<void> {
   await redis.del(`refresh:${userId}`);
 }
 
-export async function getMe(userId: string): Promise<Omit<User, 'passcodeHash'> | null> {
+export async function getMe(userId: string): Promise<Omit<User, 'kentwortHash'> | null> {
   const data = await redis.hgetall(`user:${userId}`);
   if (!data?.id) return null;
   return { id: data.id, email: data.email, role: data.role as Role, memberId: data.memberId, createdAt: data.createdAt };
 }
 
-export async function loginByEmail(email: string): Promise<{ accessToken: string; refreshToken: string; user: Omit<User, 'passcodeHash'> }> {
+export async function loginByEmail(email: string): Promise<{ accessToken: string; refreshToken: string; user: Omit<User, 'kentwortHash'> }> {
   const userId = await redis.get(`user:email:${email.toLowerCase()}`);
   if (!userId) throw createError('No account found for this email. Ask an admin to create one.', 401);
 
@@ -123,15 +123,15 @@ export async function loginByEmail(email: string): Promise<{ accessToken: string
   };
 }
 
-export async function changePasscode(userId: string, currentPasscode: string, newPasscode: string): Promise<void> {
+export async function changeKentwort(userId: string, currentKentwort: string, newKentwort: string): Promise<void> {
   const data = await redis.hgetall(`user:${userId}`);
-  if (!data?.passcodeHash) throw createError('User not found', 404);
+  if (!data?.kentwortHash) throw createError('User not found', 404);
 
-  const valid = await comparePasscode(currentPasscode, data.passcodeHash);
-  if (!valid) throw createError('Current passcode is incorrect', 400);
+  const valid = await compareKentwort(currentKentwort, data.kentwortHash);
+  if (!valid) throw createError('Current kentwort is incorrect', 400);
 
-  const newHash = await hashPasscode(newPasscode);
-  await redis.hset(`user:${userId}`, 'passcodeHash', newHash);
+  const newHash = await hashKentwort(newKentwort);
+  await redis.hset(`user:${userId}`, 'kentwortHash', newHash);
   // Invalidate all sessions
   await redis.del(`refresh:${userId}`);
 }

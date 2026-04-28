@@ -9,7 +9,7 @@ export type Role = 'Admin' | 'TribeLead' | 'PO' | 'AgileCoach' | 'ReleaseManager
 export interface User {
   id: string;
   email: string;
-  passcodeHash: string;
+  kentwortHash: string;
   role: Role;
   memberId: string;
   createdAt: string;

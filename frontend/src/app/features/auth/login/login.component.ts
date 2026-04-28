@@ -73,8 +73,8 @@ import { environment } from '../../../../environments/environment';
               <input class="value-input" type="email" formControlName="email" autocomplete="email" placeholder="you@example.com" />
             </label>
             <label class="field">
-              <span>Passcode</span>
-              <input class="value-input" [attr.type]="maskedType" formControlName="passcode" [attr.autocomplete]="autocompleteCurrent" placeholder="••••••••" />
+              <span>Kentwort</span>
+              <input class="value-input" [attr.type]="maskedType" formControlName="kentwort" [attr.autocomplete]="autocompleteCurrent" placeholder="••••••••" />
             </label>
 
             @if (errorMsg) {
@@ -135,7 +135,7 @@ export class LoginComponent implements OnInit {
 
   form = this.fb.group({
     email:    ['', [Validators.required, Validators.email]],
-    passcode: ['', Validators.required],
+    kentwort: ['', Validators.required],
   });
 
   loading  = false;
@@ -157,7 +157,7 @@ export class LoginComponent implements OnInit {
     this.loading  = true;
     this.errorMsg = '';
     try {
-      await this.auth.login(this.form.value.email!, this.form.value.passcode!);
+      await this.auth.login(this.form.value.email!, this.form.value.kentwort!);
       this.router.navigate(['/apps']);
     } catch (err: unknown) {
       this.errorMsg = (err as { error?: { error?: string } })?.error?.error ?? 'Login failed';

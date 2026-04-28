@@ -52,7 +52,7 @@ describe('AuthService', () => {
   describe('login', () => {
     it('sets currentUser and accessToken on success', async () => {
       const user = { id: 'u-1', email: 'admin@example.com', role: 'Admin' as const, memberId: 'm-1' };
-      const loginPromise = service.login('admin@example.com', 'passcode');
+      const loginPromise = service.login('admin@example.com', 'kentwort');
       const req = http.expectOne(`${API}/login`);
       expect(req.request.method).toBe('POST');
       req.flush({ accessToken: 'tok', user });

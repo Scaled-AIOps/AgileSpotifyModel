@@ -84,7 +84,7 @@ describe('MemberFormComponent', () => {
     const c = fixture.componentInstance;
     const router = TestBed.inject(Router);
     spyOn(router, 'navigate');
-    c.form.setValue({ name: 'Bob', email: 'bob@test.com', passcode: 'pass1234', role: 'Member', squadId: '' });
+    c.form.setValue({ name: 'Bob', email: 'bob@test.com', kentwort: 'pass1234', role: 'Member', squadId: '' });
     await c.submit();
     expect(memberSpy.create).toHaveBeenCalled();
     expect(router.navigate).toHaveBeenCalledWith(['/admin/members']);

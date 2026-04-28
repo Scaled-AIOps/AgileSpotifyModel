@@ -81,7 +81,7 @@ Copy `.env.example` to `backend/config/.env` and edit.
 
 | Variable | Default | Description |
 |---|---|---|
-| `AUTH_BASIC_ENABLED` | `true` | Enable email + passcode login |
+| `AUTH_BASIC_ENABLED` | `true` | Enable email + kentwort login |
 | `JIRA_ENABLED` | `false` | Enable Jira / Atlassian SSO |
 | `JIRA_CLIENT_ID` | — | Atlassian OAuth 2.0 client ID |
 | `JIRA_CLIENT_KEY` | — | Atlassian OAuth 2.0 confidential client credential |
@@ -158,7 +158,7 @@ The role hierarchy used by `authorize()`:
 | `POST` | `/auth/refresh` | Cookie | Exchange refresh cookie for new access token |
 | `POST` | `/auth/logout` | Bearer | Revoke refresh token |
 | `GET` | `/auth/me` | Bearer | Current user profile |
-| `PATCH` | `/auth/me/passcode` | Bearer | Change passcode |
+| `PATCH` | `/auth/me/kentwort` | Bearer | Change kentwort |
 | `GET` | `/auth/jira` | Public | Initiate Jira OAuth flow |
 | `GET` | `/auth/jira/callback` | Public | Jira OAuth callback |
 | `GET` | `/auth/microsoft` | Public | Initiate Microsoft OAuth flow |
@@ -170,7 +170,7 @@ The role hierarchy used by `authorize()`:
 # Login (basic)
 TOKEN=$(curl -s -X POST http://localhost:3000/api/v1/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"email":"admin@example.com","passcode":"Admin1234!"}' | jq -r .accessToken)
+  -d '{"email":"admin@example.com","kentwort":"Admin1234!"}' | jq -r .accessToken)
 
 # Full org tree
 curl -H "Authorization: Bearer $TOKEN" http://localhost:3000/api/v1/org/tree | jq
