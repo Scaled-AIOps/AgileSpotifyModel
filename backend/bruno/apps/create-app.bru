@@ -23,6 +23,28 @@ body:json {
     "tags": { "criticality": "high", "pillar": "commerce" },
     "platforms": {},
     "urls": {},
+    "ocp": {
+      "intPlatform": "backend-int-cluster",
+      "uatPlatform": "backend-uat-cluster",
+      "prdPlatform": "backend-prd-cluster",
+      "intUrl": "https://gw-int-my-service.intranet.example.com",
+      "uatUrl": "https://gw-uat-my-service.intranet.example.com",
+      "prdUrl": "https://gw-prd-my-service.intranet.example.com",
+      "buildChart": "ocp-node-build",
+      "chart": "ocp-node"
+    },
+    "gcp": {
+      "intPlatform": "backend-int-cluster",
+      "uatPlatform": "backend-uat-cluster",
+      "prdPlatform": "backend-prd-cluster",
+      "intUrl": "https://gw-int-my-service.gcp.example.com",
+      "uatUrl": "https://gw-uat-my-service.gcp.example.com",
+      "prdUrl": "https://gw-prd-my-service.gcp.example.com"
+    },
+    "probeHealth":    "/health",
+    "probeInfo":      "/info",
+    "probeLiveness":  "/health/liveness",
+    "probeReadiness": "/health/readiness",
     "jira": [
       { "url": "https://jira.example.com/projects/PAY", "description": "Main board" }
     ],

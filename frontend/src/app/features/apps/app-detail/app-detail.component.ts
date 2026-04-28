@@ -232,47 +232,59 @@ const ENVS = ['local', 'dev', 'int', 'uat', 'prd'] as const;
         </div>
       }
 
-      <!-- Platform deployments across envs -->
-      <h3 style="margin-top:1.5rem">Deployment Status</h3>
-      <div class="env-grid">
-        @for (env of envs; track env) {
-          @if (hasPlatform(env) || getLatest(env)) {
-            <div class="env-card" [class.has-deploy]="!!getLatest(env)">
-              <div class="env-tag">{{ env }}</div>
-              @if (getPlatform(env)) {
-                <div class="env-platform mono">{{ getPlatform(env) }}</div>
-              }
-              @if (getUrl(env)) {
-                <div class="env-url mono">{{ getUrl(env) }}</div>
-              }
-              @if (getLatest(env); as d) {
-                <div class="deploy-block">
-                  <div class="deploy-row">
-                    <span class="badge {{ deployClass(d.state) }}">{{ d.state }}</span>
-                    <span class="deploy-version">v{{ d.version }}</span>
-                  </div>
-                  <div class="deploy-meta">{{ d.deployedBy }} · {{ fmtDate(d.deployedAt) }}</div>
-                  @if (d.notes) { <div class="deploy-notes">{{ d.notes }}</div> }
-                  @if (d.changeRequest) { <div class="deploy-meta">CR: {{ d.changeRequest }}</div> }
-                  @if (d.javaVersion) {
-                    <div class="deploy-meta">
-                      Java {{ d.javaVersion }}
-                      @if (d.javaComplianceStatus) {
-                        · <span class="badge {{ javaClass(d.javaComplianceStatus) }}">{{ d.javaComplianceStatus }}</span>
+      <!-- Platform deployments across envs (per cloud) -->
+      @for (cloud of clouds; track cloud.key) {
+        @if (cloudHasAny(cloud.key)) {
+          <div class="cloud-header">
+            <h3 style="margin-top:1.5rem">{{ cloud.label }} Deployments</h3>
+            @if (chartFor(cloud.key); as ch) {
+              <span class="chart-chip mono">chart: {{ ch }}</span>
+            }
+            @if (buildChartFor(cloud.key); as bc) {
+              <span class="chart-chip mono">build: {{ bc }}</span>
+            }
+          </div>
+          <div class="env-grid">
+            @for (env of envs; track env) {
+              @if (hasPlatform(cloud.key, env) || (cloud.key === 'ocp' && getLatest(env))) {
+                <div class="env-card" [class.has-deploy]="cloud.key === 'ocp' && !!getLatest(env)">
+                  <div class="env-tag">{{ env }}</div>
+                  @if (getPlatform(cloud.key, env); as p) {
+                    <div class="env-platform mono">{{ p }}</div>
+                  }
+                  @if (getUrl(cloud.key, env); as u) {
+                    <a class="env-url mono" [href]="u" target="_blank" rel="noopener">{{ u }}</a>
+                  }
+                  @if (cloud.key === 'ocp' && getLatest(env); as d) {
+                    <div class="deploy-block">
+                      <div class="deploy-row">
+                        <span class="badge {{ deployClass(d.state) }}">{{ d.state }}</span>
+                        <span class="deploy-version">v{{ d.version }}</span>
+                      </div>
+                      <div class="deploy-meta">{{ d.deployedBy }} · {{ fmtDate(d.deployedAt) }}</div>
+                      @if (d.notes) { <div class="deploy-notes">{{ d.notes }}</div> }
+                      @if (d.changeRequest) { <div class="deploy-meta">CR: {{ d.changeRequest }}</div> }
+                      @if (d.javaVersion) {
+                        <div class="deploy-meta">
+                          Java {{ d.javaVersion }}
+                          @if (d.javaComplianceStatus) {
+                            · <span class="badge {{ javaClass(d.javaComplianceStatus) }}">{{ d.javaComplianceStatus }}</span>
+                          }
+                        </div>
+                      }
+                      @if (d.xray) {
+                        <a class="btn btn-ghost btn-sm" style="margin-top:6px" [href]="d.xray" target="_blank" rel="noopener">X-Ray ↗</a>
                       }
                     </div>
-                  }
-                  @if (d.xray) {
-                    <a class="btn btn-ghost btn-sm" style="margin-top:6px" [href]="d.xray" target="_blank" rel="noopener">X-Ray ↗</a>
+                  } @else if (cloud.key === 'ocp') {
+                    <div class="deploy-empty">Not deployed</div>
                   }
                 </div>
-              } @else {
-                <div class="deploy-empty">Not deployed</div>
               }
-            </div>
-          }
+            }
+          </div>
         }
-      </div>
+      }
 
       <!-- Full deploy history per env -->
       @for (env of envs; track env) {
@@ -364,6 +376,8 @@ const ENVS = ['local', 'dev', 'int', 'uat', 'prd'] as const;
     .edit-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 0.75rem; }
     .edit-field { display: flex; flex-direction: column; gap: 4px; span { font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); } }
 
+    .cloud-header { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .chart-chip { font-size: 0.7rem; padding: 2px 8px; border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text-muted); background: var(--surface-card); }
     .env-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin-top: 0.75rem; }
     .env-card { background: var(--surface-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; }
     .env-card.has-deploy { border-color: var(--blue-300); }
@@ -515,13 +529,37 @@ export class AppDetailComponent implements OnInit {
     }
   }
 
-  hasPlatform(env: string) {
-    const p = this.platforms;
-    return !!(p[`${env}Platform`] || p[`${env}Url`]);
+  readonly clouds: { key: 'ocp' | 'gcp'; label: string }[] = [
+    { key: 'ocp', label: 'OCP' },
+    { key: 'gcp', label: 'GCP' },
+  ];
+
+  cloudHasAny(cloud: 'ocp' | 'gcp'): boolean {
+    const block = this.app?.[cloud];
+    if (!block) return false;
+    for (const env of ENVS) {
+      if (this.hasPlatform(cloud, env)) return true;
+    }
+    return !!(block.buildChart || block.chart);
   }
 
-  getPlatform(env: string) { return this.platforms[`${env}Platform`] ?? ''; }
-  getUrl(env: string)      { return this.urls[`${env}Url`] ?? ''; }
+  hasPlatform(cloud: 'ocp' | 'gcp', env: string): boolean {
+    return !!(this.getPlatform(cloud, env) || this.getUrl(cloud, env));
+  }
+
+  getPlatform(cloud: 'ocp' | 'gcp', env: string): string {
+    const block = this.app?.[cloud] ?? {};
+    return (block as any)[`${env}Platform`] ?? this.platforms[`${env}Platform`] ?? '';
+  }
+
+  getUrl(cloud: 'ocp' | 'gcp', env: string): string {
+    const block = this.app?.[cloud] ?? {};
+    return (block as any)[`${env}Url`] ?? this.urls[`${env}Url`] ?? '';
+  }
+
+  chartFor(cloud: 'ocp' | 'gcp'): string { return this.app?.[cloud]?.chart ?? ''; }
+  buildChartFor(cloud: 'ocp' | 'gcp'): string { return this.app?.[cloud]?.buildChart ?? ''; }
+
   getLatest(env: string): AppDeployment | null { return this.app?.latestDeploys?.[env] ?? null; }
 
   changesOf(entry: AuditEntry): { field: string; from: string; to: string }[] {

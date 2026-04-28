@@ -18,6 +18,16 @@ body:json {
   {
     "status": "active",
     "description": "Updated description",
+    "ocp": {
+      "prdPlatform": "backend-prd-cluster",
+      "prdUrl": "https://gw-prd-my-service.intranet.example.com",
+      "buildChart": "ocp-node-build",
+      "chart": "ocp-node"
+    },
+    "gcp": {
+      "prdPlatform": "backend-prd-cluster",
+      "prdUrl": "https://gw-prd-my-service.gcp.example.com"
+    },
     "github": [
       { "url": "https://github.com/example/my-service", "description": "Production repo" }
     ]

@@ -205,20 +205,24 @@ describe('AppDetailComponent', () => {
       expect(component.saving).toBeFalse();
     });
 
-    it('hasPlatform returns true when platform exists', () => {
-      expect(component.hasPlatform('prod')).toBeTrue();
+    it('hasPlatform returns true when ocp.prdPlatform set on the app', () => {
+      component.app = { ...APP, ocp: { prdPlatform: 'eks-prd', prdUrl: 'https://app.io' } } as any;
+      expect(component.hasPlatform('ocp', 'prd')).toBeTrue();
     });
 
-    it('hasPlatform returns false when no platform', () => {
-      expect(component.hasPlatform('dev')).toBeFalse();
+    it('hasPlatform returns false when no platform set', () => {
+      component.app = { ...APP, ocp: {}, gcp: {} } as any;
+      expect(component.hasPlatform('ocp', 'dev')).toBeFalse();
     });
 
-    it('getPlatform returns platform name', () => {
-      expect(component.getPlatform('prod')).toBe('eks');
+    it('getPlatform reads from the cloud block', () => {
+      component.app = { ...APP, ocp: { prdPlatform: 'eks-prd' } } as any;
+      expect(component.getPlatform('ocp', 'prd')).toBe('eks-prd');
     });
 
-    it('getUrl returns url', () => {
-      expect(component.getUrl('prod')).toBe('https://app.io');
+    it('getUrl reads from the cloud block', () => {
+      component.app = { ...APP, gcp: { prdUrl: 'https://gcp.example.com' } } as any;
+      expect(component.getUrl('gcp', 'prd')).toBe('https://gcp.example.com');
     });
 
     it('getLatest returns latest deploy', () => {

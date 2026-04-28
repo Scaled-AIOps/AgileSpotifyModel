@@ -157,35 +157,16 @@ export async function seedFromYaml(): Promise<void> {
       if (appIds.has(a.appId)) { skipped++; continue; }
       const squad = await squadSvc.findByKey(a.squad);
       if (!squad) { console.warn(`[seed] app "${a.appId}": squad key "${a.squad}" not found`); skipped++; continue; }
-      // Flatten platform/url info from any of:
-      //   - the new nested `ocp:` block (preferred)
-      //   - the new nested `gcp:` block (fallback if ocp missing)
-      //   - the legacy flat *Platform / *Url fields on the app (back-compat)
-      // Per-env keys are namespaced: `ocp.int`, `gcp.uat`, etc., with the legacy
-      // flat keys preserved as bare `int`, `uat`, … so existing consumers still work.
+      // Build legacy `platforms` / `urls` flat maps from any top-level *Platform /
+      // *Url fields (back-compat for older YAML or API-created apps).
+      const ENVS = ['local', 'dev', 'int', 'uat', 'prd'] as const;
       const platforms: Record<string, string> = {};
       const urls:      Record<string, string> = {};
-      const ENVS = ['local', 'dev', 'int', 'uat', 'prd'] as const;
-      const cloudBlocks: Array<['ocp' | 'gcp', YamlPlatformBlock | undefined]> = [
-        ['ocp', a.ocp], ['gcp', a.gcp],
-      ];
-      for (const [cloud, block] of cloudBlocks) {
-        if (!block) continue;
-        for (const env of ENVS) {
-          const p = (block as any)[`${env}Platform`];
-          const u = (block as any)[`${env}Url`];
-          if (p) platforms[`${cloud}.${env}`] = p;
-          if (u) urls[`${cloud}.${env}`]      = u;
-        }
-        if (block.buildChart) platforms[`${cloud}.buildChart`] = block.buildChart;
-        if (block.chart)      platforms[`${cloud}.chart`]      = block.chart;
-      }
-      // Legacy flat fields → unprefixed keys
       for (const env of ENVS) {
         const p = (a as any)[`${env}Platform`];
         const u = (a as any)[`${env}Url`];
-        if (p && !platforms[env]) platforms[env] = p;
-        if (u && !urls[env])      urls[env]      = u;
+        if (p) platforms[env] = p;
+        if (u) urls[env]      = u;
       }
       const githubLinks: unknown = a.github ?? (a.gitRepo ? [a.gitRepo] : undefined);
       await appSvc.create({
@@ -193,6 +174,7 @@ export async function seedFromYaml(): Promise<void> {
         squadId: squad.id, squadKey: squad.key,
         status: a.status, tags: (a.tags as Record<string, string>) ?? {},
         platforms, urls,
+        ocp: a.ocp ?? {}, gcp: a.gcp ?? {},
         jira: a.jira, confluence: a.confluence, github: githubLinks, mailingList: a.mailingList,
         probeHealth: a.probeHealth, probeInfo: a.probeInfo,
         probeLiveness: a.probeLiveness, probeReadiness: a.probeReadiness,

@@ -141,6 +141,26 @@ export interface InfraCluster {
 
 export type AppStatus = 'active' | 'inactive' | 'marked-for-decommissioning' | 'failed';
 
+/**
+ * Per-cloud deployment block (mirrors the `ocp:` / `gcp:` shape in
+ * config/appinfo.yaml). Every field is optional so apps can register only
+ * the environments + clusters they actually use.
+ */
+export interface CloudPlatform {
+  localPlatform?: string;
+  devPlatform?:   string;
+  intPlatform?:   string;
+  uatPlatform?:   string;
+  prdPlatform?:   string;
+  localUrl?:      string;
+  devUrl?:        string;
+  intUrl?:        string;
+  uatUrl?:        string;
+  prdUrl?:        string;
+  buildChart?:    string;
+  chart?:         string;
+}
+
 export interface App {
   appId: string;
   description: string;
@@ -148,8 +168,13 @@ export interface App {
   squadKey: string;
   status: AppStatus;
   tags: string;
+  /** Legacy flat env→cluster map kept for back-compat with apps created via the API. */
   platforms: string;
+  /** Legacy flat env→URL map kept for back-compat. */
   urls: string;
+  /** New per-cloud deployment blocks (preferred). */
+  ocp: CloudPlatform;
+  gcp: CloudPlatform;
   jira: Link[];
   confluence: Link[];
   github: Link[];

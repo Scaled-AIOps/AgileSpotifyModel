@@ -178,14 +178,21 @@ curl -H "Authorization: Bearer $TOKEN" http://localhost:3000/api/v1/org/tree | j
 # All applications
 curl -H "Authorization: Bearer $TOKEN" http://localhost:3000/api/v1/apps | jq
 
-# Patch an app with multi-link arrays
+# Patch an app with multi-link arrays + per-cloud deployment blocks
 curl -X PATCH -H "Authorization: Bearer $TOKEN" -H 'Content-Type: application/json' \
   http://localhost:3000/api/v1/apps/auth-api -d '{
     "description": "Identity & SSO API",
-    "jira": [
-      { "url": "https://jira.example.com/projects/AUTH", "description": "Main board" },
-      { "url": "https://jira.example.com/projects/SEC",  "description": "Security" }
-    ],
+    "ocp": {
+      "intPlatform": "backend-int-cluster",
+      "intUrl":      "https://gw-int-auth-api.intranet.example.com",
+      "buildChart":  "ocp-node-build",
+      "chart":       "ocp-node"
+    },
+    "gcp": {
+      "intPlatform": "backend-int-cluster",
+      "intUrl":      "https://gw-int-auth-api.gcp.example.com"
+    },
+    "jira":   [{ "url": "https://jira.example.com/projects/AUTH", "description": "Main board" }],
     "github": [{ "url": "https://github.com/example/auth-api", "description": "" }]
   }' | jq
 ```

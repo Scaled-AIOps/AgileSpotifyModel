@@ -29,6 +29,21 @@ const safeUrl = z.string()
   .optional()
   .or(z.literal(''));
 
+const cloudPlatformSchema = z.object({
+  localPlatform: z.string().optional(),
+  devPlatform:   z.string().optional(),
+  intPlatform:   z.string().optional(),
+  uatPlatform:   z.string().optional(),
+  prdPlatform:   z.string().optional(),
+  localUrl:      safeUrl,
+  devUrl:        safeUrl,
+  intUrl:        safeUrl,
+  uatUrl:        safeUrl,
+  prdUrl:        safeUrl,
+  buildChart:    z.string().optional(),
+  chart:         z.string().optional(),
+}).strict().optional();
+
 async function resolveEditable(appSquadId: string, user: JwtPayload): Promise<boolean> {
   if (user.role === 'Admin' || user.role === 'AgileCoach') return true;
   if (!user.memberId) return false;
@@ -52,6 +67,8 @@ const createAppSchema = z.object({
   tags:                 z.record(z.string()).optional().default({}),
   platforms:            z.record(z.string()).optional().default({}),
   urls:                 z.record(z.string()).optional().default({}),
+  ocp:                  cloudPlatformSchema,
+  gcp:                  cloudPlatformSchema,
   javaVersion:          z.string().optional(),
   javaComplianceStatus: z.string().optional(),
   artifactoryUrl:       safeUrl,
@@ -102,6 +119,8 @@ router.post('/', authorize('TribeLead'), validate(createAppSchema), async (req, 
       tags:                 req.body.tags ?? {},
       platforms:            req.body.platforms ?? {},
       urls:                 req.body.urls ?? {},
+      ocp:                  req.body.ocp ?? {},
+      gcp:                  req.body.gcp ?? {},
       jira:                 req.body.jira,
       confluence:           req.body.confluence,
       github:               req.body.github,

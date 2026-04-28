@@ -7,7 +7,15 @@
 import redis from '../config/redis';
 import { createError } from '../middleware/errorHandler';
 import { coerceLinks, parseLinks, serialiseLinks } from '../lib/links';
-import type { App, AppStatus, Link } from '../models/index';
+import type { App, AppStatus, Link, CloudPlatform } from '../models/index';
+
+function safeParseCloud(raw: string | undefined): CloudPlatform {
+  if (!raw) return {};
+  try {
+    const v = JSON.parse(raw);
+    return v && typeof v === 'object' && !Array.isArray(v) ? v as CloudPlatform : {};
+  } catch { return {}; }
+}
 
 function fromHash(h: Record<string, string>): App {
   return {
@@ -16,6 +24,8 @@ function fromHash(h: Record<string, string>): App {
     confluence:  parseLinks(h.confluence),
     github:      parseLinks(h.github),
     mailingList: parseLinks(h.mailingList),
+    ocp:         safeParseCloud(h.ocp),
+    gcp:         safeParseCloud(h.gcp),
   };
 }
 
@@ -26,6 +36,8 @@ function toHash(a: App): Record<string, string> {
     confluence:  serialiseLinks(a.confluence),
     github:      serialiseLinks(a.github),
     mailingList: serialiseLinks(a.mailingList),
+    ocp:         JSON.stringify(a.ocp ?? {}),
+    gcp:         JSON.stringify(a.gcp ?? {}),
   };
 }
 
@@ -38,6 +50,8 @@ export async function create(data: {
   tags: Record<string, string>;
   platforms: Record<string, string>;
   urls: Record<string, string>;
+  ocp?: CloudPlatform;
+  gcp?: CloudPlatform;
   jira?: unknown;
   confluence?: unknown;
   github?: unknown;
@@ -62,6 +76,8 @@ export async function create(data: {
     tags:                 JSON.stringify(data.tags),
     platforms:            JSON.stringify(data.platforms),
     urls:                 JSON.stringify(data.urls),
+    ocp:                  data.ocp ?? {},
+    gcp:                  data.gcp ?? {},
     jira:                 coerceLinks(data.jira),
     confluence:           coerceLinks(data.confluence),
     github:               coerceLinks(data.github),
@@ -123,6 +139,8 @@ type UpdateData = Partial<{
   probeLiveness: string;
   probeReadiness: string;
   tags: Record<string, string>;
+  ocp: CloudPlatform;
+  gcp: CloudPlatform;
   jira: Link[];
   confluence: Link[];
   github: Link[];
@@ -174,6 +192,19 @@ export async function update(appId: string, data: UpdateData): Promise<{ app: Ap
         diff[field] = { from: serialiseLinks(oldLinks), to: serialiseLinks(newLinks) };
       }
       merged[field] = newLinks;
+    }
+  }
+
+  for (const field of ['ocp', 'gcp'] as const) {
+    if (data[field] !== undefined) {
+      const oldVal = existing[field] ?? {};
+      const newVal = data[field] ?? {};
+      const oldStr = JSON.stringify(oldVal);
+      const newStr = JSON.stringify(newVal);
+      if (oldStr !== newStr) {
+        diff[field] = { from: oldStr, to: newStr };
+      }
+      merged[field] = newVal;
     }
   }
 

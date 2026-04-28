@@ -115,6 +115,22 @@ export interface Guild {
 export type AppStatus = 'active' | 'inactive' | 'marked-for-decommissioning' | 'failed';
 export type DeployState = 'success' | 'failed' | 'pending' | 'rolledback';
 
+/** Per-cloud deployment block. Mirrors backend models/CloudPlatform. */
+export interface CloudPlatform {
+  localPlatform?: string;
+  devPlatform?:   string;
+  intPlatform?:   string;
+  uatPlatform?:   string;
+  prdPlatform?:   string;
+  localUrl?:      string;
+  devUrl?:        string;
+  intUrl?:        string;
+  uatUrl?:        string;
+  prdUrl?:        string;
+  buildChart?:    string;
+  chart?:         string;
+}
+
 export interface App {
   appId: string;
   description: string;
@@ -124,6 +140,8 @@ export interface App {
   tags: string;
   platforms: string;
   urls: string;
+  ocp: CloudPlatform;
+  gcp: CloudPlatform;
   jira: Link[];
   confluence: Link[];
   github: Link[];
