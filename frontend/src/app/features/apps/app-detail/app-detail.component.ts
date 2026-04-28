@@ -11,6 +11,7 @@ import { firstValueFrom } from 'rxjs';
 import { AppsApi } from '../../../core/api/apps.api';
 import { LinkListComponent } from '../../../shared/link-list/link-list.component';
 import { LinkRepeaterComponent } from '../../../shared/link-repeater/link-repeater.component';
+import { AppChartComponent } from '../app-chart/app-chart.component';
 import type { AppWithDeploys, AppDeployment, AppStatus, DeployState, AuditEntry, Link } from '../../../core/models/index';
 
 const STATUS_CLASS: Record<AppStatus, string> = {
@@ -32,7 +33,7 @@ const ENVS = ['local', 'dev', 'int', 'uat', 'prd'] as const;
 @Component({
   selector: 'app-app-detail',
   standalone: true,
-  imports: [RouterLink, FormsModule, LinkListComponent, LinkRepeaterComponent],
+  imports: [RouterLink, FormsModule, LinkListComponent, LinkRepeaterComponent, AppChartComponent],
   template: `
     @if (loading) { <div class="loading-block"><span class="spinner spinner-lg"></span></div> }
     @else if (app) {
@@ -286,6 +287,24 @@ const ENVS = ['local', 'dev', 'int', 'uat', 'prd'] as const;
         }
       }
 
+      <!-- Deployment topology chart (collapsible D3 tree) -->
+      <div class="chart-header">
+        <h3 style="margin-top:1.5rem;margin-bottom:0">Deployment Chart</h3>
+        <button class="btn btn-ghost btn-sm" (click)="showChart = !showChart">
+          {{ showChart ? 'Hide' : 'Show' }}
+        </button>
+      </div>
+      @if (showChart) {
+        <div class="card chart-card">
+          <app-app-chart
+            [appId]="app.appId"
+            [ocp]="app.ocp"
+            [gcp]="app.gcp"
+            [history]="history">
+          </app-app-chart>
+        </div>
+      }
+
       <!-- Full deploy history per env -->
       @for (env of envs; track env) {
         @if (history[env].length > 1) {
@@ -377,6 +396,8 @@ const ENVS = ['local', 'dev', 'int', 'uat', 'prd'] as const;
     .edit-field { display: flex; flex-direction: column; gap: 4px; span { font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); } }
 
     .cloud-header { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .chart-header { display: flex; align-items: center; gap: 12px; }
+    .chart-card { padding: 12px 16px; margin-top: 0.75rem; }
     .chart-chip { font-size: 0.7rem; padding: 2px 8px; border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text-muted); background: var(--surface-card); }
     .env-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin-top: 0.75rem; }
     .env-card { background: var(--surface-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; }
@@ -401,6 +422,7 @@ export class AppDetailComponent implements OnInit {
 
   app:      AppWithDeploys | null = null;
   history:  Record<string, AppDeployment[]> = Object.fromEntries(ENVS.map((e) => [e, []]));
+  showChart = true;
   auditLog: AuditEntry[] = [];
   loading   = true;
   editMode  = false;
