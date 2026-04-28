@@ -5,7 +5,6 @@
  * ToDo:    —
  */
 import { Router } from 'express';
-import { env } from '../config/env';
 import authRoutes from './auth.routes';
 import domainRoutes from './domain.routes';
 import subdomainRoutes from './subdomain.routes';

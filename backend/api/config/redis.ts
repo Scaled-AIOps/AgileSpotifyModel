@@ -23,7 +23,6 @@ let redis: RedisType;
 
 if (useMock) {
   // Lazy-load so production bundles don't pay the cost.
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const RedisMock = require('ioredis-mock');
   redis = new RedisMock() as RedisType;
   console.log('[Redis] Using in-memory mock (ioredis-mock)');

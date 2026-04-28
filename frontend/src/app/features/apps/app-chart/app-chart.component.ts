@@ -152,7 +152,6 @@ export class AppChartComponent implements AfterViewInit, OnChanges, OnDestroy {
     const width  = container.clientWidth || 900;
     const treeData = this.buildTree();
     const root = d3.hierarchy<ChartNode>(treeData);
-    const depth = (root.height + 1);
     const leafCount = root.leaves().length || 1;
     const height = Math.max(220, leafCount * 28 + margin.top + margin.bottom);
 

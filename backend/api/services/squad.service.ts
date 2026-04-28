@@ -8,7 +8,7 @@ import redis from '../config/redis';
 import { generateId } from '../lib/id';
 import { createError } from '../middleware/errorHandler';
 import { coerceLinks, parseLinks, serialiseLinks } from '../lib/links';
-import type { Squad, Link } from '../models/index';
+import type { Squad } from '../models/index';
 
 function fromHash(h: Record<string, string>): Squad {
   return {

@@ -13,7 +13,6 @@ describe('MemberFormComponent', () => {
   let memberSpy: jasmine.SpyObj<MemberApi>;
   let squadSpy: jasmine.SpyObj<SquadApi>;
   let apiSpy: jasmine.SpyObj<ApiService>;
-  let routerSpy: jasmine.SpyObj<Router>;
 
   const authStub = { currentUser: () => ({ email: 'a@b.com', role: 'Admin' }) };
 

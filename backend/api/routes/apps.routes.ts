@@ -4,7 +4,7 @@
  * Goal:    HTTP surface for the AIOps application catalogue: status, links, deploy events, and tribe-scoped editing rules.
  * ToDo:    Cross-check that PATCH respects link-array zod validation when callers omit some link fields.
  */
-import { Router, Request } from 'express';
+import { Router } from 'express';
 import { z } from 'zod';
 import { authenticate } from '../middleware/auth';
 import { authorize } from '../middleware/authorize';

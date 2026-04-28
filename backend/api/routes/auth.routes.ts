@@ -102,7 +102,7 @@ router.get('/jira', (_req: Request, res: Response) => {
   res.redirect(`https://auth.atlassian.com/authorize?${params}`);
 });
 
-router.get('/jira/callback', async (req: Request, res: Response, next: NextFunction) => {
+router.get('/jira/callback', async (req: Request, res: Response, _next: NextFunction) => {
   try {
     const { code, error, error_description } = req.query as Record<string, string>;
     if (error || !code) {
@@ -161,7 +161,7 @@ router.get('/microsoft', (_req: Request, res: Response) => {
   res.redirect(`https://login.microsoftonline.com/${env.AZURE_TENANT_ID}/oauth2/v2.0/authorize?${params}`);
 });
 
-router.get('/microsoft/callback', async (req: Request, res: Response, next: NextFunction) => {
+router.get('/microsoft/callback', async (req: Request, res: Response, _next: NextFunction) => {
   try {
     const { code, error, error_description } = req.query as Record<string, string>;
     if (error || !code) {

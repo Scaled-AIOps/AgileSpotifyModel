@@ -7,7 +7,7 @@
 import redis from '../config/redis';
 import { generateId } from '../lib/id';
 import { createError } from '../middleware/errorHandler';
-import { coerceLinks, parseLinks, serialiseLinks, LINK_FIELDS } from '../lib/links';
+import { coerceLinks, parseLinks, serialiseLinks } from '../lib/links';
 import type { Domain, Link } from '../models/index';
 
 function fromHash(h: Record<string, string>): Domain {

@@ -4,7 +4,7 @@
  * Goal:    Single picture of the entire organisation, useful for orientation and onboarding.
  * ToDo:    Persist collapse state across navigations; add a search-to-highlight input.
  */
-import { Component, OnInit, OnDestroy, ElementRef, ViewChild, inject, AfterViewInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnDestroy, ElementRef, ViewChild, inject, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
 import * as d3 from 'd3';
 import { OrgApi } from '../../../core/api/org.api';
@@ -143,7 +143,7 @@ export class OrgTreeComponent implements AfterViewInit, OnDestroy {
     const treeLayout = d3.tree<TreeNode>().size([height - margin.top - margin.bottom, width - margin.left - margin.right]);
     const root = d3.hierarchy<TreeNode>(treeData);
 
-    function update(source: d3.HierarchyNode<TreeNode>) {
+    function update(_source: d3.HierarchyNode<TreeNode>) {
       treeLayout(root);
 
       const nodes = root.descendants();
