@@ -14,6 +14,7 @@ import * as appstatusService from '../services/appstatus.service';
 import * as auditService from '../services/audit.service';
 import * as memberService from '../services/member.service';
 import * as squadService from '../services/squad.service';
+import * as tribeService from '../services/tribe.service';
 import { linksFields, genericLinksField } from '../schemas/links.schema';
 import redis from '../config/redis';
 import type { JwtPayload } from '../middleware/auth';
@@ -47,13 +48,21 @@ const cloudPlatformSchema = z.object({
 async function resolveEditable(appSquadId: string, user: JwtPayload): Promise<boolean> {
   if (user.role === 'Admin' || user.role === 'AgileCoach') return true;
   if (!user.memberId) return false;
+  const appSquad = await squadService.findById(appSquadId);
+  if (!appSquad) return false;
+
+  // TribeLead can edit any app in the tribe they lead, even if their own
+  // member.squadId points to a squad in a different tribe.
+  if (user.role === 'TribeLead') {
+    const tribe = await tribeService.findById(appSquad.tribeId);
+    if (tribe?.leadMemberId === user.memberId) return true;
+  }
+
+  // Otherwise: must be a member of a squad in the same tribe.
   const member = await memberService.findById(user.memberId);
   if (!member?.squadId) return false;
-  const [userSquad, appSquad] = await Promise.all([
-    squadService.findById(member.squadId),
-    squadService.findById(appSquadId),
-  ]);
-  if (!userSquad || !appSquad) return false;
+  const userSquad = await squadService.findById(member.squadId);
+  if (!userSquad) return false;
   return userSquad.tribeId === appSquad.tribeId;
 }
 
