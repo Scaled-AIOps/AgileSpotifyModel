@@ -92,7 +92,7 @@ const PAGE_SIZES = [10, 25, 50, 100];
           <label class="page-size-label">
             Show
             <select class="page-size-select" [(ngModel)]="pageSize" (ngModelChange)="onPageSizeChange()">
-              @for (ps of pageSizes; track ps) { <option [value]="ps">{{ ps }}</option> }
+              @for (ps of pageSizes; track ps) { <option [ngValue]="ps">{{ ps }}</option> }
             </select>
           </label>
 
@@ -484,7 +484,7 @@ export class AppListComponent implements OnInit {
   setStatus(s: AppStatus | null) { this.activeStatus = s; this.currentPage = 1; }
   onQueryChange()  { this.currentPage = 1; }
   clearQuery()     { this.query = ''; this.currentPage = 1; }
-  onPageSizeChange() { this.currentPage = 1; }
+  onPageSizeChange() { this.pageSize = Number(this.pageSize); this.currentPage = 1; }
 
   goPage(p: number) {
     if (p < 1 || p > this.totalPages) return;
