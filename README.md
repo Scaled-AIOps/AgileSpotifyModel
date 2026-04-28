@@ -276,6 +276,41 @@ Each application tracks:
 | Probe URLs | `probeHealth`, `probeLiveness`, `probeReadiness`, `probeInfo` |
 | Tool links | `artifactoryUrl`, `splunkUrl`, `xrayUrl`, `compositionViewerUrl` |
 | `jira[]` · `confluence[]` · `github[]` · `mailingList[]` | Each is a list of `{url, description}` (see Multi-link arrays below) |
+| Platform deployments | Per-cloud `ocp:` and `gcp:` blocks, each with `{env}Platform`, `{env}Url` (env ∈ local/dev/int/uat/prd), `buildChart`, `chart`. The seed loader namespaces them as `ocp.int`, `gcp.uat`, etc. on the App's `platforms` / `urls` maps. |
+
+### App YAML shape
+
+`config/appinfo.yaml` records use a per-cloud nested structure:
+
+```yaml
+- appId: auth-api
+  gitRepo: https://github.com/example/auth-api
+  squad: platform
+  ocp:
+    intPlatform: backend-int-cluster
+    uatPlatform: backend-uat-cluster
+    prdPlatform: backend-prd-cluster
+    intUrl: https://gw-int-auth-api.intranet.example.com
+    uatUrl: https://gw-uat-auth-api.intranet.example.com
+    prdUrl: https://gw-prd-auth-api.intranet.example.com
+    buildChart: ocp-node-build
+    chart: ocp-node
+  gcp:
+    intPlatform: backend-int-cluster
+    uatPlatform: backend-uat-cluster
+    prdPlatform: backend-prd-cluster
+    intUrl: https://gw-int-auth-api.gcp.example.com
+    uatUrl: https://gw-uat-auth-api.gcp.example.com
+    prdUrl: https://gw-prd-auth-api.gcp.example.com
+  probeHealth:    /health
+  probeInfo:      /info
+  probeLiveness:  /health/liveness
+  probeReadiness: /health/readiness
+  status: active
+  tags: { criticality: high, pillar: platform }
+```
+
+The legacy flat `intPlatform` / `intUrl` / … fields at the app level are still accepted by the seed loader (back-compat) and surface unprefixed in the App's `platforms` map.
 
 ## Multi-link arrays
 

@@ -34,10 +34,15 @@ interface YamlSubdomain extends YamlLinks { name: string; tribeDomain: string; d
 interface YamlTribe extends YamlLinks     { name: string; tribeName?: string; subDomain: string; tribeDomain: string; releaseManager?: string; agileCoach?: string; description?: string }
 interface YamlSquad extends YamlLinks     { key: string; name: string; description?: string; tribe: string; po?: string; sm?: string; tags?: Record<string, string> }
 interface YamlInfra { platformId: string; name: string; description?: string; clusterId: string; environment: string; host: string; routeHostName: string; platform: string; platformType: string; tokenId: string; tags?: Record<string, string> }
-interface YamlApp extends YamlLinks {
-  appId: string; description?: string; gitRepo?: string; squad: string; status: AppStatus; tags?: Record<string, string>;
+interface YamlPlatformBlock {
   localPlatform?: string; devPlatform?: string; intPlatform?: string; uatPlatform?: string; prdPlatform?: string;
-  localUrl?: string; devUrl?: string; intUrl?: string; uatUrl?: string; prdUrl?: string;
+  localUrl?: string;      devUrl?: string;      intUrl?: string;      uatUrl?: string;      prdUrl?: string;
+  buildChart?: string; chart?: string;
+}
+interface YamlApp extends YamlLinks, YamlPlatformBlock {
+  appId: string; description?: string; gitRepo?: string; squad: string; status: AppStatus; tags?: Record<string, string>;
+  ocp?: YamlPlatformBlock;
+  gcp?: YamlPlatformBlock;
   probeHealth?: string; probeInfo?: string; probeLiveness?: string; probeReadiness?: string;
   javaVersion?: string; javaComplianceStatus?: string;
 }
@@ -152,18 +157,36 @@ export async function seedFromYaml(): Promise<void> {
       if (appIds.has(a.appId)) { skipped++; continue; }
       const squad = await squadSvc.findByKey(a.squad);
       if (!squad) { console.warn(`[seed] app "${a.appId}": squad key "${a.squad}" not found`); skipped++; continue; }
+      // Flatten platform/url info from any of:
+      //   - the new nested `ocp:` block (preferred)
+      //   - the new nested `gcp:` block (fallback if ocp missing)
+      //   - the legacy flat *Platform / *Url fields on the app (back-compat)
+      // Per-env keys are namespaced: `ocp.int`, `gcp.uat`, etc., with the legacy
+      // flat keys preserved as bare `int`, `uat`, … so existing consumers still work.
       const platforms: Record<string, string> = {};
-      if (a.localPlatform) platforms['local'] = a.localPlatform;
-      if (a.devPlatform)   platforms['dev']   = a.devPlatform;
-      if (a.intPlatform)   platforms['int']   = a.intPlatform;
-      if (a.uatPlatform)   platforms['uat']   = a.uatPlatform;
-      if (a.prdPlatform)   platforms['prd']   = a.prdPlatform;
-      const urls: Record<string, string> = {};
-      if (a.localUrl) urls['local'] = a.localUrl;
-      if (a.devUrl)   urls['dev']   = a.devUrl;
-      if (a.intUrl)   urls['int']   = a.intUrl;
-      if (a.uatUrl)   urls['uat']   = a.uatUrl;
-      if (a.prdUrl)   urls['prd']   = a.prdUrl;
+      const urls:      Record<string, string> = {};
+      const ENVS = ['local', 'dev', 'int', 'uat', 'prd'] as const;
+      const cloudBlocks: Array<['ocp' | 'gcp', YamlPlatformBlock | undefined]> = [
+        ['ocp', a.ocp], ['gcp', a.gcp],
+      ];
+      for (const [cloud, block] of cloudBlocks) {
+        if (!block) continue;
+        for (const env of ENVS) {
+          const p = (block as any)[`${env}Platform`];
+          const u = (block as any)[`${env}Url`];
+          if (p) platforms[`${cloud}.${env}`] = p;
+          if (u) urls[`${cloud}.${env}`]      = u;
+        }
+        if (block.buildChart) platforms[`${cloud}.buildChart`] = block.buildChart;
+        if (block.chart)      platforms[`${cloud}.chart`]      = block.chart;
+      }
+      // Legacy flat fields → unprefixed keys
+      for (const env of ENVS) {
+        const p = (a as any)[`${env}Platform`];
+        const u = (a as any)[`${env}Url`];
+        if (p && !platforms[env]) platforms[env] = p;
+        if (u && !urls[env])      urls[env]      = u;
+      }
       const githubLinks: unknown = a.github ?? (a.gitRepo ? [a.gitRepo] : undefined);
       await appSvc.create({
         appId: a.appId, description: a.description ?? '',
