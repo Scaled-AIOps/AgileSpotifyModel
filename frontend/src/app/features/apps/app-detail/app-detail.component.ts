@@ -316,7 +316,7 @@ const ENVS = ['local', 'dev', 'int', 'uat', 'prd'] as const;
             <table class="table">
               <thead><tr><th>Version</th><th>State</th><th>Branch</th><th>Deployed by</th><th>Date</th><th>CR</th><th>Notes</th></tr></thead>
               <tbody>
-                @for (d of history[env]; track d.deployedAt) {
+                @for (d of history[env]; track d.deployedAt + ':' + d.version + ':' + $index) {
                   <tr>
                     <td class="mono">{{ d.version }}</td>
                     <td><span class="badge {{ deployClass(d.state) }}">{{ d.state }}</span></td>
@@ -407,7 +407,8 @@ const ENVS = ['local', 'dev', 'int', 'uat', 'prd'] as const;
     .env-card.has-deploy { border-color: var(--blue-300); }
     .env-tag { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 4px; }
     .env-platform { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .env-url { font-size: 0.72rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 8px; }
+    .env-url { display: block; font-size: 0.72rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 8px; max-width: 100%; }
+    .env-url:hover { text-decoration: underline; }
     .deploy-block { margin-top: 6px; }
     .deploy-row { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
     .deploy-version { font-family: var(--font-mono,monospace); font-size: 0.82rem; font-weight: 600; color: var(--text-strong); }

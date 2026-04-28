@@ -33,16 +33,16 @@ import type { Member, Squad } from '../../../core/models/index';
           <form [formGroup]="form" (ngSubmit)="submit()">
             <div class="form-field">
               <label>Name</label>
-              <input class="value-input" formControlName="name" placeholder="Full name" />
+              <input class="value-input" formControlName="name" placeholder="Full name" autocomplete="off" />
             </div>
             <div class="form-field">
               <label>Email</label>
-              <input class="value-input" type="email" formControlName="email" placeholder="user@example.com" />
+              <input class="value-input" type="email" formControlName="email" placeholder="user@example.com" autocomplete="off" />
             </div>
             @if (!isEdit) {
               <div class="form-field">
                 <label>Password</label>
-                <input class="value-input" type="password" formControlName="password" placeholder="Min 8 characters" />
+                <input class="value-input" type="password" formControlName="password" placeholder="Min 8 characters" autocomplete="new-password" />
               </div>
             }
             <div class="form-field">

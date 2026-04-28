@@ -177,7 +177,7 @@ import type { Squad, Link } from '../../../core/models/index';
     .edit-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 0.75rem; }
     .edit-field { display: flex; flex-direction: column; gap: 4px; }
     .edit-field span { font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); }
-    .field-hint { font-size: 0.7rem; color: var(--text-muted); font-style: italic; text-transform: none; letter-spacing: 0; font-weight: 400; }
+    .edit-field span.field-hint { font-size: 0.7rem; color: var(--text-muted); font-style: italic; text-transform: none; letter-spacing: 0; font-weight: 400; }
     .required { color: var(--danger, #e53e3e); }
     .form-actions { display: flex; gap: 10px; align-items: center; padding-top: 1rem; border-top: 1px solid var(--border); }
   `],
