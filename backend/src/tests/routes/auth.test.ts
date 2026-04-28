@@ -10,17 +10,17 @@ vi.mock('../../services/auth.service', () => ({
   refresh:        vi.fn(),
   logout:         vi.fn(),
   getMe:          vi.fn(),
-  changePassword: vi.fn(),
+  changePasscode: vi.fn(),
   loginByEmail:   vi.fn(),
 }));
 
 import * as authService from '../../services/auth.service';
 
 const adminToken = () =>
-  jwt.sign({ userId: 'admin-uid', memberId: 'admin-mid', role: 'Admin' }, env.JWT_SECRET, { expiresIn: '1h' });
+  jwt.sign({ userId: 'admin-uid', memberId: 'admin-mid', role: 'Admin' }, env.JWT_SIGNING_KEY, { expiresIn: '1h' });
 
 const memberToken = () =>
-  jwt.sign({ userId: 'member-uid', memberId: 'member-mid', role: 'Member' }, env.JWT_SECRET, { expiresIn: '1h' });
+  jwt.sign({ userId: 'member-uid', memberId: 'member-mid', role: 'Member' }, env.JWT_SIGNING_KEY, { expiresIn: '1h' });
 
 const mockResult = {
   accessToken: 'mock-access-token',
@@ -37,7 +37,7 @@ describe('POST /api/v1/auth/register', () => {
     const res = await request(app)
       .post('/api/v1/auth/register')
       .set('Authorization', `Bearer ${adminToken()}`)
-      .send({ email: 'new@example.com', password: 'Password1!', name: 'New User', role: 'Member' });
+      .send({ email: 'new@example.com', passcode: 'Password1!', name: 'New User', role: 'Member' });
 
     expect(res.status).toBe(201);
     expect(res.body.accessToken).toBe('mock-access-token');
@@ -47,7 +47,7 @@ describe('POST /api/v1/auth/register', () => {
     const res = await request(app)
       .post('/api/v1/auth/register')
       .set('Authorization', `Bearer ${memberToken()}`)
-      .send({ email: 'new@example.com', password: 'Password1!', name: 'New', role: 'Member' });
+      .send({ email: 'new@example.com', passcode: 'Password1!', name: 'New', role: 'Member' });
     expect(res.status).toBe(403);
   });
 
@@ -70,7 +70,7 @@ describe('POST /api/v1/auth/login', () => {
     (authService.login as any).mockResolvedValue(mockResult);
     const res = await request(app)
       .post('/api/v1/auth/login')
-      .send({ email: 'test@example.com', password: 'Password1!' });
+      .send({ email: 'test@example.com', passcode: 'Password1!' });
     expect(res.status).toBe(200);
     expect(res.body.accessToken).toBe('mock-access-token');
   });
@@ -81,7 +81,7 @@ describe('POST /api/v1/auth/login', () => {
     (authService.login as any).mockRejectedValue(err);
     const res = await request(app)
       .post('/api/v1/auth/login')
-      .send({ email: 'x@x.com', password: 'wrong' });
+      .send({ email: 'x@x.com', passcode: 'wrong' });
     expect(res.status).toBe(401);
   });
 
@@ -142,19 +142,19 @@ describe('GET /api/v1/auth/me', () => {
   });
 });
 
-describe('PATCH /api/v1/auth/me/password', () => {
-  it('changes password successfully', async () => {
-    (authService.changePassword as any).mockResolvedValue(undefined);
+describe('PATCH /api/v1/auth/me/passcode', () => {
+  it('changes passcode successfully', async () => {
+    (authService.changePasscode as any).mockResolvedValue(undefined);
     const res = await request(app)
-      .patch('/api/v1/auth/me/password')
+      .patch('/api/v1/auth/me/passcode')
       .set('Authorization', `Bearer ${memberToken()}`)
-      .send({ currentPassword: 'OldPass1!', newPassword: 'NewPass1!' });
+      .send({ currentPasscode: 'OldPass1!', newPasscode: 'NewPass1!' });
     expect(res.status).toBe(200);
   });
 
   it('returns 400 on validation failure', async () => {
     const res = await request(app)
-      .patch('/api/v1/auth/me/password')
+      .patch('/api/v1/auth/me/passcode')
       .set('Authorization', `Bearer ${memberToken()}`)
       .send({});
     expect(res.status).toBe(400);

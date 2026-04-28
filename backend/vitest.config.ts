@@ -1,7 +1,7 @@
 /**
  * Purpose: Vitest configuration for the backend test suite.
  * Usage:   Picked up by `vitest run` (the `npm test` script). Sets up the test
- *          environment vars (JWT secrets, Redis URL, etc.), points coverage at
+ *          environment vars (JWT signing keys, Redis URL, etc.), points coverage at
  *          src/ excluding tests/scripts/index/models/schemas, and pins
  *          coverage thresholds (80% lines/funcs/statements, 75% branches).
  * Goal:    Single source of truth for how the backend is tested locally and in
@@ -20,8 +20,8 @@ export default defineConfig({
     setupFiles: ['src/tests/setup.ts'],
     env: {
       NODE_ENV: 'test',
-      JWT_SECRET: 'test-jwt-secret-32-chars-longxxx',
-      JWT_REFRESH_SECRET: 'test-refresh-secret-32-chars-xx',
+      JWT_SIGNING_KEY: 'test-jwt-signing-key-32-charsxxx',
+      JWT_REFRESH_KEY: 'test-jwt-refresh-key-32-charsxxx',
       JWT_EXPIRES_IN: '15m',
       JWT_REFRESH_EXPIRES_IN: '7d',
       REDIS_URL: 'redis://localhost:6379',

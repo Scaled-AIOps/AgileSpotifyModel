@@ -10,8 +10,8 @@ const schema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   PORT: z.coerce.number().default(3000),
   REDIS_URL: z.string().default('redis://localhost:6379'),
-  JWT_SECRET: z.string().min(16),
-  JWT_REFRESH_SECRET: z.string().min(16),
+  JWT_SIGNING_KEY: z.string().min(16),
+  JWT_REFRESH_KEY: z.string().min(16),
   JWT_EXPIRES_IN: z.string().default('15m'),
   JWT_REFRESH_EXPIRES_IN: z.string().default('7d'),
   CORS_ORIGIN: z.string().default('http://localhost:4200'),
@@ -22,12 +22,12 @@ const schema = z.object({
   // Jira / Atlassian OAuth 2.0 (3LO)
   JIRA_ENABLED: z.string().default('false'),
   JIRA_CLIENT_ID: z.string().optional(),
-  JIRA_CLIENT_SECRET: z.string().optional(),
+  JIRA_CLIENT_KEY: z.string().optional(),
   // Microsoft Azure AD / Entra ID
   AD_ENABLED: z.string().default('false'),
   AZURE_CLIENT_ID: z.string().optional(),
   AZURE_TENANT_ID: z.string().default('common'),
-  AZURE_CLIENT_SECRET: z.string().optional(),
+  AZURE_CLIENT_KEY: z.string().optional(),
 });
 
 const parsed = schema.safeParse(process.env);

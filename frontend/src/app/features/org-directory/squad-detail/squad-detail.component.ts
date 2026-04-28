@@ -165,9 +165,9 @@ const APP_STATUS_CLASS: Record<AppStatus, string> = {
             </button>
           </div>
           @if (addError) { <div class="error-msg">{{ addError }}</div> }
-          @if (tempPassword && config.basicEnabled()) {
+          @if (tempPasscode && config.basicEnabled()) {
             <div class="temp-pass">
-              Temporary password for {{ addEmail }}: <code>{{ tempPassword }}</code>
+              Temporary passcode for {{ addEmail }}: <code>{{ tempPasscode }}</code>
               <span style="color:var(--text-muted);margin-left:6px">(share with the new member)</span>
             </div>
           }
@@ -258,7 +258,7 @@ export class SquadDetailComponent implements OnInit {
   addRole      = '';
   adding       = false;
   addError     = '';
-  tempPassword = '';
+  tempPasscode = '';
   emailMatch:  Member | null = null;
   emailNew     = false;
 
@@ -282,7 +282,7 @@ export class SquadDetailComponent implements OnInit {
     const email = this.addEmail.trim().toLowerCase();
     this.emailMatch = null;
     this.emailNew = false;
-    this.tempPassword = '';
+    this.tempPasscode = '';
     this.addError = '';
     if (!email) return;
     const found = this.allMembers.find((m) => m.email.toLowerCase() === email);
@@ -342,22 +342,22 @@ export class SquadDetailComponent implements OnInit {
     if (!this.squad || !this.canSubmitAdd) return;
     this.adding = true;
     this.addError = '';
-    this.tempPassword = '';
+    this.tempPasscode = '';
     try {
       let memberId: string;
       if (this.emailNew) {
         const isBasic = this.config.basicEnabled();
-        const pass = isBasic ? this.generateTempPassword() : undefined;
+        const pass = isBasic ? this.generateTempPasscode() : undefined;
         const created = await firstValueFrom(this.memberApi.create({
           name: this.addName.trim(),
           email: this.addEmail.trim(),
-          ...(pass ? { password: pass } : {}),
+          ...(pass ? { passcode: pass } : {}),
           role: 'Member',
           avatarUrl: '',
           squadId: '',
         } as any));
         memberId = created.id;
-        if (pass) this.tempPassword = pass;
+        if (pass) this.tempPasscode = pass;
         this.allMembers = [...this.allMembers, created];
       } else {
         memberId = this.emailMatch!.id;
@@ -376,7 +376,7 @@ export class SquadDetailComponent implements OnInit {
     }
   }
 
-  private generateTempPassword(): string {
+  private generateTempPasscode(): string {
     const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
     return 'Tmp' + Array.from({ length: 8 }, () => chars[Math.floor(Math.random() * chars.length)]).join('') + '!';
   }

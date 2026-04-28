@@ -31,7 +31,7 @@ export function authenticate(req: Request, res: Response, next: NextFunction): v
 
   const token = header.slice(7);
   try {
-    const payload = jwt.verify(token, env.JWT_SECRET) as JwtPayload;
+    const payload = jwt.verify(token, env.JWT_SIGNING_KEY) as JwtPayload;
     req.user = payload;
     next();
   } catch {

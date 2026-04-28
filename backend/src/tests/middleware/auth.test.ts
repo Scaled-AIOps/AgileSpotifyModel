@@ -19,7 +19,7 @@ beforeEach(() => vi.clearAllMocks());
 
 describe('authenticate', () => {
   it('calls next() with a valid token', () => {
-    const token = jwt.sign({ userId: 'u1', memberId: 'm1', role: 'Admin' }, env.JWT_SECRET);
+    const token = jwt.sign({ userId: 'u1', memberId: 'm1', role: 'Admin' }, env.JWT_SIGNING_KEY);
     const req = makeReq(`Bearer ${token}`) as Request;
     const res = makeRes() as Response;
 
@@ -59,7 +59,7 @@ describe('authenticate', () => {
   });
 
   it('returns 401 when token is expired', () => {
-    const token = jwt.sign({ userId: 'u1', memberId: 'm1', role: 'Member' }, env.JWT_SECRET, { expiresIn: -1 });
+    const token = jwt.sign({ userId: 'u1', memberId: 'm1', role: 'Member' }, env.JWT_SIGNING_KEY, { expiresIn: -1 });
     const req = makeReq(`Bearer ${token}`) as Request;
     const res = makeRes() as Response;
 

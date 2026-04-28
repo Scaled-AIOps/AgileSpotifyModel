@@ -39,7 +39,7 @@ import * as memberService from '../../services/member.service';
 import * as squadService from '../../services/squad.service';
 
 const token = (role = 'Admin', memberId = 'mid') =>
-  jwt.sign({ userId: 'uid', memberId, role }, env.JWT_SECRET, { expiresIn: '1h' });
+  jwt.sign({ userId: 'uid', memberId, role }, env.JWT_SIGNING_KEY, { expiresIn: '1h' });
 
 const mockApp = {
   appId: 'payments-api', gitRepo: 'https://github.com/acme/payments', squadId: 'sq-1',

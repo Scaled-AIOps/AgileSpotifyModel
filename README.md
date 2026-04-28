@@ -17,7 +17,7 @@ Management tool for organisations running the Spotify Agile Model. Covers the en
 
 ```bash
 cd backend
-cp ../.env.example config/.env   # fill in JWT_SECRET, JWT_REFRESH_SECRET, REDIS_URL
+cp ../.env.example config/.env   # fill in JWT_SIGNING_KEY, JWT_REFRESH_KEY, REDIS_URL
 npm install
 npm run dev                       # hot-reload on http://localhost:3000
 ```
@@ -36,7 +36,7 @@ The backend automatically seeds **non-production** environments at startup from 
 
 YAML files are not bundled into `dist/`; the deploy pipeline mounts `config/` next to `dist/server.js` at runtime (`CONFIG_DIR` env var overrides the default `./config`).
 
-The YAML files don't carry user accounts or password hashes. To bootstrap demo users on a fresh Redis, run the dev-only script:
+The YAML files don't carry user accounts or hashed credentials. To bootstrap demo users on a fresh Redis, run the dev-only script:
 
 ```bash
 cd backend
@@ -67,8 +67,8 @@ Copy `.env.example` to `backend/config/.env` and edit.
 
 | Variable | Default | Description |
 |---|---|---|
-| `JWT_SECRET` | — | Access token signing key (min 16 chars) |
-| `JWT_REFRESH_SECRET` | — | Refresh token signing key (min 16 chars) |
+| `JWT_SIGNING_KEY` | — | Access token signing key (min 16 chars) |
+| `JWT_REFRESH_KEY` | — | Refresh token signing key (min 16 chars) |
 | `JWT_EXPIRES_IN` | `15m` | Access token TTL |
 | `JWT_REFRESH_EXPIRES_IN` | `7d` | Refresh token TTL |
 | `PORT` | `3000` | Backend port |
@@ -81,14 +81,14 @@ Copy `.env.example` to `backend/config/.env` and edit.
 
 | Variable | Default | Description |
 |---|---|---|
-| `AUTH_BASIC_ENABLED` | `true` | Enable username + password login |
+| `AUTH_BASIC_ENABLED` | `true` | Enable email + passcode login |
 | `JIRA_ENABLED` | `false` | Enable Jira / Atlassian SSO |
 | `JIRA_CLIENT_ID` | — | Atlassian OAuth 2.0 client ID |
-| `JIRA_CLIENT_SECRET` | — | Atlassian OAuth 2.0 client secret |
+| `JIRA_CLIENT_KEY` | — | Atlassian OAuth 2.0 confidential client credential |
 | `AD_ENABLED` | `false` | Enable Microsoft Azure AD / Entra SSO |
 | `AZURE_CLIENT_ID` | — | Azure app registration client ID |
 | `AZURE_TENANT_ID` | `common` | Azure tenant ID (or `common` for multi-tenant) |
-| `AZURE_CLIENT_SECRET` | — | Azure app registration client secret |
+| `AZURE_CLIENT_KEY` | — | Azure app registration confidential client credential |
 
 Any combination of `AUTH_BASIC_ENABLED`, `JIRA_ENABLED`, and `AD_ENABLED` can be active simultaneously. The frontend login page automatically shows only the methods that are enabled.
 
@@ -101,14 +101,14 @@ Any combination of `AUTH_BASIC_ENABLED`, `JIRA_ENABLED`, and `AD_ENABLED` can be
 1. Create an OAuth 2.0 (3LO) app at [developer.atlassian.com/console/myapps](https://developer.atlassian.com/console/myapps/)
 2. Add callback URL: `${BACKEND_URL}/api/v1/auth/jira/callback`
 3. Required scope: `read:me`
-4. Set `JIRA_ENABLED=true`, `JIRA_CLIENT_ID`, `JIRA_CLIENT_SECRET` in `.env`
+4. Set `JIRA_ENABLED=true`, `JIRA_CLIENT_ID`, `JIRA_CLIENT_KEY` in `.env` (`JIRA_CLIENT_KEY` holds the OAuth confidential client credential the provider issues to your app)
 
 ### Microsoft Azure AD / Entra ID
 
 1. Register an app at [portal.azure.com](https://portal.azure.com) → App registrations
 2. Add redirect URI (Web): `${BACKEND_URL}/api/v1/auth/microsoft/callback`
-3. Under *Certificates & secrets* create a client secret
-4. Set `AD_ENABLED=true`, `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, `AZURE_CLIENT_SECRET` in `.env`
+3. Under *Certificates & client credentials* create a confidential client credential
+4. Set `AD_ENABLED=true`, `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, `AZURE_CLIENT_KEY` in `.env` (`AZURE_CLIENT_KEY` holds the confidential client credential value)
 
 > **User provisioning:** SSO users are matched by email. The user account must already exist in the system (created by an Admin) with the same email address as the identity provider account. There is no auto-provisioning.
 
@@ -158,7 +158,7 @@ The role hierarchy used by `authorize()`:
 | `POST` | `/auth/refresh` | Cookie | Exchange refresh cookie for new access token |
 | `POST` | `/auth/logout` | Bearer | Revoke refresh token |
 | `GET` | `/auth/me` | Bearer | Current user profile |
-| `PATCH` | `/auth/me/password` | Bearer | Change password |
+| `PATCH` | `/auth/me/passcode` | Bearer | Change passcode |
 | `GET` | `/auth/jira` | Public | Initiate Jira OAuth flow |
 | `GET` | `/auth/jira/callback` | Public | Jira OAuth callback |
 | `GET` | `/auth/microsoft` | Public | Initiate Microsoft OAuth flow |
@@ -170,7 +170,7 @@ The role hierarchy used by `authorize()`:
 # Login (basic)
 TOKEN=$(curl -s -X POST http://localhost:3000/api/v1/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"email":"admin@example.com","password":"Admin1234!"}' | jq -r .accessToken)
+  -d '{"email":"admin@example.com","passcode":"Admin1234!"}' | jq -r .accessToken)
 
 # Full org tree
 curl -H "Authorization: Bearer $TOKEN" http://localhost:3000/api/v1/org/tree | jq

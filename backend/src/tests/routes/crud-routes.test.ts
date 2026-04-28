@@ -73,7 +73,7 @@ import * as subdomainSvc from '../../services/subdomain.service';
 import * as infraSvc     from '../../services/infra.service';
 
 const tok = (role = 'Admin') =>
-  jwt.sign({ userId: 'uid', memberId: 'mid', role }, env.JWT_SECRET, { expiresIn: '1h' });
+  jwt.sign({ userId: 'uid', memberId: 'mid', role }, env.JWT_SIGNING_KEY, { expiresIn: '1h' });
 
 beforeEach(() => { vi.clearAllMocks(); });
 
