@@ -17,6 +17,13 @@ import type { OrgTreeDomain } from '../../../core/models/index';
   imports: [RouterLink, LinkListComponent],
   template: `
     @if (loading) { <div class="loading-block"><span class="spinner spinner-lg"></span></div> }
+    @else if (loadError) {
+      <div class="empty-state">
+        <div class="empty-icon">⚠</div>
+        <div class="empty-title">{{ loadError }}</div>
+        <div class="empty-sub"><a routerLink="/org">← Back to Org Directory</a></div>
+      </div>
+    }
     @else if (domain) {
       <div class="page-header">
         <div class="page-title">
@@ -80,10 +87,15 @@ export class DomainDetailComponent implements OnInit {
 
   domain: OrgTreeDomain | null = null;
   loading = true;
+  loadError = '';
 
   async ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id')!;
-    this.domain = await firstValueFrom(this.domainApi.getTree(id));
+    try {
+      this.domain = await firstValueFrom(this.domainApi.getTree(id));
+    } catch {
+      this.loadError = `Domain "${id}" not found.`;
+    }
     this.loading = false;
   }
 

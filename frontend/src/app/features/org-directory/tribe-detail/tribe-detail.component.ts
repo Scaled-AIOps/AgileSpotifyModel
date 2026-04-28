@@ -18,6 +18,13 @@ import type { Tribe, Squad } from '../../../core/models/index';
   imports: [RouterLink, LinkListComponent],
   template: `
     @if (loading) { <div class="loading-block"><span class="spinner spinner-lg"></span></div> }
+    @else if (loadError) {
+      <div class="empty-state">
+        <div class="empty-icon">⚠</div>
+        <div class="empty-title">{{ loadError }}</div>
+        <div class="empty-sub"><a routerLink="/org">← Back to Org Directory</a></div>
+      </div>
+    }
     @else if (tribe) {
       <div class="page-header">
         <div class="page-title">
@@ -92,10 +99,17 @@ export class TribeDetailComponent implements OnInit {
   tribe: Tribe | null = null;
   squads: Squad[] = [];
   loading = true;
+  loadError = '';
 
   async ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id')!;
-    this.tribe = await firstValueFrom(this.tribeApi.getById(id));
+    try {
+      this.tribe = await firstValueFrom(this.tribeApi.getById(id));
+    } catch {
+      this.loadError = `Tribe "${id}" not found.`;
+      this.loading = false;
+      return;
+    }
     const squadIds = await firstValueFrom(this.tribeApi.getSquads(id));
     this.squads = await Promise.all(squadIds.map((sid: string) => firstValueFrom(this.api.get<Squad>(`/squads/${sid}`))));
     this.loading = false;

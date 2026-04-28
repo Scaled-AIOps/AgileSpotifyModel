@@ -20,6 +20,13 @@ import type { Member, Squad } from '../../../core/models/index';
   imports: [RouterLink, ReactiveFormsModule],
   template: `
     @if (loading) { <div class="loading-block"><span class="spinner spinner-lg"></span></div> }
+    @else if (loadError) {
+      <div class="empty-state">
+        <div class="empty-icon">⚠</div>
+        <div class="empty-title">{{ loadError }}</div>
+        <div class="empty-sub"><a routerLink="/admin/members">← Back to Members</a></div>
+      </div>
+    }
     @else {
       <div class="page-header">
         <div class="page-title">
@@ -101,6 +108,7 @@ export class MemberFormComponent implements OnInit {
   loading = true;
   saving = false;
   error = '';
+  loadError = '';
 
   get isFullAdmin() { const r = this.auth.currentUser()?.role; return r === 'Admin' || r === 'AgileCoach'; }
 
@@ -123,10 +131,14 @@ export class MemberFormComponent implements OnInit {
     this.squads = await firstValueFrom(this.squadApi.getAll());
 
     if (this.isEdit) {
-      const member = await firstValueFrom(this.memberApi.getById(this.memberId));
-      this.form.patchValue({ name: member.name, email: member.email, role: member.role, squadId: member.squadId });
-      if (!this.isFullAdmin) {
-        this.form.disable();
+      try {
+        const member = await firstValueFrom(this.memberApi.getById(this.memberId));
+        this.form.patchValue({ name: member.name, email: member.email, role: member.role, squadId: member.squadId });
+        if (!this.isFullAdmin) {
+          this.form.disable();
+        }
+      } catch {
+        this.loadError = `Member "${this.memberId}" not found.`;
       }
     }
 

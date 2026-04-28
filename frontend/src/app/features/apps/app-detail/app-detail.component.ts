@@ -36,6 +36,13 @@ const ENVS = ['local', 'dev', 'int', 'uat', 'prd'] as const;
   imports: [RouterLink, FormsModule, LinkListComponent, LinkRepeaterComponent, AppChartComponent],
   template: `
     @if (loading) { <div class="loading-block"><span class="spinner spinner-lg"></span></div> }
+    @else if (loadError) {
+      <div class="empty-state">
+        <div class="empty-icon">⚠</div>
+        <div class="empty-title">{{ loadError }}</div>
+        <div class="empty-sub"><a routerLink="/apps">← Back to Applications</a></div>
+      </div>
+    }
     @else if (app) {
       <div class="page-header">
         <div class="page-title">
@@ -432,6 +439,7 @@ export class AppDetailComponent implements OnInit {
   editMode  = false;
   saving    = false;
   saveError = '';
+  loadError = '';
   readonly envs = ENVS;
 
   ef = {
@@ -482,7 +490,13 @@ export class AppDetailComponent implements OnInit {
 
   async ngOnInit() {
     const appId = this.route.snapshot.paramMap.get('appId')!;
-    this.app = await firstValueFrom(this.appsApi.getById(appId));
+    try {
+      this.app = await firstValueFrom(this.appsApi.getById(appId));
+    } catch {
+      this.loadError = `Application "${appId}" not found.`;
+      this.loading = false;
+      return;
+    }
 
     const envsWithDeploys = ENVS.filter((env) => this.app?.latestDeploys?.[env]);
     await Promise.all(envsWithDeploys.map(async (env) => {

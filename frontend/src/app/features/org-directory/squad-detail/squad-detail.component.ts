@@ -31,6 +31,13 @@ const APP_STATUS_CLASS: Record<AppStatus, string> = {
   imports: [RouterLink, FormsModule, LinkListComponent],
   template: `
     @if (loading) { <div class="loading-block"><span class="spinner spinner-lg"></span></div> }
+    @else if (loadError) {
+      <div class="empty-state">
+        <div class="empty-icon">⚠</div>
+        <div class="empty-title">{{ loadError }}</div>
+        <div class="empty-sub"><a routerLink="/org">← Back to Org Directory</a></div>
+      </div>
+    }
     @else if (squad) {
       <div class="page-header">
         <div class="page-title">
@@ -243,6 +250,7 @@ export class SquadDetailComponent implements OnInit {
   allMembers: Member[] = [];
   apps:       App[]    = [];
   loading     = true;
+  loadError   = '';
   managing    = false;
 
   addEmail     = '';
@@ -289,7 +297,13 @@ export class SquadDetailComponent implements OnInit {
 
   async ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id')!;
-    this.squadSignal.set(await firstValueFrom(this.squadApi.getById(id)));
+    try {
+      this.squadSignal.set(await firstValueFrom(this.squadApi.getById(id)));
+    } catch {
+      this.loadError = `Squad "${id}" not found.`;
+      this.loading = false;
+      return;
+    }
     await this.loadMembers(id);
 
     if (this.flags.isEnabled('appRegistry')) {
