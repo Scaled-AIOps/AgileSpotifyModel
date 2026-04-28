@@ -100,7 +100,8 @@ export class AppChartComponent implements AfterViewInit, OnChanges, OnDestroy {
     }
   }
 
-  private buildTree(): ChartNode {
+  /** Internal — exposed (not private) so unit tests can assert the tree shape without going through D3. */
+  buildTree(): ChartNode {
     const root: ChartNode = { id: 'app', name: this.appId || 'app', type: 'app', children: [] };
     const clouds: Array<['ocp' | 'gcp', CloudPlatform]> = [['ocp', this.ocp], ['gcp', this.gcp]];
 
