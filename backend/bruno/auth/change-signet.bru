@@ -1,0 +1,22 @@
+meta {
+  name: Change Signet
+  type: http
+  seq: 6
+}
+
+patch {
+  url: {{baseUrl}}/api/v1/auth/me/signet
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "currentSignet": "Admin1234!",
+    "newSignet": "NewSignet123!"
+  }
+}

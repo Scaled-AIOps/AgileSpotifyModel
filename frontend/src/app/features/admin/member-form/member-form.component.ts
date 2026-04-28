@@ -48,8 +48,8 @@ import type { Member, Squad } from '../../../core/models/index';
             </div>
             @if (!isEdit) {
               <div class="form-field">
-                <label>Kentwort</label>
-                <input class="value-input" [attr.type]="maskedType" formControlName="kentwort" placeholder="Min 8 characters" [attr.autocomplete]="autocompleteNew" />
+                <label>Signet</label>
+                <input class="value-input" [attr.type]="maskedType" formControlName="signet" placeholder="Min 8 characters" [attr.autocomplete]="autocompleteNew" />
               </div>
             }
             <div class="form-field">
@@ -120,7 +120,7 @@ export class MemberFormComponent implements OnInit {
   form = this.fb.group({
     name: ['', Validators.required],
     email: ['', [Validators.required, Validators.email]],
-    kentwort: [''],
+    signet: [''],
     role: ['Member', Validators.required],
     squadId: [''],
   });
@@ -130,7 +130,7 @@ export class MemberFormComponent implements OnInit {
     this.isEdit = !!this.memberId;
 
     if (!this.isEdit) {
-      this.form.get('kentwort')!.setValidators([Validators.required, Validators.minLength(8)]);
+      this.form.get('signet')!.setValidators([Validators.required, Validators.minLength(8)]);
     }
 
     this.squads = await firstValueFrom(this.squadApi.getAll());
@@ -156,11 +156,11 @@ export class MemberFormComponent implements OnInit {
     this.error = '';
     try {
       if (this.isEdit) {
-        const { kentwort: _pc, ...updateData } = this.form.value;
+        const { signet: _pc, ...updateData } = this.form.value;
         void _pc;
         await firstValueFrom(this.memberApi.update(this.memberId, updateData as Partial<Member>));
       } else {
-        await firstValueFrom(this.memberApi.create(this.form.value as Member & { kentwort: string }));
+        await firstValueFrom(this.memberApi.create(this.form.value as Member & { signet: string }));
       }
       this.router.navigate(['/admin/members']);
     } catch (err: unknown) {

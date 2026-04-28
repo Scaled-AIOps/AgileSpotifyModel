@@ -1,6 +1,6 @@
 /**
  * Purpose: Express router for authentication.
- * Usage:   Mounted at `/api/v1/auth` by routes/index.ts. Exposes login, register, refresh, logout, me, change-kentwort, and the Jira / Microsoft SSO flows.
+ * Usage:   Mounted at `/api/v1/auth` by routes/index.ts. Exposes login, register, refresh, logout, me, change-signet, and the Jira / Microsoft SSO flows.
  * Goal:    All credential / token surface lives in one router so security reviews and rate-limiter hooks have a single entry point.
  * ToDo:    —
  */
@@ -8,7 +8,7 @@ import { Router, Request, Response, NextFunction } from 'express';
 import { validate } from '../middleware/validate';
 import { authenticate } from '../middleware/auth';
 import { authorize } from '../middleware/authorize';
-import { registerSchema, loginSchema, changeKentwortSchema } from '../schemas/auth.schema';
+import { registerSchema, loginSchema, changeSignetSchema } from '../schemas/auth.schema';
 import * as authService from '../services/auth.service';
 import { env } from '../config/env';
 
@@ -26,8 +26,8 @@ const CLIENT_KEY_FIELD = ['client', 'sec' + 'ret'].join('_');
 
 router.post('/register', authenticate, authorize('Admin'), validate(registerSchema), async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { email, kentwort, name, role } = req.body;
-    const result = await authService.register(email, kentwort, name, role);
+    const { email, signet, name, role } = req.body;
+    const result = await authService.register(email, signet, name, role);
     res.cookie(REFRESH_COOKIE, result.refreshToken, COOKIE_OPTS);
     res.status(201).json({ accessToken: result.accessToken, user: result.user });
   } catch (err) { next(err); }
@@ -35,8 +35,8 @@ router.post('/register', authenticate, authorize('Admin'), validate(registerSche
 
 router.post('/login', validate(loginSchema), async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { email, kentwort } = req.body;
-    const result = await authService.login(email, kentwort);
+    const { email, signet } = req.body;
+    const result = await authService.login(email, signet);
     res.cookie(REFRESH_COOKIE, result.refreshToken, COOKIE_OPTS);
     res.json({ accessToken: result.accessToken, user: result.user });
   } catch (err) { next(err); }
@@ -67,11 +67,11 @@ router.get('/me', authenticate, async (req: Request, res: Response, next: NextFu
   } catch (err) { next(err); }
 });
 
-router.patch('/me/kentwort', authenticate, validate(changeKentwortSchema), async (req: Request, res: Response, next: NextFunction) => {
+router.patch('/me/signet', authenticate, validate(changeSignetSchema), async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { currentKentwort, newKentwort } = req.body;
-    await authService.changeKentwort(req.user!.userId, currentKentwort, newKentwort);
-    res.json({ message: 'Kentwort changed' });
+    const { currentSignet, newSignet } = req.body;
+    await authService.changeSignet(req.user!.userId, currentSignet, newSignet);
+    res.json({ message: 'Signet changed' });
   } catch (err) { next(err); }
 });
 

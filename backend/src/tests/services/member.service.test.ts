@@ -50,8 +50,8 @@ describe('create', () => {
     await expect(create(baseMember)).rejects.toMatchObject({ statusCode: 409 });
   });
 
-  it('creates user record when kentwort provided', async () => {
-    await create({ ...baseMember, kentwort: 'Pass1!' });
+  it('creates user record when signet provided', async () => {
+    await create({ ...baseMember, signet: 'Pass1!' });
     expect(mockPipeline.hset).toHaveBeenCalledWith(
       expect.stringMatching(/^user:/), expect.any(Object)
     );

@@ -27,7 +27,7 @@ vi.mock('../../lib/id', () => ({
 }));
 
 import redis from '../../config/redis';
-import { register, login, refresh, logout, getMe, changeKentwort } from '../../services/auth.service';
+import { register, login, refresh, logout, getMe, changeSignet } from '../../services/auth.service';
 import jwt from 'jsonwebtoken';
 import { env } from '../../config/env';
 
@@ -59,11 +59,11 @@ describe('register', () => {
 
 describe('login', () => {
   it('returns tokens for valid credentials', async () => {
-    const { hashKentwort } = await import('../../lib/crypto');
-    const hash = await hashKentwort('correct-pass');
+    const { hashSignet } = await import('../../lib/crypto');
+    const hash = await hashSignet('correct-pass');
     (redis.get as any).mockResolvedValue('user-id-1');
     (redis.hgetall as any).mockResolvedValue({
-      id: 'user-id-1', email: 'alice@example.com', kentwortHash: hash,
+      id: 'user-id-1', email: 'alice@example.com', signetHash: hash,
       role: 'Admin', memberId: 'member-id-1', createdAt: new Date().toISOString(),
     });
 
@@ -77,11 +77,11 @@ describe('login', () => {
     await expect(login('unknown@example.com', 'pass')).rejects.toMatchObject({ statusCode: 401 });
   });
 
-  it('throws 401 for wrong kentwort', async () => {
-    const { hashKentwort } = await import('../../lib/crypto');
-    const hash = await hashKentwort('correct');
+  it('throws 401 for wrong signet', async () => {
+    const { hashSignet } = await import('../../lib/crypto');
+    const hash = await hashSignet('correct');
     (redis.get as any).mockResolvedValue('uid');
-    (redis.hgetall as any).mockResolvedValue({ id: 'uid', kentwortHash: hash, role: 'Member', memberId: 'mid', createdAt: '' });
+    (redis.hgetall as any).mockResolvedValue({ id: 'uid', signetHash: hash, role: 'Member', memberId: 'mid', createdAt: '' });
     await expect(login('x@x.com', 'wrong')).rejects.toMatchObject({ statusCode: 401 });
   });
 });
@@ -128,25 +128,25 @@ describe('getMe', () => {
   });
 });
 
-describe('changeKentwort', () => {
-  it('changes kentwort when current is correct', async () => {
-    const { hashKentwort } = await import('../../lib/crypto');
-    const hash = await hashKentwort('OldPass1!');
-    (redis.hgetall as any).mockResolvedValue({ kentwortHash: hash });
-    await expect(changeKentwort('uid', 'OldPass1!', 'NewPass1!')).resolves.toBeUndefined();
+describe('changeSignet', () => {
+  it('changes signet when current is correct', async () => {
+    const { hashSignet } = await import('../../lib/crypto');
+    const hash = await hashSignet('OldPass1!');
+    (redis.hgetall as any).mockResolvedValue({ signetHash: hash });
+    await expect(changeSignet('uid', 'OldPass1!', 'NewPass1!')).resolves.toBeUndefined();
     expect(redis.hset).toHaveBeenCalled();
     expect(redis.del).toHaveBeenCalled();
   });
 
-  it('throws 400 when current kentwort is wrong', async () => {
-    const { hashKentwort } = await import('../../lib/crypto');
-    const hash = await hashKentwort('OldPass1!');
-    (redis.hgetall as any).mockResolvedValue({ kentwortHash: hash });
-    await expect(changeKentwort('uid', 'WrongOld!', 'NewPass1!')).rejects.toMatchObject({ statusCode: 400 });
+  it('throws 400 when current signet is wrong', async () => {
+    const { hashSignet } = await import('../../lib/crypto');
+    const hash = await hashSignet('OldPass1!');
+    (redis.hgetall as any).mockResolvedValue({ signetHash: hash });
+    await expect(changeSignet('uid', 'WrongOld!', 'NewPass1!')).rejects.toMatchObject({ statusCode: 400 });
   });
 
   it('throws 404 when user not found', async () => {
     (redis.hgetall as any).mockResolvedValue({});
-    await expect(changeKentwort('uid', 'any', 'new')).rejects.toMatchObject({ statusCode: 404 });
+    await expect(changeSignet('uid', 'any', 'new')).rejects.toMatchObject({ statusCode: 404 });
   });
 });

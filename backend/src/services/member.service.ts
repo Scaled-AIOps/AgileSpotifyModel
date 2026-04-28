@@ -6,7 +6,7 @@
  */
 import redis from '../config/redis';
 import { generateId } from '../lib/id';
-import { hashKentwort } from '../lib/crypto';
+import { hashSignet } from '../lib/crypto';
 import { createError } from '../middleware/errorHandler';
 import type { Member, Role } from '../models/index';
 
@@ -15,7 +15,7 @@ function fromHash(h: Record<string, string>): Member {
 }
 
 export async function create(data: {
-  name: string; email: string; kentwort?: string; role: Role; avatarUrl: string; squadId: string;
+  name: string; email: string; signet?: string; role: Role; avatarUrl: string; squadId: string;
 }): Promise<Member> {
   const existing = await redis.get(`member:email:${data.email}`);
   if (existing) throw createError('Email already in use', 409);
@@ -29,10 +29,10 @@ export async function create(data: {
   pipeline.hset(`member:${id}`, member as unknown as Record<string, string>);
   pipeline.set(`member:email:${data.email}`, id);
   pipeline.sadd('members:all', id);
-  if (data.kentwort) {
+  if (data.signet) {
     const userId = generateId();
-    const kentwortHash = await hashKentwort(data.kentwort);
-    pipeline.hset(`user:${userId}`, { id: userId, email: data.email, kentwortHash, role: data.role, memberId: id, createdAt: now });
+    const signetHash = await hashSignet(data.signet);
+    pipeline.hset(`user:${userId}`, { id: userId, email: data.email, signetHash, role: data.role, memberId: id, createdAt: now });
     pipeline.set(`user:email:${data.email}`, userId);
     pipeline.sadd('users:all', userId);
   }

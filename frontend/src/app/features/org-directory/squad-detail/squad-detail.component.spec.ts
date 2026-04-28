@@ -249,7 +249,7 @@ describe('SquadDetailComponent', () => {
   });
 
   describe('addMember with non-basic auth', () => {
-    it('creates member without temp kentwort when auth is not basic', async () => {
+    it('creates member without temp signet when auth is not basic', async () => {
       const nonBasicConfig = jasmine.createSpyObj('ConfigService', ['load'], { basicEnabled: () => false, jiraEnabled: () => true, adEnabled: () => false });
       (component as any).config = nonBasicConfig;
       component.addEmail = 'newperson@test.com';
@@ -258,7 +258,7 @@ describe('SquadDetailComponent', () => {
       component.emailMatch = null;
       await component.addMember();
       expect(memberSpy.create).toHaveBeenCalled();
-      expect(component.tempKentwort).toBe('');
+      expect(component.tempSignet).toBe('');
     });
   });
 });

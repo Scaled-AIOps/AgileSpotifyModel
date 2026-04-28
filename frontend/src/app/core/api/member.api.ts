@@ -15,7 +15,7 @@ export class MemberApi {
 
   getAll(): Observable<Member[]> { return this.api.get('/members'); }
   getById(id: string): Observable<Member> { return this.api.get(`/members/${id}`); }
-  create(data: Partial<Member> & { kentwort: string }): Observable<Member> { return this.api.post('/members', data); }
+  create(data: Partial<Member> & { signet: string }): Observable<Member> { return this.api.post('/members', data); }
   update(id: string, data: Partial<Member>): Observable<Member> { return this.api.patch(`/members/${id}`, data); }
   delete(id: string): Observable<void> { return this.api.delete(`/members/${id}`); }
   getAssignments(id: string): Observable<{ squadId: string }> {

@@ -29,9 +29,9 @@ export class AuthService {
 
   constructor(private http: HttpClient, private router: Router) {}
 
-  async login(email: string, kentwort: string): Promise<void> {
+  async login(email: string, signet: string): Promise<void> {
     const res = await firstValueFrom(
-      this.http.post<LoginResponse>(`${this.apiUrl}/login`, { email, kentwort }, { withCredentials: true })
+      this.http.post<LoginResponse>(`${this.apiUrl}/login`, { email, signet }, { withCredentials: true })
     );
     this._accessToken.set(res.accessToken);
     this._currentUser.set(res.user);

@@ -29,8 +29,8 @@ describe('MemberApi', () => {
   });
 
   it('create() calls POST /members', () => {
-    api.create({ name: 'x', kentwort: 'pass' }).subscribe();
-    expect(svc.post).toHaveBeenCalledWith('/members', { name: 'x', kentwort: 'pass' });
+    api.create({ name: 'x', signet: 'pass' }).subscribe();
+    expect(svc.post).toHaveBeenCalledWith('/members', { name: 'x', signet: 'pass' });
   });
 
   it('update() calls PATCH /members/:id', () => {
