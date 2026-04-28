@@ -141,7 +141,7 @@ The role hierarchy used by `authorize()`:
 |---|---|---|
 | `Admin` | 4 | Full access |
 | `AgileCoach` | 4 | Equivalent to Admin for management endpoints |
-| `TribeLead` | 3 | Can create squads / apps, modify squads in own tribe |
+| `TribeLead` | 3 | Can create squads / apps, modify squads in own tribe, edit any app in the tribe they lead (matched by `tribe.leadMemberId`) or in their own squad's tribe |
 | `PO` | 2 | Can update own squad |
 | `ReleaseManager` | 2 | Can record deploys |
 | `Member` | 1 | Read-only, plus squad-role updates |
