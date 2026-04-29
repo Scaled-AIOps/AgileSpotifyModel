@@ -147,8 +147,13 @@ export class OrgTreeComponent implements AfterViewInit, OnDestroy {
     function update(_source: d3.HierarchyNode<TreeNode>) {
       treeLayout(root);
 
-      const nodes = root.descendants();
-      const links = root.links();
+      // Hide the synthetic 'root' node — the chart starts at the
+      // tribeDomain level. d3's tree layout still needs a single root
+      // for spacing, so we keep it but filter it (and the four invisible
+      // root→domain links) out of rendering.
+      const nodes = root.descendants().filter((n) => n.data.type !== 'root');
+      const links = root.links().filter((l) =>
+        (l.source as d3.HierarchyNode<TreeNode>).data.type !== 'root');
 
       g.selectAll<SVGPathElement, d3.HierarchyLink<TreeNode>>('path.link')
         .data(links, (d) => (d.target as d3.HierarchyNode<TreeNode>).data.id)
