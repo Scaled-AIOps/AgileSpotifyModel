@@ -26,12 +26,20 @@ const LANG_STORAGE_KEY = 'app.lang';
   `,
   styles: [`
     .lang-wrap { display: inline-flex; align-items: center; }
+    /* Default: white-on-transparent for the dark topbar.
+       Light-background hosts (e.g. the login screen) override via ::ng-deep. */
     .lang-select {
-      background: transparent; color: inherit; border: 1px solid rgba(255,255,255,0.25);
-      border-radius: 6px; padding: 4px 8px; font-size: 0.78rem; cursor: pointer;
+      background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.35);
+      border-radius: 6px; padding: 4px 24px 4px 8px; font-size: 0.78rem; cursor: pointer;
+      appearance: none;
+      background-image: linear-gradient(45deg, transparent 50%, #fff 50%), linear-gradient(135deg, #fff 50%, transparent 50%);
+      background-position: calc(100% - 12px) 50%, calc(100% - 7px) 50%;
+      background-size: 5px 5px, 5px 5px;
+      background-repeat: no-repeat;
     }
-    .lang-select:hover { border-color: rgba(255,255,255,0.45); }
-    .lang-select option { color: #111; }
+    .lang-select:hover  { border-color: rgba(255,255,255,0.65); }
+    .lang-select:focus  { outline: none; border-color: rgba(255,255,255,0.85); box-shadow: 0 0 0 2px rgba(255,255,255,0.15); }
+    .lang-select option { color: #111; background: #fff; }
     .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
   `],
 })
