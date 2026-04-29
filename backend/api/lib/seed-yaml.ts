@@ -64,7 +64,15 @@ export async function seedFromYaml(): Promise<void> {
   const domainByName = new Map<string, Domain>(allDomains.map((d) => [d.name, d]));
 
   for (const d of domainDefs) {
-    if (domainByName.has(d.name)) { skipped++; continue; }
+    const existing = domainByName.get(d.name);
+    if (existing) {
+      const updated = await domainSvc.update(existing.id, {
+        description: d.description ?? '',
+        jira: d.jira, confluence: d.confluence, github: d.github, mailingList: d.mailingList,
+      });
+      domainByName.set(updated.name, updated);
+      continue;
+    }
     const nd = await domainSvc.create({
       name: d.name, description: d.description ?? '',
       jira: d.jira, confluence: d.confluence, github: d.github, mailingList: d.mailingList,
@@ -79,7 +87,15 @@ export async function seedFromYaml(): Promise<void> {
   const subdomainByName = new Map<string, SubDomain>(allSubdomains.map((s) => [s.name, s]));
 
   for (const s of subdomainDefs) {
-    if (subdomainByName.has(s.name)) { skipped++; continue; }
+    const existingSd = subdomainByName.get(s.name);
+    if (existingSd) {
+      const updated = await subdomainSvc.update(existingSd.id, {
+        description: s.description ?? '',
+        jira: s.jira, confluence: s.confluence, github: s.github, mailingList: s.mailingList,
+      });
+      subdomainByName.set(updated.name, updated);
+      continue;
+    }
     const domain = domainByName.get(s.tribeDomain);
     if (!domain) { console.warn(`[seed] subdomain "${s.name}": domain "${s.tribeDomain}" not found`); skipped++; continue; }
     const ns = await subdomainSvc.create({

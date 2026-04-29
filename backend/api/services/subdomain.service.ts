@@ -8,7 +8,7 @@ import redis from '../config/redis';
 import { generateId } from '../lib/id';
 import { createError } from '../middleware/errorHandler';
 import { coerceLinks, parseLinks, serialiseLinks } from '../lib/links';
-import type { SubDomain, Link } from '../models/index';
+import type { SubDomain } from '../models/index';
 
 function fromHash(h: Record<string, string>): SubDomain {
   return {
@@ -71,7 +71,7 @@ export async function findById(id: string): Promise<SubDomain | null> {
 
 export async function update(id: string, data: Partial<{
   name: string; description: string;
-  jira: Link[]; confluence: Link[]; github: Link[]; mailingList: Link[];
+  jira: unknown; confluence: unknown; github: unknown; mailingList: unknown;
 }>): Promise<SubDomain> {
   const existing = await findById(id);
   if (!existing) throw createError('SubDomain not found', 404);

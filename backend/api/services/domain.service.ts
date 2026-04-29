@@ -8,7 +8,7 @@ import redis from '../config/redis';
 import { generateId } from '../lib/id';
 import { createError } from '../middleware/errorHandler';
 import { coerceLinks, parseLinks, serialiseLinks } from '../lib/links';
-import type { Domain, Link } from '../models/index';
+import type { Domain } from '../models/index';
 
 function fromHash(h: Record<string, string>): Domain {
   return {
@@ -67,7 +67,7 @@ export async function findById(id: string): Promise<Domain | null> {
 
 export async function update(id: string, data: Partial<{
   name: string; description: string;
-  jira: Link[]; confluence: Link[]; github: Link[]; mailingList: Link[];
+  jira: unknown; confluence: unknown; github: unknown; mailingList: unknown;
 }>): Promise<Domain> {
   const existing = await findById(id);
   if (!existing) throw createError('Domain not found', 404);
