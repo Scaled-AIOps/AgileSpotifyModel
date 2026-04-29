@@ -1,6 +1,6 @@
 /**
  * Purpose: Squad detail page.
- * Usage:   Routed at /org/squads/:id. Shows mission, link grid, members table (with inline manage), apps section.
+ * Usage:   Routed at /org/squads/:id. Shows mission, tier badge, link grid, members table (with inline manage), apps section.
  * Goal:    Drill into a single squad — covers both browsing and member management.
  * ToDo:    Show edit affordance for the squad's own jira/confluence/github/mailingList arrays.
  */
@@ -58,6 +58,12 @@ const APP_STATUS_CLASS: Record<AppStatus, string> = {
           <div class="meta-card">
             <div class="meta-label">{{ 'org.squad.scrum_master' | translate }}</div>
             <div class="meta-value">{{ squad.sm }}</div>
+          </div>
+        }
+        @if (squad.tier) {
+          <div class="meta-card">
+            <div class="meta-label">{{ 'org.squad.tier' | translate }}</div>
+            <div class="meta-value"><span class="badge {{ tierClass(squad.tier) }}">{{ 'org.squad.tier_n' | translate: { n: squad.tier } }}</span></div>
           </div>
         }
       </div>
@@ -387,6 +393,10 @@ export class SquadDetailComponent implements OnInit {
   }
   appCritClass(c: string) {
     return c === 'high' ? 'badge-danger' : c === 'medium' ? 'badge-warn' : 'badge-muted';
+  }
+
+  tierClass(t: string) {
+    return t === '0' ? 'badge-danger' : t === '1' ? 'badge-warn' : 'badge-muted';
   }
 
   hasLinks(): boolean {

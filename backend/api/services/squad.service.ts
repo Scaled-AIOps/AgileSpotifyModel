@@ -33,7 +33,7 @@ function toHash(s: Squad): Record<string, string> {
 export async function create(data: {
   name: string; description: string; tribeId: string;
   leadMemberId?: string; missionStatement?: string; key?: string;
-  po?: string; sm?: string;
+  po?: string; sm?: string; tier?: string;
   jira?: unknown; confluence?: unknown; github?: unknown; mailingList?: unknown;
 }): Promise<Squad> {
   const tribeExists = await redis.exists(`tribe:${data.tribeId}`);
@@ -49,7 +49,7 @@ export async function create(data: {
     confluence:  coerceLinks(data.confluence),
     github:      coerceLinks(data.github),
     mailingList: coerceLinks(data.mailingList),
-    createdAt: now, updatedAt: now,
+    tier: data.tier ?? '', createdAt: now, updatedAt: now,
   };
 
   const pipeline = redis.pipeline();

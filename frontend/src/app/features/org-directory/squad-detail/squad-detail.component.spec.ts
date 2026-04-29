@@ -220,6 +220,15 @@ describe('SquadDetailComponent', () => {
       expect(component.appCritClass('')).toBe('badge-muted');
     });
 
+    it('tierClass returns correct badges', () => {
+      expect(component.tierClass('0')).toBe('badge-danger');
+      expect(component.tierClass('1')).toBe('badge-warn');
+      expect(component.tierClass('2')).toBe('badge-muted');
+    });
+
+    it('tierClass returns muted for unknown tier', () => {
+      expect(component.tierClass('3')).toBe('badge-muted');
+    });
   });
 
   describe('canManage edge cases', () => {

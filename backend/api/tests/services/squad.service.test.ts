@@ -29,7 +29,7 @@ import { create, findAll, findById, update, remove, getMembers, addMember, remov
 
 const storedSquad = {
   id: 'sq-1', name: 'Payments', description: '', tribeId: 'tribe-1', leadMemberId: '', missionStatement: '',
-  key: 'PAY', po: '', sm: '', jira: '', confluence: '', mailingList: '',
+  key: 'PAY', po: '', sm: '', jira: '', confluence: '', mailingList: '', tier: '1',
 };
 
 beforeEach(() => {

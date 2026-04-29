@@ -126,6 +126,7 @@ export async function seedFromYaml(): Promise<void> {
       key: s.key, name: s.name, description: s.description ?? '', tribeId: tribe.id,
       po: s.po, sm: s.sm,
       jira: s.jira, confluence: s.confluence, github: s.github, mailingList: s.mailingList,
+      tier: s.tags?.tier,
     });
     created++;
   }
