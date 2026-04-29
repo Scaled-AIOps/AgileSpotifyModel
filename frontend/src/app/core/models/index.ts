@@ -89,7 +89,6 @@ export interface Squad {
   confluence: Link[];
   github: Link[];
   mailingList: Link[];
-  tier: string;
   memberCount?: number;
 }
 

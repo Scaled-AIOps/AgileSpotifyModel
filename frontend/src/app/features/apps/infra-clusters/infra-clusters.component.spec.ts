@@ -6,7 +6,7 @@ import { AppsApi } from '../../../core/api/apps.api';
 import type { InfraCluster } from '../../../core/models/index';
 
 const CLUSTERS: InfraCluster[] = [
-  { id: 'c1', platformId: 'eks-prod', name: 'EKS Prod', environment: 'prod', host: 'eks.prod.io', platform: 'eks', tags: JSON.stringify({ tier: '0' }) } as any,
+  { id: 'c1', platformId: 'eks-prod', name: 'EKS Prod', environment: 'prod', host: 'eks.prod.io', platform: 'eks', tags: JSON.stringify({ criticality: 'high' }) } as any,
   { id: 'c2', platformId: 'eks-dev', name: 'EKS Dev', environment: 'dev', host: 'eks.dev.io', platform: 'eks', tags: null } as any,
 ];
 
@@ -76,7 +76,7 @@ describe('InfraClustersComponent', () => {
   });
 
   it('parsedTags returns parsed object', () => {
-    expect(component.parsedTags(CLUSTERS[0])['tier']).toBe('0');
+    expect(component.parsedTags(CLUSTERS[0])['criticality']).toBe('high');
   });
 
   it('parsedTags returns empty for null tags', () => {

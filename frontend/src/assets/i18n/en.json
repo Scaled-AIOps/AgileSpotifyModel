@@ -318,8 +318,6 @@
     "squad": {
       "product_owner": "Product Owner",
       "scrum_master": "Scrum Master",
-      "tier": "Tier",
-      "tier_n": "Tier {{ n }}",
       "members_paren": "Members ({{ n }})",
       "apps_paren": "Apps ({{ n }})",
       "manage_members": "Manage Members",

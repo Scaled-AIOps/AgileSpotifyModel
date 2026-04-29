@@ -38,7 +38,6 @@
     - config-service
   tags:
     pillar: platform
-    tier: '1'
 - key: payments
   name: Payments
   description: Payment processing, billing, and invoicing
@@ -77,7 +76,6 @@
     - refund-worker
   tags:
     pillar: commerce
-    tier: '0'
 - key: checkout
   name: Checkout
   description: Cart and checkout flows for web and mobile
@@ -111,7 +109,6 @@
     - cart-service
   tags:
     pillar: commerce
-    tier: '1'
 - key: identity
   name: Identity
   description: Authentication, SSO, and user directory
@@ -145,7 +142,6 @@
     - user-directory
   tags:
     pillar: security
-    tier: '0'
 - key: search
   name: Search
   description: Search indexing, ranking, and query pipeline
@@ -178,7 +174,6 @@
     - indexer
   tags:
     pillar: discovery
-    tier: '1'
 - key: recommendations
   name: Recommendations
   description: Personalization and ranking models
@@ -211,7 +206,6 @@
     - feature-store
   tags:
     pillar: discovery
-    tier: '2'
 - key: mobile
   name: Mobile
   description: iOS and Android apps
@@ -245,7 +239,6 @@
     - android-app
   tags:
     pillar: apps
-    tier: '1'
 - key: web
   name: Web
   description: Marketing site and customer web portal
@@ -279,7 +272,6 @@
     - portal
   tags:
     pillar: apps
-    tier: '2'
 - key: data-platform
   name: Data Platform
   description: Data lake, warehouse, and streaming infra
@@ -313,7 +305,6 @@
     - dbt-runner
   tags:
     pillar: data
-    tier: '0'
 - key: analytics
   name: Analytics
   description: BI dashboards and product analytics
@@ -346,7 +337,6 @@
     - events-pipeline
   tags:
     pillar: data
-    tier: '2'
 - key: notifications
   name: Notifications
   description: Email, SMS, and push notification delivery
@@ -379,7 +369,6 @@
     - push-hub
   tags:
     pillar: messaging
-    tier: '1'
 - key: observability
   name: Observability
   description: Logging, metrics, and tracing stack
@@ -413,7 +402,6 @@
     - trace-collector
   tags:
     pillar: platform
-    tier: '0'
 - key: devex
   name: DevEx
   description: Developer experience, CI/CD, build tooling
@@ -447,7 +435,6 @@
     - cli-tools
   tags:
     pillar: platform
-    tier: '2'
 - key: fraud
   name: Fraud
   description: Fraud detection and risk scoring
@@ -479,7 +466,6 @@
     - rules-engine
   tags:
     pillar: security
-    tier: '1'
 - key: support-tools
   name: Support Tools
   description: Internal tools for customer support agents
@@ -512,7 +498,6 @@
     - case-manager
   tags:
     pillar: apps
-    tier: '3'
 - key: growth
   name: Growth
   description: Experimentation and growth initiatives
@@ -545,4 +530,3 @@
     - feature-flags
   tags:
     pillar: growth
-    tier: '2'

@@ -33,7 +33,7 @@ import * as squadSvc from '../../services/squad.service';
 const tok = (role = 'Admin') =>
   jwt.sign({ userId: 'uid', memberId: 'mid', role }, env.JWT_SIGNING_KEY, { expiresIn: '1h' });
 
-const squad = { id: 'sq-1', name: 'Payments', description: '', tribeId: 't-1', leadMemberId: '', key: 'PAY', missionStatement: '', po: '', sm: '', jira: '', confluence: '', mailingList: '', tier: '1' };
+const squad = { id: 'sq-1', name: 'Payments', description: '', tribeId: 't-1', leadMemberId: '', key: 'PAY', missionStatement: '', po: '', sm: '', jira: '', confluence: '', mailingList: '' };
 
 beforeEach(() => {
   vi.clearAllMocks();
