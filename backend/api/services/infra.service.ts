@@ -2,7 +2,7 @@
  * Purpose: Redis-backed CRUD for InfraCluster records.
  * Usage:   Called from infra.routes.ts. Indexed by environment via `infra:env:{env}` set.
  * Goal:    Persistence layer for the infrastructure catalogue (clusters, hosts, platforms).
- * ToDo:    Add update() + PATCH route. POST is now exposed (Admin-only).
+ * ToDo:    Wire a PATCH route. update() is now exposed for the YAML upsert path.
  */
 import redis from '../config/redis';
 import { createError } from '../middleware/errorHandler';
@@ -43,6 +43,24 @@ export async function findByEnv(env: string): Promise<InfraCluster[]> {
   ids.forEach((id) => pipeline.hgetall(`infra:${id}`));
   const results = await pipeline.exec();
   return (results ?? []).map(([, h]) => fromHash(h as Record<string, string>)).filter((c) => c?.platformId);
+}
+
+export async function update(
+  platformId: string,
+  data: Partial<Omit<InfraCluster, 'platformId' | 'createdAt'>>,
+): Promise<InfraCluster> {
+  const existing = await findById(platformId);
+  if (!existing) throw createError('Cluster not found', 404);
+  const merged: InfraCluster = { ...existing, ...data };
+  const pipeline = redis.pipeline();
+  pipeline.hset(`infra:${platformId}`, merged as unknown as Record<string, string>);
+  // If the environment changed, move the platformId between env-index sets.
+  if (data.environment && data.environment !== existing.environment) {
+    pipeline.srem(`infra:env:${existing.environment}`, platformId);
+    pipeline.sadd(`infra:env:${data.environment}`, platformId);
+  }
+  await pipeline.exec();
+  return merged;
 }
 
 export async function remove(platformId: string): Promise<void> {

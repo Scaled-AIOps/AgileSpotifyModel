@@ -175,7 +175,17 @@ export async function seedFromYaml(): Promise<void> {
     const existingInfra = await infraSvc.findAll();
     const infraIds = new Set(existingInfra.map((c) => c.platformId));
     for (const c of infraDefs) {
-      if (infraIds.has(c.platformId)) { skipped++; continue; }
+      if (infraIds.has(c.platformId)) {
+        // Upsert by platformId — refresh mutable fields from YAML.
+        await infraSvc.update(c.platformId, {
+          name: c.name, description: c.description ?? '',
+          clusterId: c.clusterId, environment: c.environment, host: c.host,
+          routeHostName: c.routeHostName, platform: c.platform, platformType: c.platformType,
+          tokenId: c.tokenId, status: c.status ?? 'active',
+          tags: JSON.stringify(c.tags ?? {}),
+        });
+        continue;
+      }
       await infraSvc.create({
         platformId: c.platformId, name: c.name, description: c.description ?? '',
         clusterId: c.clusterId, environment: c.environment, host: c.host,
