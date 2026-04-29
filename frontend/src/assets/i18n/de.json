@@ -284,7 +284,14 @@
       "host": "Host",
       "route": "Route",
       "tags": "Tags",
-      "no_match": "Keine Cluster entsprechen den Filtern"
+      "status": "Status",
+      "no_match": "Keine Cluster entsprechen den Filtern",
+      "status_opt": {
+        "active": "Aktiv",
+        "inactive": "Inaktiv",
+        "decommissioning": "Außerbetriebnahme",
+        "failed": "Fehlgeschlagen"
+      }
     }
   },
   "org": {

@@ -33,7 +33,7 @@ interface YamlDomain extends YamlLinks    { name: string; description?: string }
 interface YamlSubdomain extends YamlLinks { name: string; tribeDomain: string; description?: string }
 interface YamlTribe extends YamlLinks     { name: string; tribeName?: string; subDomain: string; tribeDomain: string; releaseManager?: string; agileCoach?: string; description?: string }
 interface YamlSquad extends YamlLinks     { key: string; name: string; description?: string; tribe: string; po?: string; sm?: string; tags?: Record<string, string> }
-interface YamlInfra { platformId: string; name: string; description?: string; clusterId: string; environment: string; host: string; routeHostName: string; platform: string; platformType: string; tokenId: string; tags?: Record<string, string> }
+interface YamlInfra { platformId: string; name: string; description?: string; clusterId: string; environment: string; host: string; routeHostName: string; platform: string; platformType: string; tokenId: string; status?: import('../models/index').InfraStatus; tags?: Record<string, string> }
 interface YamlPlatformBlock {
   localPlatform?: string; devPlatform?: string; intPlatform?: string; uatPlatform?: string; prdPlatform?: string;
   localUrl?: string;      devUrl?: string;      intUrl?: string;      uatUrl?: string;      prdUrl?: string;
@@ -180,7 +180,8 @@ export async function seedFromYaml(): Promise<void> {
         platformId: c.platformId, name: c.name, description: c.description ?? '',
         clusterId: c.clusterId, environment: c.environment, host: c.host,
         routeHostName: c.routeHostName, platform: c.platform, platformType: c.platformType,
-        tokenId: c.tokenId, tags: JSON.stringify(c.tags ?? {}),
+        tokenId: c.tokenId, status: c.status ?? 'active',
+        tags: JSON.stringify(c.tags ?? {}),
       });
       infraIds.add(c.platformId);
       created++;

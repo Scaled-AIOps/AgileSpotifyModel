@@ -11,10 +11,17 @@ import { KeyValuePipe } from '@angular/common';
 import { firstValueFrom } from 'rxjs';
 import { TranslateModule } from '@ngx-translate/core';
 import { AppsApi } from '../../../core/api/apps.api';
-import type { InfraCluster } from '../../../core/models/index';
+import type { InfraCluster, InfraStatus } from '../../../core/models/index';
 
 const ENV_CLASS: Record<string, string> = {
   prd: 'badge-danger', uat: 'badge-warn', int: 'badge-story', dev: 'badge-success', local: 'badge-muted',
+};
+
+const STATUS_CLASS: Record<InfraStatus, string> = {
+  'active':                    'badge-success',
+  'inactive':                  'badge-muted',
+  'marked-for-decommissioning': 'badge-warn',
+  'failed':                    'badge-danger',
 };
 
 @Component({
@@ -59,6 +66,10 @@ const ENV_CLASS: Record<string, string> = {
             <div class="cluster-id mono">{{ c.platformId }}</div>
 
             <div class="cluster-body">
+              <div class="cluster-row">
+                <span class="cluster-key">{{ 'apps.infra.status' | translate }}</span>
+                <span class="cluster-val"><span class="badge {{ statusClass(c.status) }}">{{ statusLabelKey(c.status) | translate }}</span></span>
+              </div>
               @if (c.platform) {
                 <div class="cluster-row">
                   <span class="cluster-key">{{ 'apps.infra.platform' | translate }}</span>
@@ -174,6 +185,13 @@ export class InfraClustersComponent implements OnInit {
   }
 
   envClass(e: string)   { return ENV_CLASS[e] ?? 'badge-muted'; }
+
+  statusClass(s: InfraStatus | undefined) { return s ? (STATUS_CLASS[s] ?? 'badge-muted') : 'badge-muted'; }
+  statusLabelKey(s: InfraStatus | undefined): string {
+    if (!s) return 'apps.infra.status_opt.active';
+    if (s === 'marked-for-decommissioning') return 'apps.infra.status_opt.decommissioning';
+    return 'apps.infra.status_opt.' + s;
+  }
 
   parsedTags(c: InfraCluster): Record<string, string> {
     try { return c.tags ? JSON.parse(c.tags) : {}; } catch { return {}; }

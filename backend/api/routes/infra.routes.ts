@@ -46,6 +46,7 @@ router.post('/', validate(createInfraSchema), async (req, res, next) => {
       platform:      req.body.platform,
       platformType:  req.body.platformType,
       tokenId:       req.body.tokenId,
+      status:        req.body.status,
       tags:          JSON.stringify(req.body.tags ?? {}),
     });
     res.status(201).json(cluster);

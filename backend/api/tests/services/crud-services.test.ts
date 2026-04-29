@@ -218,7 +218,7 @@ describe('subdomain.service', () => {
 // ── Infra ────────────────────────────────────────────────────────────────────
 
 describe('infra.service', () => {
-  const storedCluster = { platformId: 'plat-1', name: 'OCP-PRD', description: '', clusterId: 'c-1', environment: 'prd', host: 'api.ocp.example.com', routeHostName: '*.apps.example.com', platform: 'OpenShift', platformType: 'on-prem', tokenId: 'tok-1', tags: '{}', createdAt: '' };
+  const storedCluster = { platformId: 'plat-1', name: 'OCP-PRD', description: '', clusterId: 'c-1', environment: 'prd', host: 'api.ocp.example.com', routeHostName: '*.apps.example.com', platform: 'OpenShift', platformType: 'on-prem', tokenId: 'tok-1', status: 'active' as const, tags: '{}', createdAt: '' };
 
   beforeEach(() => {
     (redis.hgetall as any).mockResolvedValue(storedCluster);

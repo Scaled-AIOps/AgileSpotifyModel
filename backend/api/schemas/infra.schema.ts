@@ -17,5 +17,6 @@ export const createInfraSchema = z.object({
   platform:      z.string().min(1),
   platformType:  z.string().min(1),
   tokenId:       z.string().optional().default(''),
+  status:        z.enum(['active', 'inactive', 'marked-for-decommissioning', 'failed']).default('active'),
   tags:          z.record(z.string()).optional().default({}),
 });

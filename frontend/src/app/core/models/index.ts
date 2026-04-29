@@ -175,6 +175,8 @@ export interface AuditEntry {
   changes: Record<string, { from: string; to: string }>;
 }
 
+export type InfraStatus = 'active' | 'inactive' | 'marked-for-decommissioning' | 'failed';
+
 export interface InfraCluster {
   platformId: string;
   name: string;
@@ -186,6 +188,7 @@ export interface InfraCluster {
   platform: string;
   platformType: string;
   tokenId: string;
+  status: InfraStatus;
   tags: string;
   createdAt: string;
 }
