@@ -1,0 +1,30 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "apps": "Apps",
+    "org": "Org Directory",
+    "admin": "Admin",
+    "signout": "Sign out",
+    "brand": "Spotify Model"
+  },
+  "login": {
+    "title": "Sign in",
+    "tagline": "Squad & Tribe Management",
+    "subtitle_credentials": "Enter your credentials to continue.",
+    "subtitle_sso_or_credentials": "Use your organisation account or enter your credentials.",
+    "email": "Email",
+    "passcode": "Passcode",
+    "submit": "Sign in",
+    "or": "or",
+    "continue_jira": "Continue with Jira",
+    "continue_microsoft": "Continue with Microsoft",
+    "default_seed": "Default seed: admin@example.com / Admin1234!",
+    "error_prefix": "Error",
+    "default_error": "Login failed"
+  },
+  "language": {
+    "label": "Language",
+    "en": "English",
+    "de": "Deutsch"
+  }
+}

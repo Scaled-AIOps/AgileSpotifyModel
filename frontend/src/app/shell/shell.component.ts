@@ -6,39 +6,41 @@
  */
 import { Component, inject } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 import { AuthService } from '../core/auth/auth.service';
+import { LanguageSwitcherComponent } from '../shared/language-switcher/language-switcher.component';
 
 @Component({
   selector: 'app-shell',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, TranslateModule, LanguageSwitcherComponent],
   template: `
     <div class="shell">
       <header class="topbar">
         <a class="brand" routerLink="/apps">
           <div class="brand-mark">S</div>
-          <span class="brand-name">Spotify Model</span>
+          <span class="brand-name">{{ 'nav.brand' | translate }}</span>
         </a>
 
         <nav class="topnav">
-          <a class="topnav-item" routerLink="/dashboard" routerLinkActive="active" title="Dashboard">
+          <a class="topnav-item" routerLink="/dashboard" routerLinkActive="active" [title]="'nav.dashboard' | translate">
             <svg class="nav-svg" viewBox="0 0 20 20" fill="currentColor">
               <rect x="2" y="2" width="7" height="7" rx="1.5"/>
               <rect x="11" y="2" width="7" height="7" rx="1.5"/>
               <rect x="2" y="11" width="7" height="7" rx="1.5"/>
               <rect x="11" y="11" width="7" height="7" rx="1.5"/>
             </svg>
-            <span class="nav-label">Dashboard</span>
+            <span class="nav-label">{{ 'nav.dashboard' | translate }}</span>
           </a>
-          <a class="topnav-item" routerLink="/apps" routerLinkActive="active" title="Applications">
+          <a class="topnav-item" routerLink="/apps" routerLinkActive="active" [title]="'nav.apps' | translate">
             <svg class="nav-svg" viewBox="0 0 20 20" fill="currentColor">
               <rect x="2" y="4" width="16" height="2.5" rx="1.25"/>
               <rect x="2" y="8.75" width="16" height="2.5" rx="1.25"/>
               <rect x="2" y="13.5" width="10" height="2.5" rx="1.25"/>
             </svg>
-            <span class="nav-label">Apps</span>
+            <span class="nav-label">{{ 'nav.apps' | translate }}</span>
           </a>
-          <a class="topnav-item" routerLink="/org" routerLinkActive="active" title="Org Directory">
+          <a class="topnav-item" routerLink="/org" routerLinkActive="active" [title]="'nav.org' | translate">
             <svg class="nav-svg" viewBox="0 0 20 20" fill="currentColor">
               <circle cx="10" cy="4" r="2.2"/>
               <rect x="8.8" y="6.2" width="2.4" height="3.4" rx="0.5"/>
@@ -49,19 +51,20 @@ import { AuthService } from '../core/auth/auth.service';
               <line x1="10" y1="9.6" x2="4" y2="11.8" stroke="currentColor" stroke-width="1.4" fill="none"/>
               <line x1="10" y1="9.6" x2="16" y2="11.8" stroke="currentColor" stroke-width="1.4" fill="none"/>
             </svg>
-            <span class="nav-label">Org Directory</span>
+            <span class="nav-label">{{ 'nav.org' | translate }}</span>
           </a>
           @if (canAccessAdmin) {
-            <a class="topnav-item" routerLink="/admin" routerLinkActive="active" title="Admin">
+            <a class="topnav-item" routerLink="/admin" routerLinkActive="active" [title]="'nav.admin' | translate">
               <svg class="nav-svg" viewBox="0 0 20 20" fill="currentColor">
                 <path d="M10 2a3 3 0 100 6 3 3 0 000-6zm-7 14c0-3.314 3.134-6 7-6s7 2.686 7 6H3z"/>
               </svg>
-              <span class="nav-label">Admin</span>
+              <span class="nav-label">{{ 'nav.admin' | translate }}</span>
             </a>
           }
         </nav>
 
         <div class="topbar-right">
+          <app-language-switcher></app-language-switcher>
           <div class="user-chip">
             <div class="user-avatar">{{ initials }}</div>
             <div class="user-meta">
@@ -69,7 +72,7 @@ import { AuthService } from '../core/auth/auth.service';
               <span class="user-role">{{ currentUser()?.role }}</span>
             </div>
           </div>
-          <button class="btn btn-ghost btn-sm" (click)="logout()">Sign out</button>
+          <button class="btn btn-ghost btn-sm" (click)="logout()">{{ 'nav.signout' | translate }}</button>
         </div>
       </header>
 

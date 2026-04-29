@@ -1,6 +1,9 @@
 import { TestBed } from '@angular/core/testing';
 import { ComponentFixture } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideTranslateService } from '@ngx-translate/core';
 import { ShellComponent } from './shell.component';
 import { AuthService } from '../core/auth/auth.service';
 import { FeatureFlagsService } from '../core/feature-flags/feature-flags.service';
@@ -25,6 +28,9 @@ describe('ShellComponent', () => {
       imports: [ShellComponent],
       providers: [
         provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        provideTranslateService(),
         { provide: AuthService, useValue: makeAuth('Admin') },
         { provide: FeatureFlagsService, useValue: flagsStub },
       ],
@@ -56,6 +62,9 @@ describe('ShellComponent role visibility', () => {
       imports: [ShellComponent],
       providers: [
         provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        provideTranslateService(),
         { provide: AuthService, useValue: makeAuth(role) },
         { provide: FeatureFlagsService, useValue: flagsStub },
       ],
@@ -83,6 +92,9 @@ describe('ShellComponent role visibility', () => {
       imports: [ShellComponent],
       providers: [
         provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        provideTranslateService(),
         { provide: AuthService, useValue: { currentUser: () => null, logout: jasmine.createSpy() } },
         { provide: FeatureFlagsService, useValue: flagsStub },
       ],

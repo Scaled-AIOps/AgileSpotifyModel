@@ -7,31 +7,34 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../../../core/auth/auth.service';
 import { ConfigService } from '../../../core/config/config.service';
 import { environment } from '../../../../environments/environment';
+import { LanguageSwitcherComponent } from '../../../shared/language-switcher/language-switcher.component';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, TranslateModule, LanguageSwitcherComponent],
   template: `
     <div class="login-shell">
+      <div class="lang-corner"><app-language-switcher></app-language-switcher></div>
       <div class="login-card">
         <div class="login-brand">
           <div class="login-mark">S</div>
           <div>
             <div class="login-title">Agile Spotify Model</div>
-            <div class="login-tag">Squad & Tribe Management</div>
+            <div class="login-tag">{{ 'login.tagline' | translate }}</div>
           </div>
         </div>
 
-        <h1 class="login-h1">Sign in</h1>
+        <h1 class="login-h1">{{ 'login.title' | translate }}</h1>
         <p class="login-sub">
           @if (config.jiraEnabled() || config.adEnabled()) {
-            Use your organisation account or enter your credentials.
+            {{ 'login.subtitle_sso_or_credentials' | translate }}
           } @else {
-            Enter your credentials to continue.
+            {{ 'login.subtitle_credentials' | translate }}
           }
         </p>
 
@@ -45,7 +48,7 @@ import { environment } from '../../../../environments/environment';
                   <path d="M11.53 8.56l-1.77 1.77 1.77 1.77 1.77-1.77-1.77-1.77z" fill="url(#j)"/>
                   <defs><linearGradient id="j" x1="10.5" y1="10.33" x2="13.56" y2="13.39" gradientUnits="userSpaceOnUse"><stop stop-color="#2684FF"/><stop offset="1" stop-color="#0052CC"/></linearGradient></defs>
                 </svg>
-                Continue with Jira
+                {{ 'login.continue_jira' | translate }}
               </a>
             }
             @if (config.adEnabled()) {
@@ -56,12 +59,12 @@ import { environment } from '../../../../environments/environment';
                   <rect x="1" y="11" width="9" height="9" fill="#00a4ef"/>
                   <rect x="11" y="11" width="9" height="9" fill="#ffb900"/>
                 </svg>
-                Continue with Microsoft
+                {{ 'login.continue_microsoft' | translate }}
               </a>
             }
           </div>
           @if (config.basicEnabled()) {
-            <div class="divider"><span>or</span></div>
+            <div class="divider"><span>{{ 'login.or' | translate }}</span></div>
           }
         }
 
@@ -69,28 +72,28 @@ import { environment } from '../../../../environments/environment';
         @if (config.basicEnabled()) {
           <form [formGroup]="form" (ngSubmit)="submit()">
             <label class="field">
-              <span>Email</span>
+              <span>{{ 'login.email' | translate }}</span>
               <input class="value-input" type="email" formControlName="email" autocomplete="email" placeholder="you@example.com" />
             </label>
             <label class="field">
-              <span>Signet</span>
+              <span>{{ 'login.passcode' | translate }}</span>
               <input class="value-input" [attr.type]="maskedType" formControlName="signet" [attr.autocomplete]="autocompleteCurrent" placeholder="••••••••" />
             </label>
 
             @if (errorMsg) {
-              <div class="error"><strong>Error</strong> — {{ errorMsg }}</div>
+              <div class="error"><strong>{{ 'login.error_prefix' | translate }}</strong> — {{ errorMsg }}</div>
             }
 
             <button class="btn btn-primary submit" type="submit" [disabled]="loading || form.invalid">
-              @if (loading) { <span class="spinner"></span> } Sign in
+              @if (loading) { <span class="spinner"></span> } {{ 'login.submit' | translate }}
             </button>
           </form>
           <div class="login-footer">
-            Default seed: admin&#64;example.com / Admin1234!
+            {{ 'login.default_seed' | translate }}
           </div>
         } @else {
           @if (errorMsg) {
-            <div class="error" style="margin-top:1rem"><strong>Error</strong> — {{ errorMsg }}</div>
+            <div class="error" style="margin-top:1rem"><strong>{{ 'login.error_prefix' | translate }}</strong> — {{ errorMsg }}</div>
           }
         }
       </div>
@@ -100,10 +103,13 @@ import { environment } from '../../../../environments/environment';
     :host { display: block; min-height: 100vh; }
     .login-shell {
       min-height: 100vh; display: grid; place-items: center; padding: 2rem;
+      position: relative;
       background: radial-gradient(circle at 20% 20%, rgba(30,64,175,0.10), transparent 60%),
                   radial-gradient(circle at 80% 70%, rgba(96,165,250,0.10), transparent 60%),
                   var(--surface-bg);
     }
+    .lang-corner { position: absolute; top: 1rem; right: 1rem; }
+    .lang-corner ::ng-deep .lang-select { color: var(--text-strong); border-color: var(--border); }
     .login-card { width: 100%; max-width: 440px; background: var(--surface-card); border: 1px solid var(--border); border-radius: 14px; box-shadow: 0 24px 48px rgba(15,23,42,0.10), 0 4px 12px rgba(15,23,42,0.06); padding: 2rem 2rem 1.5rem; }
     .login-brand { display: flex; align-items: center; gap: 0.7rem; margin-bottom: 1.5rem; }
     .login-mark { width: 38px; height: 38px; border-radius: 8px; background: linear-gradient(135deg, var(--blue-500), var(--blue-700)); color: #fff; display: grid; place-items: center; font-weight: 700; font-size: 1.15rem; box-shadow: 0 4px 12px rgba(30,64,175,0.25); }
@@ -129,6 +135,7 @@ export class LoginComponent implements OnInit {
   private router  = inject(Router);
   private route   = inject(ActivatedRoute);
   private fb      = inject(FormBuilder);
+  private i18n    = inject(TranslateService);
 
   readonly jiraAuthUrl = `${environment.apiUrl}/auth/jira`;
   readonly msAuthUrl   = `${environment.apiUrl}/auth/microsoft`;
@@ -160,7 +167,7 @@ export class LoginComponent implements OnInit {
       await this.auth.login(this.form.value.email!, this.form.value.signet!);
       this.router.navigate(['/apps']);
     } catch (err: unknown) {
-      this.errorMsg = (err as { error?: { error?: string } })?.error?.error ?? 'Login failed';
+      this.errorMsg = (err as { error?: { error?: string } })?.error?.error ?? this.i18n.instant('login.default_error');
     } finally {
       this.loading = false;
     }

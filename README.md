@@ -365,6 +365,16 @@ In the frontend, two shared standalone components render and edit these arrays:
 - [`<app-link-list>`](frontend/src/app/shared/link-list/link-list.component.ts) — read-only display on detail pages
 - [`<app-link-repeater>`](frontend/src/app/shared/link-repeater/link-repeater.component.ts) — repeater rows (URL + description + remove button) for edit forms
 
+## Internationalisation
+
+The frontend uses [`@ngx-translate/core`](https://ngx-translate.org) for runtime translations.
+
+- **Supported locales**: `en` (default) and `de`. Add another by dropping a new JSON file under [`frontend/src/assets/i18n/`](frontend/src/assets/i18n/) and adding its code to `SUPPORTED_LANGUAGES` in [app.config.ts](frontend/src/app/app.config.ts).
+- **Selection precedence**: `localStorage['app.lang']` > `navigator.language` (first two chars) > `'en'`. The user's choice is persisted on every change made via the in-app switcher.
+- **Switcher**: a tiny `<app-language-switcher>` component is mounted in the authenticated shell toolbar and on the login screen, so the language can be changed both before and after login without reload.
+- **Wiring**: `provideTranslateService` + `provideTranslateHttpLoader` in [app.config.ts](frontend/src/app/app.config.ts); a second `APP_INITIALIZER` resolves the initial locale before bootstrap finishes so the first paint is in the right language.
+- **Coverage**: the login screen and shell nav are migrated as proof of concept. Other components still hard-code English — migrate by replacing string literals with the `'key' | translate` pipe and adding the key under both `en.json` and `de.json`.
+
 ## Tribe naming
 
 `Tribe.name` is a short code (e.g. `INF`, `PSS`); `Tribe.tribeName` is the long form (e.g. *"Infrastructure"*, *"Payment System Services"*). Detail pages show the long name with the short code as a monospace badge. The YAML loader accepts either form when other entities reference a tribe.

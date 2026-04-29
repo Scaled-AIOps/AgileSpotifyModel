@@ -3,6 +3,7 @@ import { ComponentFixture } from '@angular/core/testing';
 import { ActivatedRoute, Router } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideTranslateService } from '@ngx-translate/core';
 import { LoginComponent } from './login.component';
 import { AuthService } from '../../../core/auth/auth.service';
 import { ConfigService } from '../../../core/config/config.service';
@@ -28,6 +29,7 @@ describe('LoginComponent', () => {
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
+        provideTranslateService(),
         { provide: AuthService, useValue: authSpy },
         { provide: Router, useValue: routerSpy },
         { provide: ConfigService, useValue: configSpy },
@@ -91,7 +93,8 @@ describe('LoginComponent', () => {
       authSpy.login.and.rejectWith({});
       component.form.setValue({ email: 'bad@example.com', signet: 'wrong' });
       await component.submit();
-      expect(component.errorMsg).toBe('Login failed');
+      // Translation files aren't loaded in tests, so the fallback is the raw key.
+      expect(component.errorMsg).toBe('login.default_error');
     });
   });
 });

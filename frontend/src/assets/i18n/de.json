@@ -1,0 +1,30 @@
+{
+  "nav": {
+    "dashboard": "Übersicht",
+    "apps": "Anwendungen",
+    "org": "Organisation",
+    "admin": "Verwaltung",
+    "signout": "Abmelden",
+    "brand": "Spotify-Modell"
+  },
+  "login": {
+    "title": "Anmelden",
+    "tagline": "Squad- und Tribe-Verwaltung",
+    "subtitle_credentials": "Geben Sie Ihre Anmeldedaten ein.",
+    "subtitle_sso_or_credentials": "Verwenden Sie Ihr Firmenkonto oder geben Sie Ihre Anmeldedaten ein.",
+    "email": "E-Mail",
+    "passcode": "Kennwort",
+    "submit": "Anmelden",
+    "or": "oder",
+    "continue_jira": "Mit Jira fortfahren",
+    "continue_microsoft": "Mit Microsoft fortfahren",
+    "default_seed": "Standard-Demo: admin@example.com / Admin1234!",
+    "error_prefix": "Fehler",
+    "default_error": "Anmeldung fehlgeschlagen"
+  },
+  "language": {
+    "label": "Sprache",
+    "en": "English",
+    "de": "Deutsch"
+  }
+}
