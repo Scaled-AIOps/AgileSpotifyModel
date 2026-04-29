@@ -28,6 +28,12 @@ const STATUS_LABEL: Record<AppStatus, string> = {
 };
 const ALL_STATUSES: AppStatus[] = ['active', 'inactive', 'marked-for-decommissioning', 'failed'];
 
+/** Type chips shown beneath the status filter row. The value is what we
+ *  match against either `app.tags.type` (preferred) or — when no explicit
+ *  tag is set — a small heuristic on `app.appId` / `app.javaVersion`. */
+type AppType = 'frontend' | 'backend' | 'tool' | 'node' | 'angular' | 'java';
+const ALL_TYPES: AppType[] = ['frontend', 'backend', 'tool', 'node', 'angular', 'java'];
+
 type SortField = 'appId' | 'squadKey' | 'status' | 'javaVersion' | 'pillar' | 'criticality';
 
 interface ColDef { key: string; label: string; visible: boolean; }
@@ -83,6 +89,16 @@ const PAGE_SIZES = [10, 25, 50, 100];
             @for (s of statuses; track s) {
               <button class="chip" [class.active]="activeStatus === s" (click)="setStatus(s)">
                 {{ statusLabelKey(s) | translate }} <span class="chip-count">{{ countByStatus(s) }}</span>
+              </button>
+            }
+          </div>
+
+          <!-- Type filter chips (frontend / backend / tool / node / angular / java) -->
+          <div class="filter-chips type-chips">
+            <button class="chip" [class.active]="!activeType" (click)="setType(null)">{{ 'apps.list.filter.all' | translate }}</button>
+            @for (t of types; track t) {
+              <button class="chip" [class.active]="activeType === t" (click)="setType(t)">
+                {{ ('apps.list.type.' + t) | translate }} <span class="chip-count">{{ countByType(t) }}</span>
               </button>
             }
           </div>
@@ -299,6 +315,7 @@ const PAGE_SIZES = [10, 25, 50, 100];
     .search-clear { border: none; background: none; cursor: pointer; color: var(--text-muted); font-size: 0.75rem; padding: 0 2px; }
 
     .filter-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+    .type-chips { padding-left: 12px; border-left: 1px solid var(--border); }
     .chip { padding: 3px 10px; border-radius: 999px; font-size: 0.78rem; font-weight: 600; border: 1px solid var(--border); background: var(--surface-bg); color: var(--text-muted); cursor: pointer; transition: all 150ms; white-space: nowrap; }
     .chip:hover { border-color: var(--blue-400); color: var(--blue-600); }
     .chip.active { background: var(--blue-600); border-color: var(--blue-600); color: #fff; }
@@ -363,6 +380,8 @@ export class AppListComponent implements OnInit {
   query = '';
   activeStatus: AppStatus | null = null;
   readonly statuses = ALL_STATUSES;
+  activeType: AppType | null = null;
+  readonly types = ALL_TYPES;
 
   sortField: SortField = 'appId';
   sortDir: 'asc' | 'desc' = 'asc';
@@ -392,9 +411,26 @@ export class AppListComponent implements OnInit {
         || (t['criticality'] ?? '').toLowerCase().includes(q)
         || (a.javaVersion ?? '').toLowerCase().includes(q);
       const matchS = !this.activeStatus || a.status === this.activeStatus;
-      return matchQ && matchS;
+      const matchT = !this.activeType || this.appType(a) === this.activeType;
+      return matchQ && matchS && matchT;
     });
   }
+
+  /** Resolve an app's "type" — explicit `tags.type` wins; otherwise a small
+   *  heuristic on appId / javaVersion gives a sensible bucket. */
+  appType(a: App): AppType | null {
+    const tagged = (this.parseTags(a)['type'] ?? '').toLowerCase();
+    if ((ALL_TYPES as string[]).includes(tagged)) return tagged as AppType;
+    const id = a.appId.toLowerCase();
+    if (a.javaVersion) return 'java';
+    if (id.endsWith('-ui') || id.includes('admin-ui') || id.includes('console')) return 'angular';
+    if (id.includes('android') || id.includes('ios') || id.includes('mobile') || id.includes('-web')) return 'frontend';
+    if (id.endsWith('-tool') || id.endsWith('-cli') || id.includes('-checker')) return 'tool';
+    if (id.endsWith('-worker') || id.endsWith('-service') || id.endsWith('-api') || id.endsWith('-gateway')) return 'backend';
+    return 'node';
+  }
+
+  countByType(t: AppType) { return this.sourcePool.filter((a) => this.appType(a) === t).length; }
 
   get sorted(): App[] {
     const f = this.sortField;
@@ -483,6 +519,7 @@ export class AppListComponent implements OnInit {
   }
 
   setStatus(s: AppStatus | null) { this.activeStatus = s; this.currentPage = 1; }
+  setType(t: AppType | null) { this.activeType = t; this.currentPage = 1; }
   onQueryChange()  { this.currentPage = 1; }
   clearQuery()     { this.query = ''; this.currentPage = 1; }
   onPageSizeChange() { this.pageSize = Number(this.pageSize); this.currentPage = 1; }

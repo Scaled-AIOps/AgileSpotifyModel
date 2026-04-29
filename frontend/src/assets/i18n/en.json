@@ -145,6 +145,14 @@
         "decommissioning": "Decommissioning",
         "failed": "Failed"
       },
+      "type": {
+        "frontend": "Frontend",
+        "backend": "Backend",
+        "tool": "Tool",
+        "node": "Node",
+        "angular": "Angular",
+        "java": "Java"
+      },
       "show": "Show",
       "columns": "⊞ Columns",
       "export": "↓ Export",
