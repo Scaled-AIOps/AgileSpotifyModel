@@ -1,0 +1,37 @@
+meta {
+  name: Create Infra Cluster
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/v1/infra
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "platformId":    "demo-cluster",
+    "name":          "Demo Cluster",
+    "description":   "Created via API for demo / testing",
+    "clusterId":     "CLUSTER999",
+    "environment":   "dev",
+    "host":          "https://api.demo.example.com",
+    "routeHostName": ".apps.demo.example.com",
+    "platform":      "onprem",
+    "platformType":  "OCP",
+    "tokenId":       "TOKEN_demo",
+    "tags":          { "criticality": "low", "datacenter": "eu-fra-1" }
+  }
+}
+
+script:post-response {
+  if (res.status === 201) {
+    bru.setVar("platformId", res.body.platformId);
+  }
+}

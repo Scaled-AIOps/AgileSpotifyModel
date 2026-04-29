@@ -2,7 +2,7 @@
  * Purpose: Redis-backed CRUD for InfraCluster records.
  * Usage:   Called from infra.routes.ts. Indexed by environment via `infra:env:{env}` set.
  * Goal:    Persistence layer for the infrastructure catalogue (clusters, hosts, platforms).
- * ToDo:    Add update() and POST/PATCH routes — currently only list/get/delete are exposed.
+ * ToDo:    Add update() + PATCH route. POST is now exposed (Admin-only).
  */
 import redis from '../config/redis';
 import { createError } from '../middleware/errorHandler';
