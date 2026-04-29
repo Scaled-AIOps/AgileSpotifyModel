@@ -13,7 +13,7 @@ import { Router } from 'express';
 import { authenticate } from '../middleware/auth';
 import { authorize } from '../middleware/authorize';
 import { validate } from '../middleware/validate';
-import { createInfraSchema } from '../schemas/infra.schema';
+import { createInfraSchema, updateInfraSchema } from '../schemas/infra.schema';
 import * as infraService from '../services/infra.service';
 
 const router = Router();
@@ -50,6 +50,17 @@ router.post('/', validate(createInfraSchema), async (req, res, next) => {
       tags:          JSON.stringify(req.body.tags ?? {}),
     });
     res.status(201).json(cluster);
+  } catch (e) { next(e); }
+});
+
+router.patch('/:platformId', validate(updateInfraSchema), async (req, res, next) => {
+  try {
+    const data: Record<string, unknown> = { ...req.body };
+    if (data.tags && typeof data.tags === 'object') {
+      data.tags = JSON.stringify(data.tags);
+    }
+    const updated = await infraService.update(req.params.platformId, data as never);
+    res.json(updated);
   } catch (e) { next(e); }
 });
 

@@ -1,0 +1,22 @@
+meta {
+  name: Update Infra Cluster
+  type: http
+  seq: 3
+}
+
+patch {
+  url: {{baseUrl}}/api/v1/infra/{{platformId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "status": "inactive",
+    "description": "Updated via API for demo / testing"
+  }
+}

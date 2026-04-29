@@ -6,6 +6,20 @@
  */
 import { z } from 'zod';
 
+export const updateInfraSchema = z.object({
+  name:          z.string().min(1).max(120).optional(),
+  description:   z.string().optional(),
+  clusterId:     z.string().min(1).optional(),
+  environment:   z.string().min(1).optional(),
+  host:          z.string().min(1).optional(),
+  routeHostName: z.string().optional(),
+  platform:      z.string().min(1).optional(),
+  platformType:  z.string().min(1).optional(),
+  tokenId:       z.string().optional(),
+  status:        z.enum(['active', 'inactive', 'marked-for-decommissioning', 'failed']).optional(),
+  tags:          z.record(z.string()).optional(),
+});
+
 export const createInfraSchema = z.object({
   platformId:    z.string().min(1).regex(/^[a-z0-9-]+$/, 'Only lowercase letters, numbers and hyphens'),
   name:          z.string().min(1).max(120),

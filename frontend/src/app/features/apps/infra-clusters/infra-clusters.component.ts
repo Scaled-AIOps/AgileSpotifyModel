@@ -54,6 +54,16 @@ const STATUS_CLASS: Record<InfraStatus, string> = {
             <button class="chip" [class.active]="activeEnv === e" (click)="setEnv(e)">{{ e }}</button>
           }
         </div>
+
+        <!-- Status filter chips -->
+        <div class="filter-chips status-chips">
+          <button class="chip" [class.active]="!activeStatus" (click)="setStatus(null)">{{ 'common.all' | translate }}</button>
+          @for (s of statuses; track s) {
+            <button class="chip" [class.active]="activeStatus === s" (click)="setStatus(s)">
+              {{ statusLabelKey(s) | translate }} <span class="chip-count">{{ countByStatus(s) }}</span>
+            </button>
+          }
+        </div>
       </div>
 
       <div class="cluster-grid" style="margin-top:1rem">
@@ -133,6 +143,8 @@ const STATUS_CLASS: Record<InfraStatus, string> = {
     .search-input::placeholder { color: var(--text-muted); }
     .search-clear { border: none; background: none; cursor: pointer; color: var(--text-muted); font-size: 0.75rem; padding: 0 2px; }
     .filter-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+    .status-chips { padding-left: 12px; border-left: 1px solid var(--border); }
+    .chip-count { font-size: 0.7rem; color: var(--text-muted); margin-left: 4px; }
     .chip { padding: 3px 10px; border-radius: 999px; font-size: 0.78rem; font-weight: 600; border: 1px solid var(--border); background: var(--surface-bg); color: var(--text-muted); cursor: pointer; transition: all 150ms; }
     .chip:hover { border-color: var(--blue-400); color: var(--blue-600); }
     .chip.active { background: var(--blue-600); border-color: var(--blue-600); color: #fff; }
@@ -160,6 +172,8 @@ export class InfraClustersComponent implements OnInit {
   query   = '';
   envs:   string[] = [];
   activeEnv: string | null = null;
+  readonly statuses: InfraStatus[] = ['active', 'inactive', 'marked-for-decommissioning', 'failed'];
+  activeStatus: InfraStatus | null = null;
 
   async ngOnInit() {
     this.clusters = await firstValueFrom(this.appsApi.getAllClusters());
@@ -169,7 +183,9 @@ export class InfraClustersComponent implements OnInit {
   }
 
   setEnv(e: string | null) { this.activeEnv = e; this.applyFilter(); }
+  setStatus(s: InfraStatus | null) { this.activeStatus = s; this.applyFilter(); }
   clearQuery()              { this.query = ''; this.applyFilter(); }
+  countByStatus(s: InfraStatus) { return this.clusters.filter((c) => (c.status ?? 'active') === s).length; }
 
   applyFilter() {
     const q = this.query.toLowerCase();
@@ -180,7 +196,8 @@ export class InfraClustersComponent implements OnInit {
         || (c.host ?? '').toLowerCase().includes(q)
         || (c.platform ?? '').toLowerCase().includes(q);
       const matchE = !this.activeEnv || c.environment === this.activeEnv;
-      return matchQ && matchE;
+      const matchS = !this.activeStatus || (c.status ?? 'active') === this.activeStatus;
+      return matchQ && matchE && matchS;
     });
   }
 
