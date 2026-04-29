@@ -2,10 +2,11 @@
  * Purpose: Express router for InfraCluster CRUD.
  * Usage:   Mounted at `/api/v1/infra`. Exposes list / get / create / delete on
  *          infrastructure platforms (OpenShift / EKS / etc.) referenced by
- *          application deployments. Create is Admin-only.
+ *          application deployments. Create is open to any authenticated role;
+ *          delete is Admin-only.
  * Goal:    Lightweight catalogue of where applications run; primarily populated
- *          from config/infra.yaml at startup, with a REST POST for runtime
- *          additions by an Admin.
+ *          from config/infra.yaml at startup, with a REST POST any logged-in
+ *          user can call to add a new cluster at runtime.
  * ToDo:    —
  */
 import { Router } from 'express';
@@ -30,7 +31,7 @@ router.get('/:platformId', async (req, res, next) => {
   } catch (e) { next(e); }
 });
 
-router.post('/', authorize('Admin'), validate(createInfraSchema), async (req, res, next) => {
+router.post('/', validate(createInfraSchema), async (req, res, next) => {
   try {
     const existing = await infraService.findById(req.body.platformId);
     if (existing) { res.status(409).json({ error: 'Cluster with this platformId already exists' }); return; }
