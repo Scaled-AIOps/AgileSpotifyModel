@@ -8,6 +8,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { TribeApi } from '../../../core/api/tribe.api';
+import { MemberApi } from '../../../core/api/member.api';
 import { ApiService } from '../../../core/api/api.service';
 import { LinkListComponent } from '../../../shared/link-list/link-list.component';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -39,6 +40,12 @@ import type { Tribe, Squad } from '../../../core/models/index';
         </div>
       </div>
       <div class="meta-row">
+        @if (leadName || tribe.leadMemberId) {
+          <div class="meta-card">
+            <div class="meta-label">{{ 'org.tribe.lead' | translate }}</div>
+            <div class="meta-value">{{ leadName || tribe.leadMemberId }}</div>
+          </div>
+        }
         @if (tribe.releaseManager) {
           <div class="meta-card">
             <div class="meta-label">{{ 'org.tribe.release_manager' | translate }}</div>
@@ -95,11 +102,13 @@ import type { Tribe, Squad } from '../../../core/models/index';
 export class TribeDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private tribeApi = inject(TribeApi);
+  private memberApi = inject(MemberApi);
   private api = inject(ApiService);
   private i18n = inject(TranslateService);
 
   tribe: Tribe | null = null;
   squads: Squad[] = [];
+  leadName = '';
   loading = true;
   loadError = '';
 
@@ -111,6 +120,12 @@ export class TribeDetailComponent implements OnInit {
       this.loadError = this.i18n.instant('org.tribe.not_found', { id });
       this.loading = false;
       return;
+    }
+    if (this.tribe.leadMemberId) {
+      try {
+        const lead = await firstValueFrom(this.memberApi.getById(this.tribe.leadMemberId));
+        this.leadName = lead.name;
+      } catch { /* member may have been deleted; fall back to id */ }
     }
     const squadIds = await firstValueFrom(this.tribeApi.getSquads(id));
     this.squads = await Promise.all(squadIds.map((sid: string) => firstValueFrom(this.api.get<Squad>(`/squads/${sid}`))));

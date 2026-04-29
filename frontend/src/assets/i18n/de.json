@@ -316,6 +316,7 @@
       "not_found": "Domäne \"{{ id }}\" nicht gefunden."
     },
     "tribe": {
+      "lead": "Lead",
       "release_manager": "Release-Manager",
       "agile_coach": "Agile Coach",
       "squads_count_paren": "Squads ({{ n }})",
