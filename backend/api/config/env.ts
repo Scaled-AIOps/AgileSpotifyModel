@@ -31,6 +31,15 @@ const schema = z.object({
   AZURE_CLIENT_ID: z.string().optional(),
   AZURE_TENANT_ID: z.string().default('common'),
   AZURE_CLIENT_KEY: z.string().optional(),
+  /**
+   * Bearer token used by automated ingest scripts (CI/CD, deploy hooks, fleet
+   * importers) to call the four mutating app endpoints — `POST /apps`,
+   * `PATCH /apps/:appId`, `POST /apps/:appId/:env/deploys`, and
+   * `PATCH /apps/:appId/:env/deploys/:deployedAt` — without holding a
+   * per-user JWT. Required in production; auto-generated on first boot in
+   * dev/test and logged once. Treat the value as a credential.
+   */
+  INGEST_API_KEY: z.string().min(24).optional(),
 });
 
 const parsed = schema.safeParse(process.env);
@@ -40,3 +49,24 @@ if (!parsed.success) {
 }
 
 export const env = parsed.data;
+
+/**
+ * Resolve the ingest token: prefer the explicit env var, otherwise (non-prod)
+ * synthesize one once at boot and surface it on stdout so an operator can
+ * copy it into their automation. In production a missing token aborts.
+ */
+function resolveIngestToken(): string {
+  if (env.INGEST_API_KEY) return env.INGEST_API_KEY;
+  if (env.NODE_ENV === 'production') {
+    console.error('[env] INGEST_API_KEY must be set in production.');
+    process.exit(1);
+  }
+  // Dev / test fallback. crypto.randomUUID is 36 chars; concat two for entropy.
+  const { randomUUID } = require('node:crypto') as typeof import('node:crypto');
+  const token = `${randomUUID()}-${randomUUID()}`.replace(/-/g, '');
+  console.log(`[env] INGEST_API_KEY not set — using ephemeral dev token: ${token}`);
+  console.log('[env]   Set INGEST_API_KEY in backend/config/.env to make it stable across restarts.');
+  return token;
+}
+
+export const ingestToken = resolveIngestToken();

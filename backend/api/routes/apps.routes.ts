@@ -6,7 +6,7 @@
  */
 import { Router } from 'express';
 import { z } from 'zod';
-import { authenticate } from '../middleware/auth';
+import { authenticate, authenticateOrIngest } from '../middleware/auth';
 import { authorize } from '../middleware/authorize';
 import { validate } from '../middleware/validate';
 import * as appService from '../services/app.service';
@@ -20,7 +20,14 @@ import redis from '../config/redis';
 import type { JwtPayload } from '../middleware/auth';
 
 const router = Router();
-router.use(authenticate);
+// Apps + deploy events allow either a user JWT or the shared INGEST_API_KEY
+// (used by automation pipelines that post `appinfo` / record deploy events).
+// The ingest principal acts as a synthetic Admin so authorize() and the
+// resolveEditable() check on PATCH /:appId both pass.
+router.use(authenticateOrIngest);
+// `authenticate` is exported alongside in case future routes need to opt out of
+// ingest. Reference it so the import isn't reported as unused.
+void authenticate;
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -210,6 +217,16 @@ router.post('/:appId/:env/deploys', authorize('ReleaseManager'), validate(record
   try {
     const d = await appstatusService.record(req.params.appId, req.params.env, req.body);
     res.status(201).json(d);
+  } catch (e) { next(e); }
+});
+
+// Idempotent upsert by (appId, env, version, deployedAt). Designed for ingest
+// pipelines that may replay the same deploy event with refreshed fields
+// (state changed from pending → success, notes added, xray link populated, …).
+router.patch('/:appId/:env/deploys', authorize('ReleaseManager'), validate(recordDeploySchema), async (req, res, next) => {
+  try {
+    const d = await appstatusService.upsert(req.params.appId, req.params.env, req.body);
+    res.json(d);
   } catch (e) { next(e); }
 });
 
