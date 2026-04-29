@@ -31,3 +31,5 @@ Thumbs.db
 
 # bruno test artefact
 backend/bruno-report.html
+apps-*.png
+login-*.png
