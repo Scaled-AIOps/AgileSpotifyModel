@@ -9,19 +9,20 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { DomainApi } from '../../../core/api/domain.api';
 import { LinkListComponent } from '../../../shared/link-list/link-list.component';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import type { OrgTreeDomain } from '../../../core/models/index';
 
 @Component({
   selector: 'app-domain-detail',
   standalone: true,
-  imports: [RouterLink, LinkListComponent],
+  imports: [RouterLink, LinkListComponent, TranslateModule],
   template: `
     @if (loading) { <div class="loading-block"><span class="spinner spinner-lg"></span></div> }
     @else if (loadError) {
       <div class="empty-state">
         <div class="empty-icon">⚠</div>
         <div class="empty-title">{{ loadError }}</div>
-        <div class="empty-sub"><a routerLink="/org">← Back to Org Directory</a></div>
+        <div class="empty-sub"><a routerLink="/org">{{ 'org.squad.back_to_org' | translate }}</a></div>
       </div>
     }
     @else if (domain) {
@@ -34,15 +35,15 @@ import type { OrgTreeDomain } from '../../../core/models/index';
 
       @if (hasLinks(domain)) {
         <div class="link-grid">
-          <app-link-list label="Jira"        [links]="domain.jira"></app-link-list>
-          <app-link-list label="Confluence"  [links]="domain.confluence"></app-link-list>
-          <app-link-list label="GitHub"      [links]="domain.github"></app-link-list>
-          <app-link-list label="Mailing list" [links]="domain.mailingList"></app-link-list>
+          <app-link-list [label]="'apps.links.jira' | translate"         [links]="domain.jira"></app-link-list>
+          <app-link-list [label]="'apps.links.confluence' | translate"   [links]="domain.confluence"></app-link-list>
+          <app-link-list [label]="'apps.links.github' | translate"       [links]="domain.github"></app-link-list>
+          <app-link-list [label]="'apps.links.mailing_list' | translate" [links]="domain.mailingList"></app-link-list>
         </div>
       }
 
       @if (domain.subdomains.length) {
-        <h3 style="margin:0 0 12px;color:var(--text-strong)">Sub-Domains</h3>
+        <h3 style="margin:0 0 12px;color:var(--text-strong)">{{ 'org.domain.subdomains' | translate }}</h3>
         <div class="card-grid" style="margin-bottom:24px">
           @for (sd of domain.subdomains; track sd.id) {
             <div class="card">
@@ -51,8 +52,8 @@ import type { OrgTreeDomain } from '../../../core/models/index';
                 <div style="color:var(--text-muted);font-size:0.85rem">{{ sd.description }}</div>
               </div>
               <div class="card-footer-row">
-                <span style="font-size:0.8rem;color:var(--text-muted)">{{ sd.tribes.length }} tribes</span>
-                <a class="btn btn-primary btn-sm" routerLink="/org/tribes">View Tribes</a>
+                <span style="font-size:0.8rem;color:var(--text-muted)">{{ 'org.tribes_count' | translate: { n: sd.tribes.length } }}</span>
+                <a class="btn btn-primary btn-sm" routerLink="/org/tribes">{{ 'org.view_tribes' | translate }}</a>
               </div>
             </div>
           }
@@ -60,7 +61,7 @@ import type { OrgTreeDomain } from '../../../core/models/index';
       }
 
       @if (domain.tribes.length) {
-        <h3 style="margin:0 0 12px;color:var(--text-strong)">Direct Tribes</h3>
+        <h3 style="margin:0 0 12px;color:var(--text-strong)">{{ 'org.domain.direct_tribes' | translate }}</h3>
         <div class="card-grid">
           @for (tribe of domain.tribes; track tribe.id) {
             <div class="card">
@@ -69,7 +70,7 @@ import type { OrgTreeDomain } from '../../../core/models/index';
                 <div style="color:var(--text-muted);font-size:0.85rem">{{ tribe.description }}</div>
               </div>
               <div class="card-footer-row">
-                <a class="btn btn-primary btn-sm" [routerLink]="['/org/tribes', tribe.id]">View Tribe</a>
+                <a class="btn btn-primary btn-sm" [routerLink]="['/org/tribes', tribe.id]">{{ 'org.view_tribe' | translate }}</a>
               </div>
             </div>
           }
@@ -84,6 +85,7 @@ import type { OrgTreeDomain } from '../../../core/models/index';
 export class DomainDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private domainApi = inject(DomainApi);
+  private i18n = inject(TranslateService);
 
   domain: OrgTreeDomain | null = null;
   loading = true;
@@ -94,7 +96,7 @@ export class DomainDetailComponent implements OnInit {
     try {
       this.domain = await firstValueFrom(this.domainApi.getTree(id));
     } catch {
-      this.loadError = `Domain "${id}" not found.`;
+      this.loadError = this.i18n.instant('org.domain.not_found', { id });
     }
     this.loading = false;
   }

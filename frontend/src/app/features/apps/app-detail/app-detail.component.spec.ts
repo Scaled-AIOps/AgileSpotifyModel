@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { provideTranslateService } from '@ngx-translate/core';
 import { ActivatedRoute, provideRouter } from '@angular/router';
 import { of, throwError } from 'rxjs';
 import { AppDetailComponent } from './app-detail.component';
@@ -35,6 +36,7 @@ describe('AppDetailComponent', () => {
     await TestBed.configureTestingModule({
       imports: [AppDetailComponent],
       providers: [
+        provideTranslateService(),
         provideRouter([]),
         { provide: ActivatedRoute, useValue: { snapshot: { paramMap: { get: () => 'a1' } } } },
         { provide: AppsApi, useValue: appsSpy },
@@ -193,7 +195,7 @@ describe('AppDetailComponent', () => {
       component.app = APP;
       component.enterEdit();
       await component.save();
-      expect(component.saveError).toBe('Save failed. Please try again.');
+      expect(component.saveError).toBe('apps.form.save_failed');
     });
 
     it('save() handles error', async () => {

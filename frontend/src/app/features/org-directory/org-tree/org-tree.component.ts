@@ -8,6 +8,7 @@ import { Component, OnDestroy, ElementRef, ViewChild, inject, AfterViewInit, Cha
 import { Router } from '@angular/router';
 import * as d3 from 'd3';
 import { OrgApi } from '../../../core/api/org.api';
+import { TranslateModule } from '@ngx-translate/core';
 import type { OrgTreeDomain } from '../../../core/models/index';
 import { firstValueFrom } from 'rxjs';
 
@@ -23,14 +24,14 @@ interface TreeNode {
 @Component({
   selector: 'app-org-tree',
   standalone: true,
-  imports: [],
+  imports: [TranslateModule],
   template: `
     <div class="org-tree-page">
       <div class="legend">
-        <span class="legend-item"><span class="dot dot-domain"></span>Domain</span>
-        <span class="legend-item"><span class="dot dot-subdomain"></span>Sub-Domain</span>
-        <span class="legend-item"><span class="dot dot-tribe"></span>Tribe</span>
-        <span class="legend-item"><span class="dot dot-squad"></span>Squad</span>
+        <span class="legend-item"><span class="dot dot-domain"></span>{{ 'common.domain' | translate }}</span>
+        <span class="legend-item"><span class="dot dot-subdomain"></span>{{ 'common.subdomain' | translate }}</span>
+        <span class="legend-item"><span class="dot dot-tribe"></span>{{ 'common.tribe' | translate }}</span>
+        <span class="legend-item"><span class="dot dot-squad"></span>{{ 'common.squad' | translate }}</span>
       </div>
       @if (loading) {
         <div class="loading-block"><span class="spinner spinner-lg"></span></div>

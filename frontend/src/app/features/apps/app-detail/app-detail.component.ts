@@ -7,6 +7,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
 import { AppsApi } from '../../../core/api/apps.api';
 import { LinkListComponent } from '../../../shared/link-list/link-list.component';
@@ -33,14 +34,14 @@ const ENVS = ['local', 'dev', 'int', 'uat', 'prd'] as const;
 @Component({
   selector: 'app-app-detail',
   standalone: true,
-  imports: [RouterLink, FormsModule, LinkListComponent, LinkRepeaterComponent, AppChartComponent],
+  imports: [RouterLink, FormsModule, LinkListComponent, LinkRepeaterComponent, AppChartComponent, TranslateModule],
   template: `
     @if (loading) { <div class="loading-block"><span class="spinner spinner-lg"></span></div> }
     @else if (loadError) {
       <div class="empty-state">
         <div class="empty-icon">⚠</div>
         <div class="empty-title">{{ loadError }}</div>
-        <div class="empty-sub"><a routerLink="/apps">← Back to Applications</a></div>
+        <div class="empty-sub"><a routerLink="/apps">{{ 'apps.detail.back' | translate }}</a></div>
       </div>
     }
     @else if (app) {
@@ -56,13 +57,13 @@ const ENVS = ['local', 'dev', 'int', 'uat', 'prd'] as const;
         <div style="display:flex;gap:0.5rem;align-items:center">
           <span class="badge {{ statusClass(app.status) }}">{{ statusLabel(app.status) }}</span>
           @if (app.editable && !editMode) {
-            <button class="btn btn-ghost btn-sm" (click)="enterEdit()">Edit</button>
+            <button class="btn btn-ghost btn-sm" (click)="enterEdit()">{{ 'common.edit' | translate }}</button>
           }
           @if (editMode) {
             <button class="btn btn-primary btn-sm" [disabled]="saving" (click)="save()">
-              @if (saving) { <span class="spinner"></span> } Save
+              @if (saving) { <span class="spinner"></span> } {{ 'common.save' | translate }}
             </button>
-            <button class="btn btn-ghost btn-sm" [disabled]="saving" (click)="cancelEdit()">Cancel</button>
+            <button class="btn btn-ghost btn-sm" [disabled]="saving" (click)="cancelEdit()">{{ 'common.cancel' | translate }}</button>
           }
         </div>
       </div>
@@ -76,19 +77,19 @@ const ENVS = ['local', 'dev', 'int', 'uat', 'prd'] as const;
         <div class="meta-row">
           @if (tags['criticality']) {
             <div class="meta-card">
-              <div class="meta-label">Criticality</div>
+              <div class="meta-label">{{ 'apps.detail.criticality' | translate }}</div>
               <div class="meta-value"><span class="badge {{ critClass }}">{{ tags['criticality'] }}</span></div>
             </div>
           }
           @if (tags['pillar']) {
             <div class="meta-card">
-              <div class="meta-label">Pillar</div>
+              <div class="meta-label">{{ 'apps.detail.pillar' | translate }}</div>
               <div class="meta-value">{{ tags['pillar'] }}</div>
             </div>
           }
           @if (app.javaVersion) {
             <div class="meta-card">
-              <div class="meta-label">Java</div>
+              <div class="meta-label">{{ 'apps.detail.java' | translate }}</div>
               <div class="meta-value">
                 Java {{ app.javaVersion }}
                 @if (app.javaComplianceStatus) {
@@ -99,13 +100,13 @@ const ENVS = ['local', 'dev', 'int', 'uat', 'prd'] as const;
           }
           @if (tags['sunset']) {
             <div class="meta-card">
-              <div class="meta-label">Sunset</div>
+              <div class="meta-label">{{ 'apps.detail.sunset' | translate }}</div>
               <div class="meta-value" style="color:var(--warn,#b45309)">{{ tags['sunset'] }}</div>
             </div>
           }
           @if (app.probeHealth) {
             <div class="meta-card">
-              <div class="meta-label">Health probe</div>
+              <div class="meta-label">{{ 'apps.detail.health_probe' | translate }}</div>
               <div class="meta-value mono">{{ app.probeHealth }}</div>
             </div>
           }
@@ -139,11 +140,11 @@ const ENVS = ['local', 'dev', 'int', 'uat', 'prd'] as const;
 
         @if (hasLinks) {
           <div class="link-grid">
-            <app-link-list label="Jira"        [links]="app.jira"></app-link-list>
-            <app-link-list label="Confluence"  [links]="app.confluence"></app-link-list>
-            <app-link-list label="GitHub"      [links]="app.github"></app-link-list>
-            <app-link-list label="Mailing list" [links]="app.mailingList"></app-link-list>
-            <app-link-list label="Links"       [links]="app.links"></app-link-list>
+            <app-link-list [label]="'apps.links.jira' | translate"         [links]="app.jira"></app-link-list>
+            <app-link-list [label]="'apps.links.confluence' | translate"   [links]="app.confluence"></app-link-list>
+            <app-link-list [label]="'apps.links.github' | translate"       [links]="app.github"></app-link-list>
+            <app-link-list [label]="'apps.links.mailing_list' | translate" [links]="app.mailingList"></app-link-list>
+            <app-link-list [label]="'apps.links.links' | translate"        [links]="app.links"></app-link-list>
           </div>
         }
       }
@@ -247,7 +248,7 @@ const ENVS = ['local', 'dev', 'int', 'uat', 'prd'] as const;
       @for (cloud of clouds; track cloud.key) {
         @if (cloudHasAny(cloud.key)) {
           <div class="cloud-header">
-            <h3 style="margin-top:1.5rem">{{ cloud.label }} Deployments</h3>
+            <h3 style="margin-top:1.5rem">{{ ('apps.detail.' + cloud.key + '_deployments') | translate }}</h3>
             @if (chartFor(cloud.key); as ch) {
               <span class="chart-chip mono">chart: {{ ch }}</span>
             }
@@ -288,7 +289,7 @@ const ENVS = ['local', 'dev', 'int', 'uat', 'prd'] as const;
                       }
                     </div>
                   } @else if (cloud.key === 'ocp') {
-                    <div class="deploy-empty">Not deployed</div>
+                    <div class="deploy-empty">{{ 'apps.detail.not_deployed' | translate }}</div>
                   }
                 </div>
               }
@@ -299,9 +300,9 @@ const ENVS = ['local', 'dev', 'int', 'uat', 'prd'] as const;
 
       <!-- Deployment topology chart (collapsible D3 tree) -->
       <div class="chart-header">
-        <h3 style="margin-top:1.5rem;margin-bottom:0">Deployment Chart</h3>
+        <h3 style="margin-top:1.5rem;margin-bottom:0">{{ 'apps.detail.deployment_chart' | translate }}</h3>
         <button class="btn btn-ghost btn-sm" (click)="showChart = !showChart">
-          {{ showChart ? 'Hide' : 'Show' }}
+          {{ (showChart ? 'apps.detail.hide' : 'apps.detail.show') | translate }}
         </button>
       </div>
       @if (showChart) {
@@ -318,10 +319,10 @@ const ENVS = ['local', 'dev', 'int', 'uat', 'prd'] as const;
       <!-- Full deploy history per env -->
       @for (env of envs; track env) {
         @if (history[env].length > 1) {
-          <h3 style="margin-top:1.5rem">{{ env.toUpperCase() }} History</h3>
+          <h3 style="margin-top:1.5rem">{{ 'apps.detail.history' | translate: { env: env.toUpperCase() } }}</h3>
           <div class="card">
             <table class="table">
-              <thead><tr><th>Version</th><th>State</th><th>Branch</th><th>Deployed by</th><th>Date</th><th>CR</th><th>Notes</th></tr></thead>
+              <thead><tr><th>{{ 'apps.detail.version' | translate }}</th><th>{{ 'apps.detail.state' | translate }}</th><th>{{ 'apps.detail.branch' | translate }}</th><th>{{ 'apps.detail.deployed_by' | translate }}</th><th>{{ 'apps.detail.date' | translate }}</th><th>{{ 'apps.detail.cr' | translate }}</th><th>{{ 'apps.detail.notes' | translate }}</th></tr></thead>
               <tbody>
                 @for (d of history[env]; track d.deployedAt + ':' + d.version + ':' + $index) {
                   <tr>
@@ -346,10 +347,10 @@ const ENVS = ['local', 'dev', 'int', 'uat', 'prd'] as const;
 
       <!-- Audit log -->
       @if (auditLog.length) {
-        <h3 style="margin-top:1.5rem">Change Log</h3>
+        <h3 style="margin-top:1.5rem">{{ 'apps.detail.change_log' | translate }}</h3>
         <div class="card">
           <table class="table">
-            <thead><tr><th>When</th><th>Who</th><th>Field</th><th>From</th><th>To</th></tr></thead>
+            <thead><tr><th>{{ 'apps.detail.when' | translate }}</th><th>{{ 'apps.detail.who' | translate }}</th><th>{{ 'apps.detail.field' | translate }}</th><th>{{ 'apps.detail.from' | translate }}</th><th>{{ 'apps.detail.to' | translate }}</th></tr></thead>
             <tbody>
               @for (entry of auditLog; track entry.id) {
                 @for (change of changesOf(entry); track change.field; let first = $first) {
@@ -430,6 +431,7 @@ const ENVS = ['local', 'dev', 'int', 'uat', 'prd'] as const;
 export class AppDetailComponent implements OnInit {
   private route   = inject(ActivatedRoute);
   private appsApi = inject(AppsApi);
+  private i18n    = inject(TranslateService);
 
   app:      AppWithDeploys | null = null;
   history:  Record<string, AppDeployment[]> = Object.fromEntries(ENVS.map((e) => [e, []]));
@@ -493,7 +495,7 @@ export class AppDetailComponent implements OnInit {
     try {
       this.app = await firstValueFrom(this.appsApi.getById(appId));
     } catch {
-      this.loadError = `Application "${appId}" not found.`;
+      this.loadError = this.i18n.instant('apps.detail.not_found', { id: appId });
       this.loading = false;
       return;
     }
@@ -572,7 +574,7 @@ export class AppDetailComponent implements OnInit {
       const detail  = details && typeof details === 'object'
         ? Object.entries(details).map(([k, v]) => `${k}: ${(v as string[])?.join('; ') ?? v}`).join(' • ')
         : '';
-      this.saveError = [apiErr, detail].filter(Boolean).join(' — ') || 'Save failed. Please try again.';
+      this.saveError = [apiErr, detail].filter(Boolean).join(' — ') || this.i18n.instant('apps.form.save_failed');
     } finally {
       this.saving = false;
     }

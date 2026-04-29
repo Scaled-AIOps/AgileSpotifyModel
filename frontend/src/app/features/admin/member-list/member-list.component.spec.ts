@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { provideTranslateService } from '@ngx-translate/core';
 import { provideRouter } from '@angular/router';
 import { of } from 'rxjs';
 import { MemberListComponent } from './member-list.component';
@@ -27,6 +28,7 @@ describe('MemberListComponent', () => {
     await TestBed.configureTestingModule({
       imports: [MemberListComponent],
       providers: [
+        provideTranslateService(),
         provideRouter([]),
         { provide: MemberApi, useValue: memberSpy },
         { provide: AuthService, useValue: authStub },

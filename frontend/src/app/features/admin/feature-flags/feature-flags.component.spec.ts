@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { provideTranslateService } from '@ngx-translate/core';
 import { FeatureFlagsComponent } from './feature-flags.component';
 import { FeatureFlagsService } from '../../../core/feature-flags/feature-flags.service';
 
@@ -13,7 +14,8 @@ describe('FeatureFlagsComponent', () => {
 
     await TestBed.configureTestingModule({
       imports: [FeatureFlagsComponent],
-      providers: [{ provide: FeatureFlagsService, useValue: svcSpy }],
+      providers: [
+        provideTranslateService(),{ provide: FeatureFlagsService, useValue: svcSpy }],
     }).compileComponents();
   });
 

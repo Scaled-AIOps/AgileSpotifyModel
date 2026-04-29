@@ -15,18 +15,19 @@ import { ApiService } from '../../../core/api/api.service';
 import { AppsApi } from '../../../core/api/apps.api';
 import { FeatureFlagsService } from '../../../core/feature-flags/feature-flags.service';
 import { OrgTreeComponent } from '../org-tree/org-tree.component';
+import { TranslateModule } from '@ngx-translate/core';
 import type { Member, Squad, Tribe, Domain, SubDomain } from '../../../core/models/index';
 
 @Component({
   selector: 'app-org-context',
   standalone: true,
-  imports: [RouterLink, OrgTreeComponent],
+  imports: [RouterLink, OrgTreeComponent, TranslateModule],
   template: `
     @if (loading) { <div class="loading-block"><span class="spinner spinner-lg"></span></div> }
     @else {
       <div class="page-header">
         <div class="page-title">
-          <h1>Org Directory</h1>
+          <h1>{{ 'org.title' | translate }}</h1>
           @if (!showGlobal && breadcrumb.length) {
             <div class="page-sub breadcrumb">
               @for (crumb of breadcrumb; track crumb.label; let last = $last) {
@@ -44,8 +45,8 @@ import type { Member, Squad, Tribe, Domain, SubDomain } from '../../../core/mode
         @if (!member?.squadId && role !== 'TribeLead') {
           <div class="empty-state">
             <div class="empty-icon">◉</div>
-            <div class="empty-title">You are not assigned to a squad or tribe yet.</div>
-            <div class="empty-sub">Use the global view to explore the full organisation.</div>
+            <div class="empty-title">{{ 'org.no_assignment' | translate }}</div>
+            <div class="empty-sub">{{ 'org.no_assignment_sub' | translate }}</div>
           </div>
         } @else {
           <div class="context-chain">
@@ -54,12 +55,12 @@ import type { Member, Squad, Tribe, Domain, SubDomain } from '../../../core/mode
             @if (domain) {
               <div class="chain-node">
                 <div class="chain-card" [class.mine]="false">
-                  <div class="chain-type-tag">Domain</div>
+                  <div class="chain-type-tag">{{ 'common.domain' | translate }}</div>
                   <div class="chain-name">{{ domain.name }}</div>
                   @if (domain.description) {
                     <div class="chain-desc">{{ domain.description }}</div>
                   }
-                  <a class="btn btn-ghost btn-sm chain-link" [routerLink]="['/org/domains', domain.id]">View Domain</a>
+                  <a class="btn btn-ghost btn-sm chain-link" [routerLink]="['/org/domains', domain.id]">{{ 'org.view_domain' | translate }}</a>
                 </div>
               </div>
               <div class="chain-connector"></div>
@@ -69,7 +70,7 @@ import type { Member, Squad, Tribe, Domain, SubDomain } from '../../../core/mode
             @if (subdomain) {
               <div class="chain-node">
                 <div class="chain-card">
-                  <div class="chain-type-tag subdomain">Sub-Domain</div>
+                  <div class="chain-type-tag subdomain">{{ 'common.subdomain' | translate }}</div>
                   <div class="chain-name">{{ subdomain.name }}</div>
                   @if (subdomain.description) {
                     <div class="chain-desc">{{ subdomain.description }}</div>
@@ -83,16 +84,16 @@ import type { Member, Squad, Tribe, Domain, SubDomain } from '../../../core/mode
             @if (tribe) {
               <div class="chain-node">
                 <div class="chain-card" [class.mine]="role === 'TribeLead'">
-                  @if (role === 'TribeLead') { <div class="mine-badge">You lead this</div> }
-                  <div class="chain-type-tag tribe">Tribe</div>
+                  @if (role === 'TribeLead') { <div class="mine-badge">{{ 'org.you_lead' | translate }}</div> }
+                  <div class="chain-type-tag tribe">{{ 'common.tribe' | translate }}</div>
                   <div class="chain-name">{{ tribe.name }}</div>
                   @if (tribe.description) {
                     <div class="chain-desc">{{ tribe.description }}</div>
                   }
                   @if (tribeLeadName) {
-                    <div class="chain-lead">Lead: <strong>{{ tribeLeadName }}</strong></div>
+                    <div class="chain-lead">{{ 'org.lead' | translate: { name: tribeLeadName } }}</div>
                   }
-                  <a class="btn btn-ghost btn-sm chain-link" [routerLink]="['/org/tribes', tribe.id]">View Tribe</a>
+                  <a class="btn btn-ghost btn-sm chain-link" [routerLink]="['/org/tribes', tribe.id]">{{ 'org.view_tribe' | translate }}</a>
                 </div>
               </div>
               @if (squad) { <div class="chain-connector"></div> }
@@ -102,23 +103,23 @@ import type { Member, Squad, Tribe, Domain, SubDomain } from '../../../core/mode
             @if (squad) {
               <div class="chain-node">
                 <div class="chain-card mine">
-                  <div class="mine-badge">Your Squad</div>
-                  <div class="chain-type-tag squad">Squad</div>
+                  <div class="mine-badge">{{ 'org.your_squad' | translate }}</div>
+                  <div class="chain-type-tag squad">{{ 'common.squad' | translate }}</div>
                   <div class="chain-name">{{ squad.name }}</div>
                   @if (squad.missionStatement) {
                     <div class="chain-desc">{{ squad.missionStatement }}</div>
                   }
                   @if (squadLeadName) {
-                    <div class="chain-lead">Lead: <strong>{{ squadLeadName }}</strong></div>
+                    <div class="chain-lead">{{ 'org.lead' | translate: { name: squadLeadName } }}</div>
                   }
                   <div class="squad-stats">
-                    <span class="stat-pill">{{ memberCount }} members</span>
+                    <span class="stat-pill">{{ 'org.members_count' | translate: { n: memberCount } }}</span>
                     @if (flags.isEnabled('appRegistry') && appCount > 0) {
-                      <span class="stat-pill">{{ appCount }} apps</span>
+                      <span class="stat-pill">{{ 'org.apps_count' | translate: { n: appCount } }}</span>
                     }
                   </div>
                   <div class="chain-actions">
-                    <a class="btn btn-ghost btn-sm" [routerLink]="['/org/squads', squad.id]">View Squad</a>
+                    <a class="btn btn-ghost btn-sm" [routerLink]="['/org/squads', squad.id]">{{ 'org.view_squad' | translate }}</a>
                     @if (flags.isEnabled('appRegistry') && appCount > 0) {
                       <a class="btn btn-ghost btn-sm" [routerLink]="['/org/squads', squad.id]" fragment="apps">Apps ↗</a>
                     }
@@ -136,10 +137,10 @@ import type { Member, Squad, Tribe, Domain, SubDomain } from '../../../core/mode
     <button class="global-fab" [class.active]="showGlobal" (click)="showGlobal = !showGlobal" [title]="showGlobal ? 'My context' : 'Global view'">
       @if (showGlobal) {
         <span class="fab-icon">⊙</span>
-        <span class="fab-label">My Context</span>
+        <span class="fab-label">{{ 'org.my_context' | translate }}</span>
       } @else {
         <span class="fab-icon">⊕</span>
-        <span class="fab-label">Global View</span>
+        <span class="fab-label">{{ 'org.global_view' | translate }}</span>
       }
     </button>
   `,

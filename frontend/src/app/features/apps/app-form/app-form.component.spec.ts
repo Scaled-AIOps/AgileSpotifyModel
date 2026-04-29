@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { provideTranslateService } from '@ngx-translate/core';
 import { provideRouter, Router } from '@angular/router';
 import { of, throwError } from 'rxjs';
 import { AppFormComponent } from './app-form.component';
@@ -20,6 +21,7 @@ describe('AppFormComponent', () => {
     await TestBed.configureTestingModule({
       imports: [AppFormComponent],
       providers: [
+        provideTranslateService(),
         provideRouter([]),
         { provide: AppsApi, useValue: appsSpy },
         { provide: SquadApi, useValue: squadSpy },
@@ -84,6 +86,6 @@ describe('AppFormComponent', () => {
     appsSpy.createApp.and.returnValue(throwError(() => ({})));
     component.f.appId = 'x';
     await component.submit();
-    expect(component.error).toBe('Failed to register app. Please try again.');
+    expect(component.error).toBe('apps.form.register_failed');
   });
 });

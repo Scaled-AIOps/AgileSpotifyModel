@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { provideTranslateService } from '@ngx-translate/core';
 import { ActivatedRoute, provideRouter } from '@angular/router';
 import { of } from 'rxjs';
 import { TribeDetailComponent } from './tribe-detail.component';
@@ -20,6 +21,7 @@ describe('TribeDetailComponent', () => {
     await TestBed.configureTestingModule({
       imports: [TribeDetailComponent],
       providers: [
+        provideTranslateService(),
         provideRouter([]),
         { provide: ActivatedRoute, useValue: { snapshot: { paramMap: { get: () => 't1' } } } },
         { provide: TribeApi, useValue: tribeSpy },

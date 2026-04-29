@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { provideTranslateService } from '@ngx-translate/core';
 import { provideRouter } from '@angular/router';
 import { of } from 'rxjs';
 import { OrgContextComponent } from './org-context.component';
@@ -44,6 +45,7 @@ async function createComponent(authStub: any, flagsStub: any, spies: ReturnType<
   await TestBed.configureTestingModule({
     imports: [OrgContextComponent],
     providers: [
+        provideTranslateService(),
       provideRouter([]),
       { provide: AuthService, useValue: authStub },
       { provide: MemberApi, useValue: spies.memberSpy },

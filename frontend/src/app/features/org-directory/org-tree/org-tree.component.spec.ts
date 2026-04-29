@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { provideTranslateService } from '@ngx-translate/core';
 import { provideRouter } from '@angular/router';
 import { of } from 'rxjs';
 import { OrgTreeComponent } from './org-tree.component';
@@ -15,6 +16,7 @@ describe('OrgTreeComponent', () => {
     await TestBed.configureTestingModule({
       imports: [OrgTreeComponent],
       providers: [
+        provideTranslateService(),
         provideRouter([]),
         { provide: OrgApi, useValue: orgSpy },
       ],

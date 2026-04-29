@@ -8,6 +8,7 @@ import { Component, OnInit, inject, HostListener } from '@angular/core';
 import { RouterLink, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
+import { TranslateModule } from '@ngx-translate/core';
 import { AuthService } from '../../core/auth/auth.service';
 import { MemberApi } from '../../core/api/member.api';
 import { SquadApi } from '../../core/api/squad.api';
@@ -32,7 +33,7 @@ const ROLE_CLASS: Record<Role, string> = {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [RouterLink, FormsModule],
+  imports: [RouterLink, FormsModule, TranslateModule],
   template: `
     @if (loading) { <div class="loading-block"><span class="spinner spinner-lg"></span></div> }
     @else {
@@ -41,7 +42,7 @@ const ROLE_CLASS: Record<Role, string> = {
         <div class="greeting-left">
           <div class="greeting-avatar">{{ initials }}</div>
           <div>
-            <h1 class="greeting-name">Welcome back, {{ member?.name ?? user?.email }}</h1>
+            <h1 class="greeting-name">{{ 'dashboard.welcome' | translate: { name: (member?.name ?? user?.email) } }}</h1>
             <div class="greeting-meta">
               <span class="badge" [class]="roleClass">{{ roleLabel }}</span>
               @if (member?.squadId && squad) {
@@ -62,7 +63,7 @@ const ROLE_CLASS: Record<Role, string> = {
             <input
               class="search-input"
               type="text"
-              placeholder="Search apps, members…"
+              [placeholder]="'dashboard.search_placeholder' | translate"
               [(ngModel)]="searchQuery"
               (ngModelChange)="onSearch($event)"
               (focus)="searchOpen = searchQuery.length > 0"
@@ -77,7 +78,7 @@ const ROLE_CLASS: Record<Role, string> = {
               @for (r of searchResults; track r.id) {
                 <div class="search-result" (click)="navigate(r)">
                   <span class="search-type" [class]="r.type === 'app' ? 'type-app' : 'type-member'">
-                    {{ r.type === 'app' ? 'APP' : 'MEMBER' }}
+                    {{ (r.type === 'app' ? 'dashboard.search_type.app' : 'dashboard.search_type.member') | translate }}
                   </span>
                   <div class="search-info">
                     <div class="search-primary">{{ r.primary }}</div>
@@ -88,7 +89,7 @@ const ROLE_CLASS: Record<Role, string> = {
             </div>
           }
           @if (searchOpen && searchQuery.length >= 2 && !searchResults.length) {
-            <div class="search-dropdown search-empty">No results for "{{ searchQuery }}"</div>
+            <div class="search-dropdown search-empty">{{ 'dashboard.search_no_results' | translate: { query: searchQuery } }}</div>
           }
         </div>
       </div>
@@ -96,16 +97,16 @@ const ROLE_CLASS: Record<Role, string> = {
       <!-- ── Admin / AgileCoach ─────────────────────────────────────────── -->
       @if (role === 'Admin' || role === 'AgileCoach') {
         <div class="metric-grid">
-          <div class="metric"><div class="metric-value">{{ orgStats.members }}</div><div class="metric-label">Members</div></div>
-          <div class="metric"><div class="metric-value">{{ orgStats.tribes }}</div><div class="metric-label">Tribes</div></div>
-          <div class="metric"><div class="metric-value">{{ orgStats.squads }}</div><div class="metric-label">Squads</div></div>
-          <div class="metric"><div class="metric-value">{{ orgStats.avgPerTribe }}</div><div class="metric-label">Avg members / tribe</div></div>
+          <div class="metric"><div class="metric-value">{{ orgStats.members }}</div><div class="metric-label">{{ 'dashboard.metric.members' | translate }}</div></div>
+          <div class="metric"><div class="metric-value">{{ orgStats.tribes }}</div><div class="metric-label">{{ 'dashboard.metric.tribes' | translate }}</div></div>
+          <div class="metric"><div class="metric-value">{{ orgStats.squads }}</div><div class="metric-label">{{ 'dashboard.metric.squads' | translate }}</div></div>
+          <div class="metric"><div class="metric-value">{{ orgStats.avgPerTribe }}</div><div class="metric-label">{{ 'dashboard.metric.avg_per_tribe' | translate }}</div></div>
         </div>
 
         <div class="dash-grid">
           <div class="card dash-wide">
             <div class="card-body">
-              <div class="section-title">Headcount by Tribe</div>
+              <div class="section-title">{{ 'dashboard.section.headcount_by_tribe' | translate }}</div>
               <div class="bar-chart">
                 @for (t of headcount; track t.id) {
                   <div class="bar-row">
@@ -120,7 +121,7 @@ const ROLE_CLASS: Record<Role, string> = {
 
           <div class="card">
             <div class="card-body">
-              <div class="section-title">Squad breakdown</div>
+              <div class="section-title">{{ 'dashboard.section.squad_breakdown' | translate }}</div>
               @for (t of headcount; track t.id) {
                 <div class="tribe-block">
                   <div class="tribe-name">{{ t.name }}</div>
@@ -138,58 +139,58 @@ const ROLE_CLASS: Record<Role, string> = {
 
         <!-- App Fleet Health -->
         @if (fleetHealth.total > 0) {
-          <div class="section-title" style="margin:20px 0 12px">Application Fleet Health</div>
+          <div class="section-title" style="margin:20px 0 12px">{{ 'dashboard.section.fleet_health' | translate }}</div>
           <div class="health-summary-grid">
             <div class="health-tile health-tile-ok">
               <div class="health-tile-value">{{ fleetHealth.active }}</div>
-              <div class="health-tile-label">Active</div>
+              <div class="health-tile-label">{{ 'dashboard.tile.active' | translate }}</div>
             </div>
             <div class="health-tile" [class.health-tile-danger]="fleetHealth.failed > 0" [class.health-tile-ok]="fleetHealth.failed === 0">
               <div class="health-tile-value">{{ fleetHealth.failed }}</div>
-              <div class="health-tile-label">Failed</div>
+              <div class="health-tile-label">{{ 'dashboard.tile.failed' | translate }}</div>
             </div>
             <div class="health-tile" [class.health-tile-warn]="fleetHealth.inactive > 0" [class.health-tile-ok]="fleetHealth.inactive === 0">
               <div class="health-tile-value">{{ fleetHealth.inactive }}</div>
-              <div class="health-tile-label">Inactive</div>
+              <div class="health-tile-label">{{ 'dashboard.tile.inactive' | translate }}</div>
             </div>
             <div class="health-tile" [class.health-tile-warn]="fleetHealth.decom > 0" [class.health-tile-ok]="fleetHealth.decom === 0">
               <div class="health-tile-value">{{ fleetHealth.decom }}</div>
-              <div class="health-tile-label">Decom</div>
+              <div class="health-tile-label">{{ 'dashboard.tile.decom' | translate }}</div>
             </div>
             <div class="health-tile" [class.health-tile-danger]="fleetHealth.javaFail > 0" [class.health-tile-ok]="fleetHealth.javaFail === 0">
               <div class="health-tile-value">{{ fleetHealth.javaFail }}</div>
-              <div class="health-tile-label">Java Non-Compliant</div>
+              <div class="health-tile-label">{{ 'dashboard.tile.java_non_compliant' | translate }}</div>
             </div>
             <div class="health-tile" [class.health-tile-warn]="fleetHealth.xrayFail > 0" [class.health-tile-ok]="fleetHealth.xrayFail === 0">
               <div class="health-tile-value">{{ fleetHealth.xrayFail }}</div>
-              <div class="health-tile-label">No Xray Scan</div>
+              <div class="health-tile-label">{{ 'dashboard.tile.no_xray_scan' | translate }}</div>
             </div>
           </div>
 
           <div class="card" style="margin-top:16px">
             <div class="card-body">
-              <div class="section-title" style="margin-bottom:14px">Compliance breakdown</div>
+              <div class="section-title" style="margin-bottom:14px">{{ 'dashboard.section.compliance' | translate }}</div>
               <div class="compliance-row">
                 <div class="compliance-item">
-                  <div class="compliance-label">Java compliance</div>
+                  <div class="compliance-label">{{ 'dashboard.section.java_compliance' | translate }}</div>
                   <div class="compliance-bar-wrap">
                     <div class="compliance-bar compliance-bar-ok"  [style.width]="compliancePct(fleetHealth.javaOk,  fleetHealth.total)"></div>
                     <div class="compliance-bar compliance-bar-bad" [style.width]="compliancePct(fleetHealth.javaFail, fleetHealth.total)"></div>
                   </div>
                   <div class="compliance-legend">
-                    <span class="cl-ok">{{ fleetHealth.javaOk }} compliant</span>
-                    <span class="cl-bad">{{ fleetHealth.javaFail }} issue{{ fleetHealth.javaFail !== 1 ? 's' : '' }}</span>
+                    <span class="cl-ok">{{ 'dashboard.compliance_legend.compliant' | translate: { n: fleetHealth.javaOk } }}</span>
+                    <span class="cl-bad">{{ (fleetHealth.javaFail !== 1 ? 'dashboard.compliance_legend.issues' : 'dashboard.compliance_legend.issue') | translate: { n: fleetHealth.javaFail } }}</span>
                   </div>
                 </div>
                 <div class="compliance-item">
-                  <div class="compliance-label">Xray scans</div>
+                  <div class="compliance-label">{{ 'dashboard.section.xray_scans' | translate }}</div>
                   <div class="compliance-bar-wrap">
                     <div class="compliance-bar compliance-bar-ok"  [style.width]="compliancePct(fleetHealth.xrayOk,  fleetHealth.total)"></div>
                     <div class="compliance-bar compliance-bar-bad" [style.width]="compliancePct(fleetHealth.xrayFail, fleetHealth.total)"></div>
                   </div>
                   <div class="compliance-legend">
-                    <span class="cl-ok">{{ fleetHealth.xrayOk }} scanned</span>
-                    <span class="cl-bad">{{ fleetHealth.xrayFail }} missing</span>
+                    <span class="cl-ok">{{ 'dashboard.compliance_legend.scanned' | translate: { n: fleetHealth.xrayOk } }}</span>
+                    <span class="cl-bad">{{ 'dashboard.compliance_legend.missing' | translate: { n: fleetHealth.xrayFail } }}</span>
                   </div>
                 </div>
               </div>
@@ -198,26 +199,26 @@ const ROLE_CLASS: Record<Role, string> = {
         }
 
         <div class="quick-links">
-          <a class="btn btn-primary" routerLink="/admin/members">Manage Members</a>
-          <a class="btn btn-ghost" routerLink="/admin/flags">Feature Flags</a>
-          <a class="btn btn-ghost" routerLink="/org">Org Directory</a>
-          <a class="btn btn-ghost" routerLink="/apps">All Applications</a>
+          <a class="btn btn-primary" routerLink="/admin/members">{{ 'dashboard.actions.manage_members' | translate }}</a>
+          <a class="btn btn-ghost" routerLink="/admin/flags">{{ 'dashboard.actions.feature_flags' | translate }}</a>
+          <a class="btn btn-ghost" routerLink="/org">{{ 'dashboard.actions.org_directory' | translate }}</a>
+          <a class="btn btn-ghost" routerLink="/apps">{{ 'dashboard.actions.all_apps' | translate }}</a>
         </div>
 
       <!-- ── Tribe Lead ────────────────────────────────────────────────── -->
       } @else if (role === 'TribeLead') {
         @if (tribe) {
           <div class="metric-grid">
-            <div class="metric"><div class="metric-value">{{ tribeSquads.length }}</div><div class="metric-label">Squads</div></div>
-            <div class="metric"><div class="metric-value">{{ tribeTotalMembers }}</div><div class="metric-label">Members</div></div>
-            <div class="metric"><div class="metric-value">{{ tribeHealth.total }}</div><div class="metric-label">Applications</div></div>
+            <div class="metric"><div class="metric-value">{{ tribeSquads.length }}</div><div class="metric-label">{{ 'dashboard.metric.squads' | translate }}</div></div>
+            <div class="metric"><div class="metric-value">{{ tribeTotalMembers }}</div><div class="metric-label">{{ 'dashboard.metric.members' | translate }}</div></div>
+            <div class="metric"><div class="metric-value">{{ tribeHealth.total }}</div><div class="metric-label">{{ 'dashboard.metric.applications' | translate }}</div></div>
             <div class="metric" [class.metric-warn]="tribeHealth.failed > 0">
               <div class="metric-value">{{ tribeHealth.failed }}</div>
-              <div class="metric-label">Apps failing</div>
+              <div class="metric-label">{{ 'dashboard.metric.apps_failing' | translate }}</div>
             </div>
           </div>
 
-          <div class="section-title" style="margin-bottom:12px">Squads in {{ tribe.name }}</div>
+          <div class="section-title" style="margin-bottom:12px">{{ 'dashboard.section.squads_in' | translate: { tribe: tribe.name } }}</div>
           <div class="card-grid">
             @for (row of tribeSquads; track row.squad.id) {
               <div class="card">
@@ -225,7 +226,7 @@ const ROLE_CLASS: Record<Role, string> = {
                   <div style="font-weight:600;margin-bottom:4px">{{ row.squad.name }}</div>
                   <div style="color:var(--text-muted);font-size:0.82rem;margin-bottom:10px">{{ row.squad.missionStatement }}</div>
                   <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-                    <span class="badge badge-muted">{{ row.memberCount }} members</span>
+                    <span class="badge badge-muted">{{ 'org.members_count' | translate: { n: row.memberCount } }}</span>
                     @if (row.apps.length) {
                       @if (squadFailedCount(row.apps) > 0) {
                         <span class="badge badge-danger">{{ squadFailedCount(row.apps) }} failed</span>
@@ -244,14 +245,14 @@ const ROLE_CLASS: Record<Role, string> = {
                   }
                 </div>
                 <div class="card-footer-row">
-                  <a class="btn btn-ghost btn-sm" [routerLink]="['/org/squads', row.squad.id]">View Squad</a>
-                  <a class="btn btn-primary btn-sm" [routerLink]="['/apps']" [queryParams]="{ squad: row.squad.key }">Squad Apps</a>
+                  <a class="btn btn-ghost btn-sm" [routerLink]="['/org/squads', row.squad.id]">{{ 'dashboard.actions.view_squad' | translate }}</a>
+                  <a class="btn btn-primary btn-sm" [routerLink]="['/apps']" [queryParams]="{ squad: row.squad.key }">{{ 'dashboard.actions.squad_apps' | translate }}</a>
                 </div>
               </div>
             }
           </div>
         } @else {
-          <div class="empty-state"><div class="empty-icon">◉</div><div class="empty-title">You are not assigned as lead of any tribe yet.</div></div>
+          <div class="empty-state"><div class="empty-icon">◉</div><div class="empty-title">{{ 'dashboard.no_tribe' | translate }}</div></div>
         }
 
       <!-- ── Member / PO / SM / ReleaseManager ────────────────────────── -->
@@ -260,19 +261,19 @@ const ROLE_CLASS: Record<Role, string> = {
           <div class="metric-grid">
             <div class="metric">
               <div class="metric-value">{{ squadApps.length || '—' }}</div>
-              <div class="metric-label">Applications</div>
+              <div class="metric-label">{{ 'dashboard.metric.applications' | translate }}</div>
             </div>
             <div class="metric" [class.metric-warn]="squadHealth.failed > 0">
               <div class="metric-value">{{ squadApps.length ? squadHealth.failed : '—' }}</div>
-              <div class="metric-label">Failed</div>
+              <div class="metric-label">{{ 'dashboard.metric.failed' | translate }}</div>
             </div>
             <div class="metric" [class.metric-warn]="squadHealth.javaFail > 0">
               <div class="metric-value">{{ squadApps.length ? squadHealth.javaFail : '—' }}</div>
-              <div class="metric-label">Java Issues</div>
+              <div class="metric-label">{{ 'dashboard.metric.java_issues' | translate }}</div>
             </div>
             <div class="metric" [class.metric-warn]="squadHealth.xrayFail > 0">
               <div class="metric-value">{{ squadApps.length ? squadHealth.xrayFail : '—' }}</div>
-              <div class="metric-label">No Xray</div>
+              <div class="metric-label">{{ 'dashboard.metric.no_xray' | translate }}</div>
             </div>
           </div>
 
@@ -281,17 +282,17 @@ const ROLE_CLASS: Record<Role, string> = {
             <div class="card" style="margin-bottom:16px">
               <div class="card-body">
                 <div class="section-title" style="margin-bottom:14px">
-                  Application Health
+                  {{ 'dashboard.section.app_health' | translate }}
                   <span class="section-count">{{ squadApps.length }}</span>
                 </div>
                 <table class="app-health-table">
                   <thead>
                     <tr>
-                      <th>Application</th>
-                      <th>Running</th>
-                      <th>Java</th>
-                      <th>Xray</th>
-                      <th>Criticality</th>
+                      <th>{{ 'dashboard.table.application' | translate }}</th>
+                      <th>{{ 'dashboard.table.running' | translate }}</th>
+                      <th>{{ 'dashboard.table.java' | translate }}</th>
+                      <th>{{ 'dashboard.table.xray' | translate }}</th>
+                      <th>{{ 'dashboard.table.criticality' | translate }}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -330,20 +331,20 @@ const ROLE_CLASS: Record<Role, string> = {
                 </table>
               </div>
               <div class="card-footer-row">
-                <a class="btn btn-ghost btn-sm" [routerLink]="['/apps']" [queryParams]="{ squad: squad.key }">All Squad Apps</a>
+                <a class="btn btn-ghost btn-sm" [routerLink]="['/apps']" [queryParams]="{ squad: squad.key }">{{ 'dashboard.actions.all_squad_apps' | translate }}</a>
               </div>
             </div>
           }
 
           <div class="quick-links" style="margin-top:0">
-            <a class="btn btn-ghost" [routerLink]="['/org/squads', squad.id]">View Squad</a>
+            <a class="btn btn-ghost" [routerLink]="['/org/squads', squad.id]">{{ 'dashboard.actions.view_squad' | translate }}</a>
           </div>
 
         } @else {
           <div class="empty-state">
             <div class="empty-icon">◫</div>
-            <div class="empty-title">You are not assigned to a squad yet.</div>
-            <div class="empty-sub">Contact your tribe lead or an admin to be added to a squad.</div>
+            <div class="empty-title">{{ 'dashboard.no_squad' | translate }}</div>
+            <div class="empty-sub">{{ 'dashboard.no_squad_sub' | translate }}</div>
           </div>
         }
       }

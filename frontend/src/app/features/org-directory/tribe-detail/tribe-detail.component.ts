@@ -10,19 +10,20 @@ import { firstValueFrom } from 'rxjs';
 import { TribeApi } from '../../../core/api/tribe.api';
 import { ApiService } from '../../../core/api/api.service';
 import { LinkListComponent } from '../../../shared/link-list/link-list.component';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import type { Tribe, Squad } from '../../../core/models/index';
 
 @Component({
   selector: 'app-tribe-detail',
   standalone: true,
-  imports: [RouterLink, LinkListComponent],
+  imports: [RouterLink, LinkListComponent, TranslateModule],
   template: `
     @if (loading) { <div class="loading-block"><span class="spinner spinner-lg"></span></div> }
     @else if (loadError) {
       <div class="empty-state">
         <div class="empty-icon">⚠</div>
         <div class="empty-title">{{ loadError }}</div>
-        <div class="empty-sub"><a routerLink="/org">← Back to Org Directory</a></div>
+        <div class="empty-sub"><a routerLink="/org">{{ 'org.squad.back_to_org' | translate }}</a></div>
       </div>
     }
     @else if (tribe) {
@@ -40,32 +41,32 @@ import type { Tribe, Squad } from '../../../core/models/index';
       <div class="meta-row">
         @if (tribe.releaseManager) {
           <div class="meta-card">
-            <div class="meta-label">Release Manager</div>
+            <div class="meta-label">{{ 'org.tribe.release_manager' | translate }}</div>
             <div class="meta-value">{{ tribe.releaseManager }}</div>
           </div>
         }
         @if (tribe.agileCoach) {
           <div class="meta-card">
-            <div class="meta-label">Agile Coach</div>
+            <div class="meta-label">{{ 'org.tribe.agile_coach' | translate }}</div>
             <div class="meta-value">{{ tribe.agileCoach }}</div>
           </div>
         }
         <div class="meta-card">
-          <div class="meta-label">Squads</div>
+          <div class="meta-label">{{ 'common.squads' | translate }}</div>
           <div class="meta-value">{{ squads.length }}</div>
         </div>
       </div>
 
       @if (hasLinks(tribe)) {
         <div class="link-grid">
-          <app-link-list label="Jira"        [links]="tribe.jira"></app-link-list>
-          <app-link-list label="Confluence"  [links]="tribe.confluence"></app-link-list>
-          <app-link-list label="GitHub"      [links]="tribe.github"></app-link-list>
-          <app-link-list label="Mailing list" [links]="tribe.mailingList"></app-link-list>
+          <app-link-list [label]="'apps.links.jira' | translate"         [links]="tribe.jira"></app-link-list>
+          <app-link-list [label]="'apps.links.confluence' | translate"   [links]="tribe.confluence"></app-link-list>
+          <app-link-list [label]="'apps.links.github' | translate"       [links]="tribe.github"></app-link-list>
+          <app-link-list [label]="'apps.links.mailing_list' | translate" [links]="tribe.mailingList"></app-link-list>
         </div>
       }
 
-      <h3>Squads ({{ squads.length }})</h3>
+      <h3>{{ 'org.tribe.squads_count_paren' | translate: { n: squads.length } }}</h3>
       <div class="card-grid">
         @for (squad of squads; track squad.id) {
           <div class="card">
@@ -74,11 +75,11 @@ import type { Tribe, Squad } from '../../../core/models/index';
               <div style="color:var(--text-muted);font-size:0.85rem;margin-bottom:0.75rem">{{ squad.missionStatement }}</div>
             </div>
             <div class="card-footer-row">
-              <a class="btn btn-primary btn-sm" [routerLink]="['/org/squads', squad.id]">View Squad</a>
+              <a class="btn btn-primary btn-sm" [routerLink]="['/org/squads', squad.id]">{{ 'org.view_squad' | translate }}</a>
             </div>
           </div>
         }
-        @empty { <p style="color:var(--text-muted)">No squads in this tribe.</p> }
+        @empty { <p style="color:var(--text-muted)">{{ 'org.tribe.no_squads' | translate }}</p> }
       </div>
     }
   `,
@@ -95,6 +96,7 @@ export class TribeDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private tribeApi = inject(TribeApi);
   private api = inject(ApiService);
+  private i18n = inject(TranslateService);
 
   tribe: Tribe | null = null;
   squads: Squad[] = [];
@@ -106,7 +108,7 @@ export class TribeDetailComponent implements OnInit {
     try {
       this.tribe = await firstValueFrom(this.tribeApi.getById(id));
     } catch {
-      this.loadError = `Tribe "${id}" not found.`;
+      this.loadError = this.i18n.instant('org.tribe.not_found', { id });
       this.loading = false;
       return;
     }

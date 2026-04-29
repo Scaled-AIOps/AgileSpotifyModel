@@ -5,44 +5,45 @@
  * ToDo:    Show flag descriptions inline; group by category as more flags are added.
  */
 import { Component, inject } from '@angular/core';
+import { TranslateModule } from '@ngx-translate/core';
 import { FeatureFlagsService, FeatureFlag } from '../../../core/feature-flags/feature-flags.service';
 
-interface FlagMeta { key: FeatureFlag; label: string; description: string; }
+interface FlagMeta { key: FeatureFlag; labelKey: string; descriptionKey: string; }
 
 const FLAG_META: FlagMeta[] = [
-  { key: 'appRegistry', label: 'Applications', description: 'Application catalogue, infra cluster view, and deployment history per squad.' },
+  { key: 'appRegistry', labelKey: 'admin.flags.feature_appRegistry', descriptionKey: 'admin.flags.desc_appRegistry' },
 ];
 
 @Component({
   selector: 'app-feature-flags',
   standalone: true,
-  imports: [],
+  imports: [TranslateModule],
   template: `
     <div class="page-header">
       <div class="page-title">
-        <h1>Feature Flags</h1>
-        <div class="page-sub">Toggle features on or off. Changes take effect immediately and reset on page reload.</div>
+        <h1>{{ 'admin.flags.title' | translate }}</h1>
+        <div class="page-sub">{{ 'admin.flags.subtitle' | translate }}</div>
       </div>
     </div>
 
     <div class="card" style="max-width:640px">
       <table class="table">
-        <thead><tr><th>Feature</th><th>Description</th><th style="text-align:right">Status</th></tr></thead>
+        <thead><tr><th>{{ 'admin.flags.feature' | translate }}</th><th>{{ 'admin.flags.description' | translate }}</th><th style="text-align:right">{{ 'admin.flags.status' | translate }}</th></tr></thead>
         <tbody>
           @for (f of flags; track f.key) {
             <tr>
-              <td style="font-weight:600;white-space:nowrap">{{ f.label }}</td>
-              <td style="color:var(--text-muted);font-size:0.875rem">{{ f.description }}</td>
+              <td style="font-weight:600;white-space:nowrap">{{ f.labelKey | translate }}</td>
+              <td style="color:var(--text-muted);font-size:0.875rem">{{ f.descriptionKey | translate }}</td>
               <td style="text-align:right;white-space:nowrap">
                 <button
                   class="toggle-btn"
                   [class.on]="svc.isEnabled(f.key)"
                   (click)="svc.toggle(f.key)"
-                  [attr.aria-label]="'Toggle ' + f.label">
+                  [attr.aria-label]="(f.labelKey | translate)">
                   <span class="toggle-track">
                     <span class="toggle-thumb"></span>
                   </span>
-                  <span class="toggle-label">{{ svc.isEnabled(f.key) ? 'On' : 'Off' }}</span>
+                  <span class="toggle-label">{{ svc.isEnabled(f.key) ? ('admin.flags.on' | translate) : ('admin.flags.off' | translate) }}</span>
                 </button>
               </td>
             </tr>

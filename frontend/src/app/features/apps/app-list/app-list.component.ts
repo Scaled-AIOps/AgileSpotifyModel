@@ -8,6 +8,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { RouterLink, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
+import { TranslateModule } from '@ngx-translate/core';
 import { AppsApi } from '../../../core/api/apps.api';
 import { AuthService } from '../../../core/auth/auth.service';
 import { MemberApi } from '../../../core/api/member.api';
@@ -48,20 +49,20 @@ const PAGE_SIZES = [10, 25, 50, 100];
 @Component({
   selector: 'app-app-list',
   standalone: true,
-  imports: [RouterLink, FormsModule],
+  imports: [RouterLink, FormsModule, TranslateModule],
   template: `
     @if (loading) { <div class="loading-block"><span class="spinner spinner-lg"></span></div> }
     @else {
       <div class="page-header">
         <div class="page-title">
-          <h1>Applications</h1>
-          <div class="page-sub">{{ sorted.length }} of {{ sourcePool.length }} apps</div>
+          <h1>{{ 'apps.list.title' | translate }}</h1>
+          <div class="page-sub">{{ 'apps.list.count' | translate: { shown: sorted.length, total: sourcePool.length } }}</div>
         </div>
         <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
           @if (canManage) {
-            <a class="btn btn-primary btn-sm" routerLink="/apps/new">+ Register App</a>
+            <a class="btn btn-primary btn-sm" routerLink="/apps/new">{{ 'apps.list.register' | translate }}</a>
           }
-          <a class="btn btn-ghost btn-sm" routerLink="/apps/infra">Infra Clusters</a>
+          <a class="btn btn-ghost btn-sm" routerLink="/apps/infra">{{ 'apps.list.infra_clusters' | translate }}</a>
         </div>
       </div>
 
@@ -70,7 +71,7 @@ const PAGE_SIZES = [10, 25, 50, 100];
         <div class="toolbar-left">
           <div class="search-box">
             <span class="search-icon">⌕</span>
-            <input class="search-input" type="text" placeholder="Search apps, squad, tags…"
+            <input class="search-input" type="text" [placeholder]="'apps.list.search_placeholder' | translate"
                    [(ngModel)]="query" (ngModelChange)="onQueryChange()" />
             @if (query) {
               <button class="search-clear" (click)="clearQuery()">✕</button>
@@ -78,10 +79,10 @@ const PAGE_SIZES = [10, 25, 50, 100];
           </div>
 
           <div class="filter-chips">
-            <button class="chip" [class.active]="!activeStatus" (click)="setStatus(null)">All</button>
+            <button class="chip" [class.active]="!activeStatus" (click)="setStatus(null)">{{ 'apps.list.filter.all' | translate }}</button>
             @for (s of statuses; track s) {
               <button class="chip" [class.active]="activeStatus === s" (click)="setStatus(s)">
-                {{ statusLabel(s) }} <span class="chip-count">{{ countByStatus(s) }}</span>
+                {{ statusLabelKey(s) | translate }} <span class="chip-count">{{ countByStatus(s) }}</span>
               </button>
             }
           </div>
@@ -90,7 +91,7 @@ const PAGE_SIZES = [10, 25, 50, 100];
         <div class="toolbar-right">
           <!-- Page size -->
           <label class="page-size-label">
-            Show
+            {{ 'common.show' | translate }}
             <select class="page-size-select" [(ngModel)]="pageSize" (ngModelChange)="onPageSizeChange()">
               @for (ps of pageSizes; track ps) { <option [ngValue]="ps">{{ ps }}</option> }
             </select>
@@ -100,15 +101,15 @@ const PAGE_SIZES = [10, 25, 50, 100];
           <div class="col-chooser-wrap" (click)="$event.stopPropagation()">
             <button class="btn btn-ghost btn-sm col-chooser-btn"
                     (click)="colMenuOpen = !colMenuOpen; exportMenuOpen = false">
-              ⊞ Columns
+              {{ 'apps.list.columns' | translate }}
             </button>
             @if (colMenuOpen) {
               <div class="col-menu">
-                <div class="col-menu-title">Visible columns</div>
+                <div class="col-menu-title">{{ 'apps.list.visible_columns' | translate }}</div>
                 @for (col of cols; track col.key) {
                   <label class="col-row">
                     <input type="checkbox" [(ngModel)]="col.visible" />
-                    <span>{{ col.label }}</span>
+                    <span>{{ ('apps.list.col.' + col.key) | translate }}</span>
                   </label>
                 }
               </div>
@@ -118,19 +119,19 @@ const PAGE_SIZES = [10, 25, 50, 100];
           <!-- Export dropdown -->
           <div class="col-chooser-wrap" (click)="$event.stopPropagation()">
             <button class="btn btn-ghost btn-sm" (click)="exportMenuOpen = !exportMenuOpen; colMenuOpen = false">
-              ↓ Export
+              {{ 'apps.list.export' | translate }}
             </button>
             @if (exportMenuOpen) {
               <div class="col-menu export-menu">
-                <div class="col-menu-title">Export {{ sorted.length }} apps</div>
+                <div class="col-menu-title">{{ 'apps.list.export_n' | translate: { n: sorted.length } }}</div>
                 <button class="export-item" (click)="exportData('csv'); exportMenuOpen = false">
-                  <span class="export-fmt">CSV</span> Spreadsheet
+                  <span class="export-fmt">CSV</span> {{ 'apps.list.export_csv' | translate }}
                 </button>
                 <button class="export-item" (click)="exportData('json'); exportMenuOpen = false">
-                  <span class="export-fmt">JSON</span> Machine-readable
+                  <span class="export-fmt">JSON</span> {{ 'apps.list.export_json' | translate }}
                 </button>
                 <button class="export-item" (click)="exportData('yaml'); exportMenuOpen = false">
-                  <span class="export-fmt">YAML</span> Config-friendly
+                  <span class="export-fmt">YAML</span> {{ 'apps.list.export_yaml' | translate }}
                 </button>
               </div>
             }
@@ -141,8 +142,8 @@ const PAGE_SIZES = [10, 25, 50, 100];
       <!-- Scope toggle -->
       @if (mySquadId) {
         <div class="scope-bar">
-          <button class="scope-btn" [class.active]="!showAll" (click)="setScope(false)">My squad</button>
-          <button class="scope-btn" [class.active]="showAll"  (click)="setScope(true)">All apps</button>
+          <button class="scope-btn" [class.active]="!showAll" (click)="setScope(false)">{{ 'apps.list.scope.my_squad' | translate }}</button>
+          <button class="scope-btn" [class.active]="showAll"  (click)="setScope(true)">{{ 'apps.list.scope.all' | translate }}</button>
         </div>
       }
 
@@ -153,42 +154,42 @@ const PAGE_SIZES = [10, 25, 50, 100];
             <tr>
               @if (col('appId').visible) {
                 <th class="sortable" (click)="sortBy('appId')">
-                  App {{ sortIcon('appId') }}
+                  {{ 'apps.list.col.app' | translate }} {{ sortIcon('appId') }}
                 </th>
               }
               @if (col('squadKey').visible) {
                 <th class="sortable" (click)="sortBy('squadKey')">
-                  Squad {{ sortIcon('squadKey') }}
+                  {{ 'apps.list.col.squad' | translate }} {{ sortIcon('squadKey') }}
                 </th>
               }
               @if (col('status').visible) {
                 <th class="sortable" (click)="sortBy('status')">
-                  Status {{ sortIcon('status') }}
+                  {{ 'apps.list.col.status' | translate }} {{ sortIcon('status') }}
                 </th>
               }
               @if (col('java').visible) {
                 <th class="sortable" (click)="sortBy('javaVersion')">
-                  Java {{ sortIcon('javaVersion') }}
+                  {{ 'apps.list.col.java' | translate }} {{ sortIcon('javaVersion') }}
                 </th>
               }
               @if (col('pillar').visible) {
                 <th class="sortable" (click)="sortBy('pillar')">
-                  Pillar {{ sortIcon('pillar') }}
+                  {{ 'apps.list.col.pillar' | translate }} {{ sortIcon('pillar') }}
                 </th>
               }
               @if (col('criticality').visible) {
                 <th class="sortable" (click)="sortBy('criticality')">
-                  Criticality {{ sortIcon('criticality') }}
+                  {{ 'apps.list.col.criticality' | translate }} {{ sortIcon('criticality') }}
                 </th>
               }
               @if (col('github').visible) {
-                <th>GitHub</th>
+                <th>{{ 'apps.list.col.github' | translate }}</th>
               }
               @if (col('artifactory').visible) {
-                <th>Artifactory</th>
+                <th>{{ 'apps.list.col.artifactory' | translate }}</th>
               }
               @if (col('splunk').visible) {
-                <th>Splunk</th>
+                <th>{{ 'apps.list.col.splunk' | translate }}</th>
               }
               <th></th>
             </tr>
@@ -205,7 +206,7 @@ const PAGE_SIZES = [10, 25, 50, 100];
                   <td style="color:var(--text-muted);font-size:0.875rem">{{ app.squadKey }}</td>
                 }
                 @if (col('status').visible) {
-                  <td><span class="badge {{ statusClass(app.status) }}">{{ statusLabel(app.status) }}</span></td>
+                  <td><span class="badge {{ statusClass(app.status) }}">{{ statusLabelKey(app.status) | translate }}</span></td>
                 }
                 @if (col('java').visible) {
                   <td>
@@ -252,7 +253,7 @@ const PAGE_SIZES = [10, 25, 50, 100];
                   </td>
                 }
                 <td style="text-align:right">
-                  <a class="btn btn-ghost btn-sm" [routerLink]="['/apps', app.appId]">Details</a>
+                  <a class="btn btn-ghost btn-sm" [routerLink]="['/apps', app.appId]">{{ 'common.details' | translate }}</a>
                 </td>
               </tr>
             }
@@ -271,7 +272,7 @@ const PAGE_SIZES = [10, 25, 50, 100];
         <div class="table-footer">
           <div class="pagination-info">
             @if (sorted.length > 0) {
-              {{ pageStart + 1 }}–{{ pageEnd }} of {{ sorted.length }}
+              {{ 'apps.list.page_of' | translate: { start: pageStart + 1, end: pageEnd, total: sorted.length } }}
             }
           </div>
           <div class="pagination-controls">
@@ -509,6 +510,10 @@ export class AppListComponent implements OnInit {
   countByStatus(s: AppStatus) { return this.sourcePool.filter((a) => a.status === s).length; }
   statusClass(s: AppStatus)   { return STATUS_CLASS[s] ?? ''; }
   statusLabel(s: AppStatus)   { return STATUS_LABEL[s] ?? s; }
+  statusLabelKey(s: AppStatus): string {
+    if (s === 'marked-for-decommissioning') return 'apps.list.filter.decommissioning';
+    return 'apps.list.filter.' + s;
+  }
   repoShort(url: string)      { return url.replace(/https?:\/\/(www\.)?github\.com\//, ''); }
 
   private parseTags(app: App): Record<string, string> {

@@ -8,6 +8,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MemberApi } from '../../../core/api/member.api';
 import { SquadApi } from '../../../core/api/squad.api';
 import { ApiService } from '../../../core/api/api.service';
@@ -17,56 +18,56 @@ import type { Member, Squad } from '../../../core/models/index';
 @Component({
   selector: 'app-member-form',
   standalone: true,
-  imports: [RouterLink, ReactiveFormsModule],
+  imports: [RouterLink, ReactiveFormsModule, TranslateModule],
   template: `
     @if (loading) { <div class="loading-block"><span class="spinner spinner-lg"></span></div> }
     @else if (loadError) {
       <div class="empty-state">
         <div class="empty-icon">⚠</div>
         <div class="empty-title">{{ loadError }}</div>
-        <div class="empty-sub"><a routerLink="/admin/members">← Back to Members</a></div>
+        <div class="empty-sub"><a routerLink="/admin/members">{{ 'admin.members.back_to_members' | translate }}</a></div>
       </div>
     }
     @else {
       <div class="page-header">
         <div class="page-title">
-          <h1>{{ isEdit ? (isFullAdmin ? 'Edit Member' : 'Member Details') : 'New Member' }}</h1>
+          <h1>{{ (isEdit ? (isFullAdmin ? 'admin.members.edit_title' : 'admin.members.details_title') : 'admin.members.new_title') | translate }}</h1>
         </div>
-        <a class="btn btn-ghost" routerLink="/admin/members">← Back</a>
+        <a class="btn btn-ghost" routerLink="/admin/members">{{ 'admin.members.back' | translate }}</a>
       </div>
 
       <div class="card" style="max-width:520px">
         <div class="card-body">
           <form [formGroup]="form" (ngSubmit)="submit()">
             <div class="form-field">
-              <label>Name</label>
-              <input class="value-input" formControlName="name" placeholder="Full name" autocomplete="off" />
+              <label>{{ 'admin.members.name' | translate }}</label>
+              <input class="value-input" formControlName="name" [placeholder]="'admin.members.name_placeholder' | translate" autocomplete="off" />
             </div>
             <div class="form-field">
-              <label>Email</label>
-              <input class="value-input" type="email" formControlName="email" placeholder="user@example.com" autocomplete="off" />
+              <label>{{ 'admin.members.email' | translate }}</label>
+              <input class="value-input" type="email" formControlName="email" [placeholder]="'admin.members.email_placeholder' | translate" autocomplete="off" />
             </div>
             @if (!isEdit) {
               <div class="form-field">
-                <label>Signet</label>
-                <input class="value-input" [attr.type]="maskedType" formControlName="signet" placeholder="Min 8 characters" [attr.autocomplete]="autocompleteNew" />
+                <label>{{ 'admin.members.passcode' | translate }}</label>
+                <input class="value-input" [attr.type]="maskedType" formControlName="signet" [placeholder]="'admin.members.passcode_placeholder' | translate" [attr.autocomplete]="autocompleteNew" />
               </div>
             }
             <div class="form-field">
-              <label>Role</label>
+              <label>{{ 'admin.members.role' | translate }}</label>
               <select class="value-input" formControlName="role">
-                <option value="Admin">Admin</option>
-                <option value="TribeLead">Tribe Lead</option>
-                <option value="PO">Product Owner</option>
-                <option value="AgileCoach">Agile Coach</option>
-                <option value="ReleaseManager">Release Manager</option>
-                <option value="Member">Member</option>
+                <option value="Admin">{{ 'admin.members.role_opt.Admin' | translate }}</option>
+                <option value="TribeLead">{{ 'admin.members.role_opt.TribeLead' | translate }}</option>
+                <option value="PO">{{ 'admin.members.role_opt.PO' | translate }}</option>
+                <option value="AgileCoach">{{ 'admin.members.role_opt.AgileCoach' | translate }}</option>
+                <option value="ReleaseManager">{{ 'admin.members.role_opt.ReleaseManager' | translate }}</option>
+                <option value="Member">{{ 'admin.members.role_opt.Member' | translate }}</option>
               </select>
             </div>
             <div class="form-field">
-              <label>Squad</label>
+              <label>{{ 'admin.members.squad' | translate }}</label>
               <select class="value-input" formControlName="squadId">
-                <option value="">— None —</option>
+                <option value="">{{ 'admin.members.none' | translate }}</option>
                 @for (s of squads; track s.id) {
                   <option [value]="s.id">{{ s.name }}</option>
                 }
@@ -81,11 +82,11 @@ import type { Member, Squad } from '../../../core/models/index';
           </form>
         </div>
         <div class="card-footer-row" style="justify-content:flex-end;gap:8px">
-          <a class="btn btn-ghost" routerLink="/admin/members">Cancel</a>
+          <a class="btn btn-ghost" routerLink="/admin/members">{{ 'common.cancel' | translate }}</a>
           @if (!isEdit || isFullAdmin) {
             <button class="btn btn-primary" (click)="submit()" [disabled]="form.invalid || saving">
               @if (saving) { <span class="spinner"></span> }
-              {{ isEdit ? 'Update' : 'Create' }}
+              {{ (isEdit ? 'common.update' : 'common.create') | translate }}
             </button>
           }
         </div>
@@ -101,6 +102,7 @@ export class MemberFormComponent implements OnInit {
   private squadApi = inject(SquadApi);
   private api = inject(ApiService);
   private auth = inject(AuthService);
+  private i18n = inject(TranslateService);
 
   isEdit = false;
   memberId = '';
@@ -143,7 +145,7 @@ export class MemberFormComponent implements OnInit {
           this.form.disable();
         }
       } catch {
-        this.loadError = `Member "${this.memberId}" not found.`;
+        this.loadError = this.i18n.instant('admin.members.not_found', { id: this.memberId });
       }
     }
 
@@ -170,7 +172,7 @@ export class MemberFormComponent implements OnInit {
       const detail = details && typeof details === 'object'
         ? Object.entries(details).map(([k, v]) => `${k}: ${(v as string[])?.join('; ') ?? v}`).join(' • ')
         : '';
-      this.error = [apiErr, detail].filter(Boolean).join(' — ') || 'An error occurred';
+      this.error = [apiErr, detail].filter(Boolean).join(' — ') || this.i18n.instant('admin.members.default_error');
     } finally {
       this.saving = false;
     }

@@ -14,6 +14,7 @@ import {
   ChangeDetectorRef, inject,
 } from '@angular/core';
 import * as d3 from 'd3';
+import { TranslateModule } from '@ngx-translate/core';
 import type { AppDeployment, CloudPlatform } from '../../../core/models/index';
 
 interface ChartNode {
@@ -32,17 +33,17 @@ const MAX_VERSIONS_PER_ENV = 5;
 @Component({
   selector: 'app-app-chart',
   standalone: true,
-  imports: [],
+  imports: [TranslateModule],
   template: `
     <div class="app-chart">
       <div class="legend">
-        <span class="legend-item"><span class="dot dot-app"></span>App</span>
-        <span class="legend-item"><span class="dot dot-cloud"></span>Cloud</span>
-        <span class="legend-item"><span class="dot dot-env"></span>Environment</span>
-        <span class="legend-item"><span class="dot dot-version"></span>Version</span>
+        <span class="legend-item"><span class="dot dot-app"></span>{{ 'apps.detail.chart_legend.app' | translate }}</span>
+        <span class="legend-item"><span class="dot dot-cloud"></span>{{ 'apps.detail.chart_legend.cloud' | translate }}</span>
+        <span class="legend-item"><span class="dot dot-env"></span>{{ 'apps.detail.chart_legend.env' | translate }}</span>
+        <span class="legend-item"><span class="dot dot-version"></span>{{ 'apps.detail.chart_legend.version' | translate }}</span>
       </div>
       @if (!hasData) {
-        <div class="empty">No deployments to chart yet.</div>
+        <div class="empty">{{ 'apps.detail.no_deployments' | translate }}</div>
       } @else {
         <div #chartContainer class="chart-container"></div>
       }

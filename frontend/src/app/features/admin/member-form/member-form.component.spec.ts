@@ -1,3 +1,4 @@
+import { provideTranslateService } from '@ngx-translate/core';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 import { provideRouter, Router } from '@angular/router';
@@ -19,7 +20,7 @@ describe('MemberFormComponent', () => {
   function setup(paramId?: string) {
     return TestBed.configureTestingModule({
       imports: [MemberFormComponent],
-      providers: [
+      providers: [provideTranslateService(),
         provideRouter([]),
         {
           provide: ActivatedRoute,

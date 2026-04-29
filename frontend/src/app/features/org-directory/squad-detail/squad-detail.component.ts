@@ -15,6 +15,7 @@ import { AuthService } from '../../../core/auth/auth.service';
 import { FeatureFlagsService } from '../../../core/feature-flags/feature-flags.service';
 import { ConfigService } from '../../../core/config/config.service';
 import { LinkListComponent } from '../../../shared/link-list/link-list.component';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { SQUAD_ROLES } from '../../../core/models/index';
 import type { Squad, Member, App, AppStatus } from '../../../core/models/index';
 
@@ -28,14 +29,14 @@ const APP_STATUS_CLASS: Record<AppStatus, string> = {
 @Component({
   selector: 'app-squad-detail',
   standalone: true,
-  imports: [RouterLink, FormsModule, LinkListComponent],
+  imports: [RouterLink, FormsModule, LinkListComponent, TranslateModule],
   template: `
     @if (loading) { <div class="loading-block"><span class="spinner spinner-lg"></span></div> }
     @else if (loadError) {
       <div class="empty-state">
         <div class="empty-icon">⚠</div>
         <div class="empty-title">{{ loadError }}</div>
-        <div class="empty-sub"><a routerLink="/org">← Back to Org Directory</a></div>
+        <div class="empty-sub"><a routerLink="/org">{{ 'org.squad.back_to_org' | translate }}</a></div>
       </div>
     }
     @else if (squad) {
@@ -49,40 +50,40 @@ const APP_STATUS_CLASS: Record<AppStatus, string> = {
       <div class="meta-row">
         @if (squad.po) {
           <div class="meta-card">
-            <div class="meta-label">Product Owner</div>
+            <div class="meta-label">{{ 'org.squad.product_owner' | translate }}</div>
             <div class="meta-value">{{ squad.po }}</div>
           </div>
         }
         @if (squad.sm) {
           <div class="meta-card">
-            <div class="meta-label">Scrum Master</div>
+            <div class="meta-label">{{ 'org.squad.scrum_master' | translate }}</div>
             <div class="meta-value">{{ squad.sm }}</div>
           </div>
         }
         @if (squad.tier) {
           <div class="meta-card">
-            <div class="meta-label">Tier</div>
-            <div class="meta-value"><span class="badge {{ tierClass(squad.tier) }}">Tier {{ squad.tier }}</span></div>
+            <div class="meta-label">{{ 'org.squad.tier' | translate }}</div>
+            <div class="meta-value"><span class="badge {{ tierClass(squad.tier) }}">{{ 'org.squad.tier_n' | translate: { n: squad.tier } }}</span></div>
           </div>
         }
       </div>
 
       @if (hasLinks()) {
         <div class="link-grid">
-          <app-link-list label="Jira"        [links]="squad.jira"></app-link-list>
-          <app-link-list label="Confluence"  [links]="squad.confluence"></app-link-list>
-          <app-link-list label="GitHub"      [links]="squad.github"></app-link-list>
-          <app-link-list label="Mailing list" [links]="squad.mailingList"></app-link-list>
+          <app-link-list [label]="'apps.links.jira' | translate"         [links]="squad.jira"></app-link-list>
+          <app-link-list [label]="'apps.links.confluence' | translate"   [links]="squad.confluence"></app-link-list>
+          <app-link-list [label]="'apps.links.github' | translate"       [links]="squad.github"></app-link-list>
+          <app-link-list [label]="'apps.links.mailing_list' | translate" [links]="squad.mailingList"></app-link-list>
         </div>
       }
 
       <!-- Members section -->
       <div class="section-header">
-        <h3>Members ({{ members.length }})</h3>
+        <h3>{{ 'org.squad.members_paren' | translate: { n: members.length } }}</h3>
         @if (canManage()) {
           <button class="btn btn-sm {{ managing ? 'btn-primary' : 'btn-ghost' }}"
                   (click)="managing = !managing">
-            {{ managing ? 'Done' : 'Manage Members' }}
+            {{ (managing ? 'common.done' : 'org.squad.manage_members') | translate }}
           </button>
         }
       </div>
@@ -91,9 +92,9 @@ const APP_STATUS_CLASS: Record<AppStatus, string> = {
         <table class="table">
           <thead>
             <tr>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Role</th>
+              <th>{{ 'common.name' | translate }}</th>
+              <th>{{ 'common.email' | translate }}</th>
+              <th>{{ 'common.role' | translate }}</th>
               @if (managing) { <th></th> }
             </tr>
           </thead>
@@ -106,7 +107,7 @@ const APP_STATUS_CLASS: Record<AppStatus, string> = {
                   @if (managing) {
                     <select class="role-select" [ngModel]="m.squadRole"
                             (ngModelChange)="onRoleChange(m, $event)">
-                      <option value="">— unassigned —</option>
+                      <option value="">{{ 'org.squad.unassigned' | translate }}</option>
                       @for (r of squadRoles; track r) {
                         <option [value]="r">{{ r }}</option>
                       }
@@ -121,13 +122,13 @@ const APP_STATUS_CLASS: Record<AppStatus, string> = {
                 </td>
                 @if (managing) {
                   <td style="text-align:right">
-                    <button class="btn btn-danger btn-sm" (click)="removeMember(m)">Remove</button>
+                    <button class="btn btn-danger btn-sm" (click)="removeMember(m)">{{ 'common.remove' | translate }}</button>
                   </td>
                 }
               </tr>
             }
             @empty {
-              <tr><td [attr.colspan]="managing ? 4 : 3" style="text-align:center;color:var(--text-muted)">No members yet.</td></tr>
+              <tr><td [attr.colspan]="managing ? 4 : 3" style="text-align:center;color:var(--text-muted)">{{ 'org.squad.no_members' | translate }}</td></tr>
             }
           </tbody>
         </table>
@@ -136,22 +137,22 @@ const APP_STATUS_CLASS: Record<AppStatus, string> = {
       <!-- Add member panel -->
       @if (managing) {
         <div class="add-panel card">
-          <div class="add-panel-title">Add a member</div>
+          <div class="add-panel-title">{{ 'org.squad.add_member' | translate }}</div>
           <div class="add-row">
-            <input class="add-input" type="email" placeholder="Email address"
+            <input class="add-input" type="email" [placeholder]="'org.squad.email_placeholder' | translate"
                    [(ngModel)]="addEmail" (ngModelChange)="onEmailInput()" />
             @if (addEmail && !emailMatch && !emailNew) {
-              <span class="lookup-hint">Searching…</span>
+              <span class="lookup-hint">{{ 'org.squad.searching' | translate }}</span>
             }
             @if (emailMatch) {
-              <span class="lookup-found">✓ {{ emailMatch.name }}</span>
+              <span class="lookup-found">{{ 'org.squad.found' | translate: { name: emailMatch.name } }}</span>
             }
             @if (emailNew) {
-              <input class="add-input" type="text" placeholder="Full name"
+              <input class="add-input" type="text" [placeholder]="'org.squad.name_placeholder' | translate"
                      [(ngModel)]="addName" />
             }
             <select class="role-select" [(ngModel)]="addRole">
-              <option value="">— squad role —</option>
+              <option value="">{{ 'org.squad.squad_role' | translate }}</option>
               @for (r of squadRoles; track r) {
                 <option [value]="r">{{ r }}</option>
               }
@@ -160,25 +161,25 @@ const APP_STATUS_CLASS: Record<AppStatus, string> = {
                     [disabled]="!canSubmitAdd || adding"
                     (click)="addMember()">
               @if (adding) { <span class="spinner"></span> }
-              @else if (emailNew) { Create & Add }
-              @else { Add }
+              @else if (emailNew) { {{ 'org.squad.create_and_add' | translate }} }
+              @else { {{ 'common.add' | translate }} }
             </button>
           </div>
           @if (addError) { <div class="error-msg">{{ addError }}</div> }
           @if (tempSignet && config.basicEnabled()) {
             <div class="temp-pass">
-              Temporary signet for {{ addEmail }}: <code>{{ tempSignet }}</code>
-              <span style="color:var(--text-muted);margin-left:6px">(share with the new member)</span>
+              {{ 'org.squad.temp_passcode' | translate: { email: addEmail, code: tempSignet } }}
+              <span style="color:var(--text-muted);margin-left:6px">{{ 'org.squad.share_with' | translate }}</span>
             </div>
           }
         </div>
       }
 
       @if (flags.isEnabled('appRegistry') && apps.length) {
-        <h3 style="margin-top:1.5rem">Apps ({{ apps.length }})</h3>
+        <h3 style="margin-top:1.5rem">{{ 'org.squad.apps_paren' | translate: { n: apps.length } }}</h3>
         <div class="card">
           <table class="table">
-            <thead><tr><th>App</th><th>Status</th><th>Criticality</th><th></th></tr></thead>
+            <thead><tr><th>{{ 'apps.list.col.app' | translate }}</th><th>{{ 'apps.list.col.status' | translate }}</th><th>{{ 'apps.list.col.criticality' | translate }}</th><th></th></tr></thead>
             <tbody>
               @for (app of apps; track app.appId) {
                 <tr>
@@ -192,7 +193,7 @@ const APP_STATUS_CLASS: Record<AppStatus, string> = {
                     }
                   </td>
                   <td style="text-align:right">
-                    <a class="btn btn-ghost btn-sm" [routerLink]="['/apps', app.appId]">Details</a>
+                    <a class="btn btn-ghost btn-sm" [routerLink]="['/apps', app.appId]">{{ 'common.details' | translate }}</a>
                   </td>
                 </tr>
               }
@@ -239,6 +240,7 @@ export class SquadDetailComponent implements OnInit {
   private squadApi  = inject(SquadApi);
   private memberApi = inject(MemberApi);
   private appsApi   = inject(AppsApi);
+  private i18n      = inject(TranslateService);
   private auth      = inject(AuthService);
   readonly config   = inject(ConfigService);
   readonly flags    = inject(FeatureFlagsService);
@@ -300,7 +302,7 @@ export class SquadDetailComponent implements OnInit {
     try {
       this.squadSignal.set(await firstValueFrom(this.squadApi.getById(id)));
     } catch {
-      this.loadError = `Squad "${id}" not found.`;
+      this.loadError = this.i18n.instant('org.squad.not_found', { id });
       this.loading = false;
       return;
     }

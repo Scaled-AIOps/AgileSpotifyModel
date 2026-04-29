@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { provideTranslateService } from '@ngx-translate/core';
 import { provideRouter } from '@angular/router';
 import { of } from 'rxjs';
 import { AdminDashboardComponent } from './admin-dashboard.component';
@@ -24,6 +25,7 @@ describe('AdminDashboardComponent', () => {
     await TestBed.configureTestingModule({
       imports: [AdminDashboardComponent],
       providers: [
+        provideTranslateService(),
         provideRouter([]),
         { provide: OrgApi, useValue: orgSpy },
         { provide: AuthService, useValue: authStub },

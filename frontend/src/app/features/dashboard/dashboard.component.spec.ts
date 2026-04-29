@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { provideTranslateService } from '@ngx-translate/core';
 import { provideRouter, Router } from '@angular/router';
 import { of } from 'rxjs';
 import { DashboardComponent } from './dashboard.component';
@@ -25,6 +26,7 @@ describe('DashboardComponent', () => {
     return TestBed.configureTestingModule({
       imports: [DashboardComponent],
       providers: [
+        provideTranslateService(),
         provideRouter([]),
         { provide: AuthService, useValue: authStub },
         { provide: MemberApi, useValue: memberSpy },
@@ -371,6 +373,7 @@ describe('DashboardComponent branch coverage', () => {
     await TestBed.configureTestingModule({
       imports: [DashboardComponent],
       providers: [
+        provideTranslateService(),
         provideRouter([]),
         { provide: AuthService, useValue: authStub },
         { provide: MemberApi, useValue: memberSpy },

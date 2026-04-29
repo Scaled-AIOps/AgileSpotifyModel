@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { provideTranslateService } from '@ngx-translate/core';
 import { AppChartComponent } from './app-chart.component';
 import type { AppDeployment } from '../../../core/models/index';
 
@@ -9,7 +10,7 @@ const mkDeploy = (version: string, state: AppDeployment['state'] = 'success'): A
 });
 
 function newComponent() {
-  TestBed.configureTestingModule({ imports: [AppChartComponent] });
+  TestBed.configureTestingModule({ imports: [AppChartComponent], providers: [provideTranslateService()] });
   return TestBed.createComponent(AppChartComponent).componentInstance;
 }
 

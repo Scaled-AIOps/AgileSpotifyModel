@@ -9,6 +9,7 @@ import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { KeyValuePipe } from '@angular/common';
 import { firstValueFrom } from 'rxjs';
+import { TranslateModule } from '@ngx-translate/core';
 import { AppsApi } from '../../../core/api/apps.api';
 import type { InfraCluster } from '../../../core/models/index';
 
@@ -19,29 +20,29 @@ const ENV_CLASS: Record<string, string> = {
 @Component({
   selector: 'app-infra-clusters',
   standalone: true,
-  imports: [RouterLink, FormsModule, KeyValuePipe],
+  imports: [RouterLink, FormsModule, KeyValuePipe, TranslateModule],
   template: `
     @if (loading) { <div class="loading-block"><span class="spinner spinner-lg"></span></div> }
     @else {
       <div class="page-header">
         <div class="page-title">
-          <h1>Infra Clusters</h1>
-          <div class="page-sub">{{ filtered.length }} of {{ clusters.length }} clusters</div>
+          <h1>{{ 'apps.infra.title' | translate }}</h1>
+          <div class="page-sub">{{ 'apps.infra.count' | translate: { shown: filtered.length, total: clusters.length } }}</div>
         </div>
-        <a class="btn btn-ghost btn-sm" routerLink="/apps">← Applications</a>
+        <a class="btn btn-ghost btn-sm" routerLink="/apps">{{ 'apps.infra.applications' | translate }}</a>
       </div>
 
       <!-- Toolbar -->
       <div class="toolbar">
         <div class="search-box">
           <span class="search-icon">⌕</span>
-          <input class="search-input" type="text" placeholder="Search clusters, hosts…"
+          <input class="search-input" type="text" [placeholder]="'apps.infra.search_placeholder' | translate"
                  [(ngModel)]="query" (ngModelChange)="applyFilter()" />
           @if (query) { <button class="search-clear" (click)="clearQuery()">✕</button> }
         </div>
 
         <div class="filter-chips">
-          <button class="chip" [class.active]="!activeEnv" (click)="setEnv(null)">All</button>
+          <button class="chip" [class.active]="!activeEnv" (click)="setEnv(null)">{{ 'common.all' | translate }}</button>
           @for (e of envs; track e) {
             <button class="chip" [class.active]="activeEnv === e" (click)="setEnv(e)">{{ e }}</button>
           }
@@ -60,38 +61,38 @@ const ENV_CLASS: Record<string, string> = {
             <div class="cluster-body">
               @if (c.platform) {
                 <div class="cluster-row">
-                  <span class="cluster-key">Platform</span>
+                  <span class="cluster-key">{{ 'apps.infra.platform' | translate }}</span>
                   <span class="cluster-val">{{ c.platform }}</span>
                 </div>
               }
               @if (c.platformType) {
                 <div class="cluster-row">
-                  <span class="cluster-key">Type</span>
+                  <span class="cluster-key">{{ 'apps.infra.type' | translate }}</span>
                   <span class="cluster-val">{{ c.platformType }}</span>
                 </div>
               }
               @if (c.clusterId) {
                 <div class="cluster-row">
-                  <span class="cluster-key">Cluster</span>
+                  <span class="cluster-key">{{ 'apps.infra.cluster' | translate }}</span>
                   <span class="cluster-val mono">{{ c.clusterId }}</span>
                 </div>
               }
               @if (c.host) {
                 <div class="cluster-row">
-                  <span class="cluster-key">Host</span>
+                  <span class="cluster-key">{{ 'apps.infra.host' | translate }}</span>
                   <span class="cluster-val mono host-val">{{ c.host }}</span>
                 </div>
               }
               @if (c.routeHostName) {
                 <div class="cluster-row">
-                  <span class="cluster-key">Route</span>
+                  <span class="cluster-key">{{ 'apps.infra.route' | translate }}</span>
                   <span class="cluster-val mono host-val">{{ c.routeHostName }}</span>
                 </div>
               }
               @if (parsedTags(c) | keyvalue; as tagEntries) {
                 @if (tagEntries.length) {
                   <div class="cluster-row" style="align-items:flex-start">
-                    <span class="cluster-key">Tags</span>
+                    <span class="cluster-key">{{ 'apps.infra.tags' | translate }}</span>
                     <span class="cluster-val" style="display:flex;gap:4px;flex-wrap:wrap">
                       @for (t of tagEntries; track t.key) {
                         <span class="tag-chip">{{ t.key }}: {{ t.value }}</span>
@@ -106,7 +107,7 @@ const ENV_CLASS: Record<string, string> = {
         @empty {
           <div class="empty-state" style="grid-column:1/-1">
             <div class="empty-icon">◫</div>
-            <div class="empty-title">No clusters match your filters</div>
+            <div class="empty-title">{{ 'apps.infra.no_match' | translate }}</div>
           </div>
         }
       </div>

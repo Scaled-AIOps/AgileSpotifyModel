@@ -6,6 +6,7 @@
  */
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { TranslateModule } from '@ngx-translate/core';
 import type { Link } from '../../core/models/index';
 
 /**
@@ -24,15 +25,15 @@ import type { Link } from '../../core/models/index';
 @Component({
   selector: 'app-link-repeater',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, TranslateModule],
   template: `
     <div class="repeater">
       <div class="repeater-header">
         <span class="repeater-label">{{ label }}</span>
-        <button type="button" class="btn btn-ghost btn-sm" (click)="addRow()">+ Add</button>
+        <button type="button" class="btn btn-ghost btn-sm" (click)="addRow()">+ {{ 'common.add' | translate }}</button>
       </div>
       @if (rows.length === 0) {
-        <div class="empty-hint">No {{ label || 'links' }} yet.</div>
+        <div class="empty-hint">{{ 'common.no_items_yet' | translate: { what: (label || ('apps.links.links' | translate)) } }}</div>
       }
       @for (row of rows; track $index; let i = $index) {
         <div class="row">
@@ -48,7 +49,7 @@ import type { Link } from '../../core/models/index';
             type="text"
             [(ngModel)]="row.description"
             (ngModelChange)="emit()"
-            placeholder="Label (optional)"
+            [placeholder]="'common.label_optional' | translate"
             [name]="'desc-' + i" />
           <button type="button" class="btn-remove" (click)="removeRow(i)" [attr.aria-label]="'Remove ' + (row.description || 'link')">×</button>
         </div>

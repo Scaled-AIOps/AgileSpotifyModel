@@ -7,29 +7,30 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
+import { TranslateModule } from '@ngx-translate/core';
 import { OrgApi, HeadcountEntry } from '../../../core/api/org.api';
 import { AuthService } from '../../../core/auth/auth.service';
 
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, TranslateModule],
   template: `
     @if (loading) { <div class="loading-block"><span class="spinner spinner-lg"></span></div> }
     @else {
       <div class="page-header">
-        <div class="page-title"><h1>Admin Dashboard</h1></div>
+        <div class="page-title"><h1>{{ 'admin.dashboard_title' | translate }}</h1></div>
         <div style="display:flex;gap:8px">
           @if (isFullAdmin) {
-            <a class="btn btn-ghost" routerLink="/admin/flags">Feature Flags</a>
+            <a class="btn btn-ghost" routerLink="/admin/flags">{{ 'admin.feature_flags' | translate }}</a>
           }
-          <a class="btn btn-primary" routerLink="/admin/members">Manage Members</a>
+          <a class="btn btn-primary" routerLink="/admin/members">{{ 'admin.manage_members' | translate }}</a>
         </div>
       </div>
 
       <div class="card" style="margin-bottom:20px">
         <div class="card-body">
-          <div style="font-weight:600;margin-bottom:16px;color:var(--text-strong)">Headcount by Tribe</div>
+          <div style="font-weight:600;margin-bottom:16px;color:var(--text-strong)">{{ 'dashboard.section.headcount_by_tribe' | translate }}</div>
           <div class="bar-chart">
             @for (tribe of headcount; track tribe.id) {
               <div class="bar-row">
@@ -49,7 +50,7 @@ import { AuthService } from '../../../core/auth/auth.service';
           <div class="card">
             <div class="card-body">
               <div style="font-weight:600;margin-bottom:2px">{{ tribe.name }}</div>
-              <div style="color:var(--text-muted);font-size:0.82rem;margin-bottom:10px">{{ tribe.memberCount }} members</div>
+              <div style="color:var(--text-muted);font-size:0.82rem;margin-bottom:10px">{{ 'org.members_count' | translate: { n: tribe.memberCount } }}</div>
               <ul class="squad-list">
                 @for (sq of tribe.squads; track sq.id) {
                   <li><span>{{ sq.name }}</span><span class="sq-count">{{ sq.memberCount }}</span></li>
@@ -59,7 +60,7 @@ import { AuthService } from '../../../core/auth/auth.service';
           </div>
         }
         @empty {
-          <div class="empty-state"><div class="empty-icon">◉</div><div class="empty-title">No tribes found</div></div>
+          <div class="empty-state"><div class="empty-icon">◉</div><div class="empty-title">{{ 'org.tribe.squads_count_paren' | translate: { n: 0 } }}</div></div>
         }
       </div>
     }

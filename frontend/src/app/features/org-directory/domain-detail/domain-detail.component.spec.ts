@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { provideTranslateService } from '@ngx-translate/core';
 import { ActivatedRoute, provideRouter } from '@angular/router';
 import { of } from 'rxjs';
 import { DomainDetailComponent } from './domain-detail.component';
@@ -14,6 +15,7 @@ describe('DomainDetailComponent', () => {
     await TestBed.configureTestingModule({
       imports: [DomainDetailComponent],
       providers: [
+        provideTranslateService(),
         provideRouter([]),
         { provide: ActivatedRoute, useValue: { snapshot: { paramMap: { get: () => 'd1' } } } },
         { provide: DomainApi, useValue: domainSpy },
