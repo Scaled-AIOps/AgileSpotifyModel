@@ -8,7 +8,7 @@ import redis from '../config/redis';
 import { generateId } from '../lib/id';
 import { createError } from '../middleware/errorHandler';
 import { coerceLinks, parseLinks, serialiseLinks } from '../lib/links';
-import type { Tribe, Link } from '../models/index';
+import type { Tribe } from '../models/index';
 
 function fromHash(h: Record<string, string>): Tribe {
   return {
@@ -82,7 +82,8 @@ export async function findById(id: string): Promise<Tribe | null> {
 export async function update(id: string, data: Partial<{
   name: string; tribeName: string; description: string;
   leadMemberId: string; subdomainId: string;
-  jira: Link[]; confluence: Link[]; github: Link[]; mailingList: Link[];
+  releaseManager: string; agileCoach: string;
+  jira: unknown; confluence: unknown; github: unknown; mailingList: unknown;
 }>): Promise<Tribe> {
   const existing = await findById(id);
   if (!existing) throw createError('Tribe not found', 404);

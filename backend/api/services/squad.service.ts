@@ -75,7 +75,9 @@ export async function findById(id: string): Promise<Squad | null> {
   return h?.id ? fromHash(h) : null;
 }
 
-export async function update(id: string, data: Partial<Omit<Squad, 'id' | 'tribeId' | 'createdAt' | 'updatedAt'>>): Promise<Squad> {
+export async function update(id: string, data: Partial<Omit<Squad, 'id' | 'tribeId' | 'createdAt' | 'updatedAt' | 'jira' | 'confluence' | 'github' | 'mailingList'>> & {
+  jira?: unknown; confluence?: unknown; github?: unknown; mailingList?: unknown;
+}): Promise<Squad> {
   const existing = await findById(id);
   if (!existing) throw createError('Squad not found', 404);
   if (data.key && data.key !== existing.key) {

@@ -116,10 +116,23 @@ export async function seedFromYaml(): Promise<void> {
   }
 
   for (const t of tribeDefs) {
-    if (tribeByName.has(t.name)) { skipped++; continue; }
+    const subdomain = subdomainByName.get(t.subDomain);
+    const existingTribe = tribeByName.get(t.name);
+    if (existingTribe) {
+      const updated = await tribeSvc.update(existingTribe.id, {
+        tribeName: t.tribeName ?? t.name,
+        description: t.description ?? '',
+        subdomainId: subdomain?.id,
+        releaseManager: t.releaseManager,
+        agileCoach: t.agileCoach,
+        jira: t.jira, confluence: t.confluence, github: t.github, mailingList: t.mailingList,
+      });
+      tribeByName.set(updated.name, updated);
+      if (updated.tribeName && updated.tribeName !== updated.name) tribeByName.set(updated.tribeName, updated);
+      continue;
+    }
     const domain = domainByName.get(t.tribeDomain);
     if (!domain) { console.warn(`[seed] tribe "${t.name}": domain "${t.tribeDomain}" not found`); skipped++; continue; }
-    const subdomain = subdomainByName.get(t.subDomain);
     const nt = await tribeSvc.create({
       name: t.name, tribeName: t.tribeName ?? t.name,
       description: t.description ?? '', domainId: domain.id,
@@ -135,7 +148,16 @@ export async function seedFromYaml(): Promise<void> {
   // ── Squads ────────────────────────────────────────────────────────────────────
   const squadDefs = loadYaml<YamlSquad>('squads.yaml');
   for (const s of squadDefs) {
-    if (await squadSvc.findByKey(s.key)) { skipped++; continue; }
+    const existingSquad = await squadSvc.findByKey(s.key);
+    if (existingSquad) {
+      await squadSvc.update(existingSquad.id, {
+        name: s.name, description: s.description ?? '',
+        po: s.po, sm: s.sm,
+        jira: s.jira, confluence: s.confluence, github: s.github, mailingList: s.mailingList,
+        tier: s.tags?.tier ?? '',
+      });
+      continue;
+    }
     const tribe = tribeByName.get(s.tribe);
     if (!tribe) { console.warn(`[seed] squad "${s.key}": tribe "${s.tribe}" not found`); skipped++; continue; }
     await squadSvc.create({
