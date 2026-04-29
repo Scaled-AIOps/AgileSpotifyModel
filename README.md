@@ -373,7 +373,9 @@ The frontend uses [`@ngx-translate/core`](https://ngx-translate.org) for runtime
 - **Selection precedence**: `localStorage['app.lang']` > `navigator.language` (first two chars) > `'en'`. The user's choice is persisted on every change made via the in-app switcher.
 - **Switcher**: a tiny `<app-language-switcher>` component is mounted in the authenticated shell toolbar and on the login screen, so the language can be changed both before and after login without reload.
 - **Wiring**: `provideTranslateService` + `provideTranslateHttpLoader` in [app.config.ts](frontend/src/app/app.config.ts); a second `APP_INITIALIZER` resolves the initial locale before bootstrap finishes so the first paint is in the right language.
-- **Coverage**: the login screen and shell nav are migrated as proof of concept. Other components still hard-code English — migrate by replacing string literals with the `'key' | translate` pipe and adding the key under both `en.json` and `de.json`.
+- **Coverage**: every visible static label across the SPA is migrated — shell, login, dashboard, the entire `apps/` feature (list / detail / form / chart / infra-clusters), the full admin area (dashboard / members / member-form / feature-flags), and every `org-directory/` page (tree / context / domain / tribe / squad). The shared `<app-link-repeater>` widget is translated too. Counter-bearing strings use ngx-translate parameters (e.g. `'org.tribes_count' | translate: { n: count }`).
+- **Adding a new key**: pick a sensible nested path (e.g. `apps.detail.something`), add it to both `en.json` and `de.json` keeping the structures in lock-step, then bind in the template via `{{ 'apps.detail.something' | translate }}` (or with parameters via `'…' | translate: { n: count }`).
+- **Tests**: any spec that boots a `TranslateModule`-using component must add `provideTranslateService()` to its `TestBed`. Where assertions compared against an English fallback string, they now compare against the translation key, since translations aren't loaded in Karma's offline runtime.
 
 ## Tribe naming
 
