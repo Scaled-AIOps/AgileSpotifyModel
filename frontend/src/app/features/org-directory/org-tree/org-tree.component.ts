@@ -123,7 +123,7 @@ export class OrgTreeComponent implements AfterViewInit, OnDestroy {
   private renderTree(domains: OrgTreeDomain[]) {
     const container = this.containerRef.nativeElement;
     const width = container.clientWidth || 900;
-    const margin = { top: 20, right: 180, bottom: 20, left: 180 };
+    const margin = { top: 20, right: 180, bottom: 20, left: 80 };
     const height = 600;
 
     const svg = d3.select(container)
@@ -152,6 +152,12 @@ export class OrgTreeComponent implements AfterViewInit, OnDestroy {
       // for spacing, so we keep it but filter it (and the four invisible
       // root→domain links) out of rendering.
       const nodes = root.descendants().filter((n) => n.data.type !== 'root');
+
+      // Pull the chart left so the visible leftmost column (the
+      // tribeDomains) sits at the page's left edge instead of leaving
+      // an empty 'root' column behind.
+      const minY = Math.min(...nodes.map((n) => n.y ?? 0));
+      nodes.forEach((n) => { n.y = (n.y ?? 0) - minY; });
       const links = root.links().filter((l) =>
         (l.source as d3.HierarchyNode<TreeNode>).data.type !== 'root');
 
