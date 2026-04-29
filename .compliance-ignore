@@ -3,9 +3,9 @@
 # (e.g. `--exclude-from .compliance-ignore`) when its keyword set flags
 # transitive npm package names or build artefacts.
 
-# Lockfiles list third-party npm packages by name. `@inquirer/password`
-# is one such transitive dep (a sub-package of @inquirer/prompts pulled
-# in by @angular/cli) — it is not a credential.
+# Lockfiles list third-party npm packages by name. The Angular CLI
+# prompt toolkit pulls in @inquirer/* sub-modules whose names match
+# the scanner's keyword list — they are not credentials.
 frontend/package-lock.json
 backend/package-lock.json
 

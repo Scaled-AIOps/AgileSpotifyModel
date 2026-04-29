@@ -1,7 +1,7 @@
 # Files / lines the secret scanner can safely skip.
 #
-# package-lock.json contains transitive npm package names that match
-# the scanner's keyword list (e.g. `@inquirer/password` is a sub-package
-# of @inquirer/prompts pulled in by @angular/cli). They are not credentials.
+# package-lock.json files contain transitive npm package names that
+# match the scanner's keyword list (third-party module names from the
+# Angular CLI prompt toolkit). They are not credentials.
 frontend/package-lock.json
 backend/package-lock.json
