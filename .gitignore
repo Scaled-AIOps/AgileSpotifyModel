@@ -33,3 +33,6 @@ Thumbs.db
 backend/bruno-report.html
 apps-*.png
 login-*.png
+coverage/
+backend/coverage/
+frontend/coverage/
