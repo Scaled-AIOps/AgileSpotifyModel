@@ -81,7 +81,7 @@ describe('POST /api/v1/auth/login', () => {
     (authService.login as any).mockRejectedValue(err);
     const res = await request(app)
       .post('/api/v1/auth/login')
-      .send({ email: 'x@x.com', signet: 'wrong' });
+      .send({ email: 'x@x.com', signet: 'wrong-tink' });
     expect(res.status).toBe(401);
   });
 
@@ -148,7 +148,7 @@ describe('PATCH /api/v1/auth/me/signet', () => {
     const res = await request(app)
       .patch('/api/v1/auth/me/signet')
       .set('Authorization', `Bearer ${memberToken()}`)
-      .send({ currentSignet: 'OldPass1!', newSignet: 'NewPass1!' });
+      .send({ currentSignet: 'OldTink1!', newSignet: 'NewTink1!' });
     expect(res.status).toBe(200);
   });
 

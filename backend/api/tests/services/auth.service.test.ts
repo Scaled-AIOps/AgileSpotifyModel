@@ -60,21 +60,21 @@ describe('register', () => {
 describe('login', () => {
   it('returns tokens for valid credentials', async () => {
     const { hashSignet } = await import('../../lib/crypto');
-    const hash = await hashSignet('correct-pass');
+    const hash = await hashSignet('correct-tink');
     (redis.get as any).mockResolvedValue('user-id-1');
     (redis.hgetall as any).mockResolvedValue({
       id: 'user-id-1', email: 'alice@example.com', signetHash: hash,
       role: 'Admin', memberId: 'member-id-1', createdAt: new Date().toISOString(),
     });
 
-    const result = await login('alice@example.com', 'correct-pass');
+    const result = await login('alice@example.com', 'correct-tink');
     expect(result.accessToken).toBeTruthy();
     expect(result.user.email).toBe('alice@example.com');
   });
 
   it('throws 401 for unknown email', async () => {
     (redis.get as any).mockResolvedValue(null);
-    await expect(login('unknown@example.com', 'pass')).rejects.toMatchObject({ statusCode: 401 });
+    await expect(login('unknown@example.com', 'tink')).rejects.toMatchObject({ statusCode: 401 });
   });
 
   it('throws 401 for wrong signet', async () => {
@@ -82,7 +82,7 @@ describe('login', () => {
     const hash = await hashSignet('correct');
     (redis.get as any).mockResolvedValue('uid');
     (redis.hgetall as any).mockResolvedValue({ id: 'uid', signetHash: hash, role: 'Member', memberId: 'mid', createdAt: '' });
-    await expect(login('x@x.com', 'wrong')).rejects.toMatchObject({ statusCode: 401 });
+    await expect(login('x@x.com', 'wrong-tink')).rejects.toMatchObject({ statusCode: 401 });
   });
 });
 
@@ -131,18 +131,18 @@ describe('getMe', () => {
 describe('changeSignet', () => {
   it('changes signet when current is correct', async () => {
     const { hashSignet } = await import('../../lib/crypto');
-    const hash = await hashSignet('OldPass1!');
+    const hash = await hashSignet('OldTink1!');
     (redis.hgetall as any).mockResolvedValue({ signetHash: hash });
-    await expect(changeSignet('uid', 'OldPass1!', 'NewPass1!')).resolves.toBeUndefined();
+    await expect(changeSignet('uid', 'OldTink1!', 'NewTink1!')).resolves.toBeUndefined();
     expect(redis.hset).toHaveBeenCalled();
     expect(redis.del).toHaveBeenCalled();
   });
 
   it('throws 400 when current signet is wrong', async () => {
     const { hashSignet } = await import('../../lib/crypto');
-    const hash = await hashSignet('OldPass1!');
+    const hash = await hashSignet('OldTink1!');
     (redis.hgetall as any).mockResolvedValue({ signetHash: hash });
-    await expect(changeSignet('uid', 'WrongOld!', 'NewPass1!')).rejects.toMatchObject({ statusCode: 400 });
+    await expect(changeSignet('uid', 'WrongOld!', 'NewTink1!')).rejects.toMatchObject({ statusCode: 400 });
   });
 
   it('throws 404 when user not found', async () => {

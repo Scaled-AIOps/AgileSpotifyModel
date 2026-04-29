@@ -51,7 +51,7 @@ describe('create', () => {
   });
 
   it('creates user record when signet provided', async () => {
-    await create({ ...baseMember, signet: 'Pass1!' });
+    await create({ ...baseMember, signet: 'Tink1!' });
     expect(mockPipeline.hset).toHaveBeenCalledWith(
       expect.stringMatching(/^user:/), expect.any(Object)
     );

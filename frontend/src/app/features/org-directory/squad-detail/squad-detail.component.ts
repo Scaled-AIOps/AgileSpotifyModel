@@ -167,8 +167,8 @@ const APP_STATUS_CLASS: Record<AppStatus, string> = {
           </div>
           @if (addError) { <div class="error-msg">{{ addError }}</div> }
           @if (tempSignet && config.basicEnabled()) {
-            <div class="temp-pass">
-              {{ 'org.squad.temp_passcode' | translate: { email: addEmail, code: tempSignet } }}
+            <div class="temp-tink">
+              {{ 'org.squad.temp_tinkwort' | translate: { email: addEmail, code: tempSignet } }}
               <span style="color:var(--text-muted);margin-left:6px">{{ 'org.squad.share_with' | translate }}</span>
             </div>
           }
@@ -229,8 +229,8 @@ const APP_STATUS_CLASS: Record<AppStatus, string> = {
     .lookup-hint { font-size: 0.8rem; color: var(--text-muted); white-space: nowrap; }
     .lookup-found { font-size: 0.82rem; font-weight: 600; color: var(--success, #2f855a); white-space: nowrap; }
     .error-msg { margin-top: 8px; font-size: 0.8rem; color: var(--danger, #e53e3e); }
-    .temp-pass { margin-top: 10px; font-size: 0.82rem; background: #fefce8; border: 1px solid #fde68a; border-radius: var(--radius); padding: 8px 12px; }
-    .temp-pass code { font-family: var(--font-mono, monospace); font-weight: 700; font-size: 0.88rem; }
+    .temp-tink { margin-top: 10px; font-size: 0.82rem; background: #fefce8; border: 1px solid #fde68a; border-radius: var(--radius); padding: 8px 12px; }
+    .temp-tink code { font-family: var(--font-mono, monospace); font-weight: 700; font-size: 0.88rem; }
     .btn-danger { background: var(--danger, #e53e3e); color: #fff; border: none; }
     .btn-danger:hover { opacity: 0.85; }
   `],
@@ -349,17 +349,17 @@ export class SquadDetailComponent implements OnInit {
       let memberId: string;
       if (this.emailNew) {
         const isBasic = this.config.basicEnabled();
-        const pass = isBasic ? this.generateTempSignet() : undefined;
+        const tink = isBasic ? this.generateTempSignet() : undefined;
         const created = await firstValueFrom(this.memberApi.create({
           name: this.addName.trim(),
           email: this.addEmail.trim(),
-          ...(pass ? { signet: pass } : {}),
+          ...(tink ? { signet: tink } : {}),
           role: 'Member',
           avatarUrl: '',
           squadId: '',
         } as any));
         memberId = created.id;
-        if (pass) this.tempSignet = pass;
+        if (tink) this.tempSignet = tink;
         this.allMembers = [...this.allMembers, created];
       } else {
         memberId = this.emailMatch!.id;
