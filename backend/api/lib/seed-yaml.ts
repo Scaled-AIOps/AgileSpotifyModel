@@ -192,13 +192,10 @@ export async function seedFromYaml(): Promise<void> {
   if (appDefs.length) {
     const existingApps = await appSvc.findAll();
     const appIds = new Set(existingApps.map((a) => a.appId));
+    const ENVS = ['local', 'dev', 'int', 'uat', 'prd'] as const;
     for (const a of appDefs) {
-      if (appIds.has(a.appId)) { skipped++; continue; }
-      const squad = await squadSvc.findByKey(a.squad);
-      if (!squad) { console.warn(`[seed] app "${a.appId}": squad key "${a.squad}" not found`); skipped++; continue; }
       // Build legacy `platforms` / `urls` flat maps from any top-level *Platform /
       // *Url fields (back-compat for older YAML or API-created apps).
-      const ENVS = ['local', 'dev', 'int', 'uat', 'prd'] as const;
       const platforms: Record<string, string> = {};
       const urls:      Record<string, string> = {};
       for (const env of ENVS) {
@@ -208,6 +205,24 @@ export async function seedFromYaml(): Promise<void> {
         if (u) urls[env]      = u;
       }
       const githubLinks: unknown = a.github ?? (a.gitRepo ? [a.gitRepo] : undefined);
+
+      if (appIds.has(a.appId)) {
+        // Upsert by appId — mutable fields refresh from YAML.
+        await appSvc.update(a.appId, {
+          description: a.description ?? '',
+          status: a.status,
+          tags: (a.tags as Record<string, string>) ?? {},
+          ocp: a.ocp ?? {}, gcp: a.gcp ?? {},
+          jira: a.jira, confluence: a.confluence, github: githubLinks, mailingList: a.mailingList,
+          links: a.links,
+          probeHealth: a.probeHealth, probeInfo: a.probeInfo,
+          probeLiveness: a.probeLiveness, probeReadiness: a.probeReadiness,
+          javaVersion: a.javaVersion, javaComplianceStatus: a.javaComplianceStatus,
+        });
+        continue;
+      }
+      const squad = await squadSvc.findByKey(a.squad);
+      if (!squad) { console.warn(`[seed] app "${a.appId}": squad key "${a.squad}" not found`); skipped++; continue; }
       await appSvc.create({
         appId: a.appId, description: a.description ?? '',
         squadId: squad.id, squadKey: squad.key,
@@ -236,13 +251,11 @@ export async function seedFromYaml(): Promise<void> {
     }
     for (const [, events] of pairMap) {
       const { appId, env } = events[0];
-      const history = await appstatusSvc.getHistory(appId, env);
-      const existingKeys = new Set(history.map((h) => `${h.version}::${h.deployedAt}`));
+      // Upsert by (appId, env, version, deployedAt). Existing matching events
+      // get their fields (state, notes, xray, …) refreshed from YAML; new
+      // events are appended.
       for (const s of events) {
-        const dk = `${s.deploy.version}::${s.deploy.deployedAt}`;
-        if (existingKeys.has(dk)) { skipped++; continue; }
-        await appstatusSvc.record(appId, env, s.deploy);
-        existingKeys.add(dk);
+        await appstatusSvc.upsert(appId, env, s.deploy);
         created++;
       }
     }

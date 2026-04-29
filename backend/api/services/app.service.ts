@@ -7,7 +7,7 @@
 import redis from '../config/redis';
 import { createError } from '../middleware/errorHandler';
 import { coerceLinks, parseLinks, serialiseLinks } from '../lib/links';
-import type { App, AppStatus, Link, CloudPlatform } from '../models/index';
+import type { App, AppStatus, CloudPlatform } from '../models/index';
 
 function safeParseCloud(raw: string | undefined): CloudPlatform {
   if (!raw) return {};
@@ -145,11 +145,11 @@ type UpdateData = Partial<{
   tags: Record<string, string>;
   ocp: CloudPlatform;
   gcp: CloudPlatform;
-  jira: Link[];
-  confluence: Link[];
-  github: Link[];
-  mailingList: Link[];
-  links: Link[];
+  jira: unknown;
+  confluence: unknown;
+  github: unknown;
+  mailingList: unknown;
+  links: unknown;
 }>;
 
 function safeParseTags(raw: string): Record<string, string> {
