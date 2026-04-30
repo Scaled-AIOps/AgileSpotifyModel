@@ -13,6 +13,7 @@ import squadRoutes from './squad.routes';
 import memberRoutes from './member.routes';
 import orgRoutes from './org.routes';
 import infraRoutes from './infra.routes';
+import certificateRoutes from './certificate.routes';
 import appsRoutes from './apps.routes';
 
 const router = Router();
@@ -25,6 +26,7 @@ router.use('/squads', squadRoutes);
 router.use('/members', memberRoutes);
 router.use('/org', orgRoutes);
 router.use('/infra', infraRoutes);
+router.use('/certificates', certificateRoutes);
 router.use('/apps', appsRoutes);
 
 export default router;

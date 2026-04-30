@@ -193,6 +193,33 @@ export interface InfraCluster {
   createdAt: string;
 }
 
+/**
+ * Operator-set certificate state. The "expired" reading is derived at
+ * render time from notAfter, not stored — so the persisted enum is narrower
+ * than what the UI displays.
+ */
+export type CertificateStatus = 'active' | 'pending-renewal' | 'revoked';
+
+export interface Certificate {
+  certId: string;
+  commonName: string;
+  /** JSON-encoded string[] on the wire. */
+  subjectAltNames: string;
+  issuer: string;
+  serialNumber: string;
+  fingerprintSha256: string;
+  notBefore: string;
+  notAfter: string;
+  environment: string;
+  platformId: string;
+  appId: string;
+  squadId: string;
+  status: CertificateStatus;
+  autoRenewal: string;
+  tags: string;
+  createdAt: string;
+}
+
 // ── Org tree node shape returned by GET /org/tree ─────────────────────────────
 export interface OrgTreeSquad extends Squad {
   memberCount: number;

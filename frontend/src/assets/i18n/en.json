@@ -136,6 +136,7 @@
       "title": "Applications",
       "count": "{{ shown }} of {{ total }} apps",
       "infra_clusters": "Infra Clusters",
+      "certificates": "Certificates",
       "register": "+ Register App",
       "search_placeholder": "Search apps, squad, tags…",
       "filter": {
@@ -272,6 +273,33 @@
       "github": "GitHub",
       "mailing_list": "Mailing list",
       "links": "Links"
+    },
+    "certs": {
+      "title": "Certificates",
+      "count": "{{ shown }} of {{ total }} certificates",
+      "applications": "← Applications",
+      "search_placeholder": "Search common name, issuer, SANs…",
+      "expiry": "Expiry",
+      "status": "Status",
+      "issuer": "Issuer",
+      "sans": "SANs",
+      "serial": "Serial",
+      "fingerprint": "Fingerprint",
+      "tags": "Tags",
+      "auto_renewal": "auto",
+      "no_match": "No certificates match your filters",
+      "kpi": {
+        "total": "Total",
+        "expired": "Expired",
+        "critical": "≤ 30 days",
+        "warning": "≤ 90 days",
+        "ok": "Healthy"
+      },
+      "status_opt": {
+        "active": "Active",
+        "pending": "Pending Renewal",
+        "revoked": "Revoked"
+      }
     },
     "infra": {
       "title": "Infra Clusters",

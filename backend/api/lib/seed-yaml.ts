@@ -12,6 +12,7 @@ import * as subdomainSvc from '../services/subdomain.service';
 import * as tribeSvc     from '../services/tribe.service';
 import * as squadSvc     from '../services/squad.service';
 import * as infraSvc     from '../services/infra.service';
+import * as certSvc      from '../services/certificate.service';
 import * as appSvc       from '../services/app.service';
 import * as appstatusSvc from '../services/appstatus.service';
 import type { Domain, SubDomain, Tribe } from '../models/index';
@@ -34,6 +35,24 @@ interface YamlSubdomain extends YamlLinks { name: string; tribeDomain: string; d
 interface YamlTribe extends YamlLinks     { name: string; tribeName?: string; subDomain: string; tribeDomain: string; releaseManager?: string; agileCoach?: string; description?: string }
 interface YamlSquad extends YamlLinks     { key: string; name: string; description?: string; tribe: string; po?: string; sm?: string; tags?: Record<string, string> }
 interface YamlInfra { platformId: string; name: string; description?: string; clusterId: string; environment: string; host: string; routeHostName: string; platform: string; platformType: string; tokenId: string; status?: import('../models/index').InfraStatus; tags?: Record<string, string> }
+interface YamlCertificate {
+  certId: string;
+  commonName: string;
+  subjectAltNames?: string[];
+  issuer: string;
+  serialNumber: string;
+  fingerprintSha256: string;
+  notBefore: string | Date;
+  notAfter: string | Date;
+  environment: string;
+  platformId?: string;
+  appId?: string;
+  squadId?: string;
+  squad?: string;
+  status?: import('../models/index').CertificateStatus;
+  autoRenewal?: boolean;
+  tags?: Record<string, string>;
+}
 interface YamlPlatformBlock {
   localPlatform?: string; devPlatform?: string; intPlatform?: string; uatPlatform?: string; prdPlatform?: string;
   localUrl?: string;      devUrl?: string;      intUrl?: string;      uatUrl?: string;      prdUrl?: string;
@@ -194,6 +213,53 @@ export async function seedFromYaml(): Promise<void> {
         tags: JSON.stringify(c.tags ?? {}),
       });
       infraIds.add(c.platformId);
+      created++;
+    }
+  }
+
+  // ── Certificates ──────────────────────────────────────────────────────────────
+  const certDefs = loadYaml<YamlCertificate>('certificates.yaml');
+  if (certDefs.length) {
+    const existingCerts = await certSvc.findAll();
+    const certIds = new Set(existingCerts.map((c) => c.certId));
+    for (const c of certDefs) {
+      // Squad can be supplied as UUID (squadId) or by key (squad).
+      let squadId = c.squadId ?? '';
+      if (!squadId && c.squad) {
+        const sq = await squadSvc.findByKey(c.squad);
+        if (!sq) { console.warn(`[seed] cert "${c.certId}": squad key "${c.squad}" not found`); skipped++; continue; }
+        squadId = sq.id;
+      }
+      if (!squadId) { console.warn(`[seed] cert "${c.certId}": missing squadId / squad`); skipped++; continue; }
+
+      // js-yaml parses ISO timestamps into Date objects; Redis HSET would
+      // toString() them to a localised "Mon Feb 15 2027 …" string. Normalise
+      // to ISO so the rest of the system (UI bucket math, schema validators)
+      // gets a clean format.
+      const toIso = (v: string | Date | undefined): string =>
+        v instanceof Date ? v.toISOString() : (v ?? '');
+      const common = {
+        commonName:        c.commonName,
+        subjectAltNames:   JSON.stringify(c.subjectAltNames ?? []),
+        issuer:            c.issuer,
+        serialNumber:      c.serialNumber,
+        fingerprintSha256: c.fingerprintSha256,
+        notBefore:         toIso(c.notBefore),
+        notAfter:          toIso(c.notAfter),
+        environment:       c.environment,
+        platformId:        c.platformId ?? '',
+        appId:             c.appId ?? '',
+        squadId,
+        status:            c.status ?? 'active',
+        autoRenewal:       c.autoRenewal ? 'true' : 'false',
+        tags:              JSON.stringify(c.tags ?? {}),
+      };
+      if (certIds.has(c.certId)) {
+        await certSvc.update(c.certId, common);
+        continue;
+      }
+      await certSvc.create({ certId: c.certId, ...common });
+      certIds.add(c.certId);
       created++;
     }
   }

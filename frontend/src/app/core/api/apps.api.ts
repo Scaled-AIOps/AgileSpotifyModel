@@ -6,7 +6,7 @@
  */
 import { Injectable, inject } from '@angular/core';
 import { ApiService } from './api.service';
-import type { App, AppWithDeploys, AppDeployment, InfraCluster, AuditEntry } from '../models/index';
+import type { App, AppWithDeploys, AppDeployment, InfraCluster, Certificate, AuditEntry } from '../models/index';
 
 @Injectable({ providedIn: 'root' })
 export class AppsApi {
@@ -22,4 +22,7 @@ export class AppsApi {
 
   getAllClusters()                                { return this.api.get<InfraCluster[]>('/infra'); }
   getCluster(platformId: string)                 { return this.api.get<InfraCluster>(`/infra/${platformId}`); }
+
+  getAllCertificates()                            { return this.api.get<Certificate[]>('/certificates'); }
+  getCertificate(certId: string)                  { return this.api.get<Certificate>(`/certificates/${certId}`); }
 }

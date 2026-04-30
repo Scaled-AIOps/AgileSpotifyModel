@@ -1,0 +1,40 @@
+meta {
+  name: Create Certificate
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/v1/certificates
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "certId":            "demo-cert-2027",
+    "commonName":        "demo.example.com",
+    "subjectAltNames":   ["demo.example.com", "www.demo.example.com"],
+    "issuer":            "C=US, O=Let's Encrypt, CN=R3",
+    "serialNumber":      "01:23:45:67:89:ab:cd:ef:01:23:45:67:89:ab:cd:ef",
+    "fingerprintSha256": "AB:CD:EF:01:23:45:67:89:AB:CD:EF:01:23:45:67:89:AB:CD:EF:01:23:45:67:89:AB:CD:EF:01:23:45:67:89",
+    "notBefore":         "2026-04-30T00:00:00.000Z",
+    "notAfter":          "2027-04-30T00:00:00.000Z",
+    "environment":       "dev",
+    "platformId":        "backend-dev-cluster",
+    "squadId":           "{{squadId}}",
+    "status":            "active",
+    "autoRenewal":       true,
+    "tags":              { "criticality": "low" }
+  }
+}
+
+script:post-response {
+  if (res.status === 201) {
+    bru.setVar("certId", res.body.certId);
+  }
+}

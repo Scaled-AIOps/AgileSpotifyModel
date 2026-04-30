@@ -69,6 +69,7 @@ const PAGE_SIZES = [10, 25, 50, 100];
             <a class="btn btn-primary btn-sm" routerLink="/apps/new">{{ 'apps.list.register' | translate }}</a>
           }
           <a class="btn btn-ghost btn-sm" routerLink="/apps/infra">{{ 'apps.list.infra_clusters' | translate }}</a>
+          <a class="btn btn-ghost btn-sm" routerLink="/apps/certificates">{{ 'apps.list.certificates' | translate }}</a>
         </div>
       </div>
 

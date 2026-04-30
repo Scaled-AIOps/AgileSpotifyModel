@@ -1,0 +1,70 @@
+/**
+ * Purpose: Express router for the Certificate registry.
+ * Usage:   Mounted at `/api/v1/certificates`. List / get / create / update /
+ *          delete on TLS/X.509 records used for expiry monitoring.
+ * Goal:    Catalogue surface — "what certs do we own, when do they expire,
+ *          who renews them?" Issuance is not in scope here.
+ */
+import { Router } from 'express';
+import { authenticate } from '../middleware/auth';
+import { authorize } from '../middleware/authorize';
+import { validate } from '../middleware/validate';
+import { createCertificateSchema, updateCertificateSchema } from '../schemas/certificate.schema';
+import * as certService from '../services/certificate.service';
+
+const router = Router();
+router.use(authenticate);
+
+router.get('/', async (_req, res, next) => {
+  try { res.json(await certService.findAll()); } catch (e) { next(e); }
+});
+
+router.get('/:certId', async (req, res, next) => {
+  try {
+    const c = await certService.findById(req.params.certId);
+    if (!c) { res.status(404).json({ error: 'Not found' }); return; }
+    res.json(c);
+  } catch (e) { next(e); }
+});
+
+router.post('/', authorize('TribeLead'), validate(createCertificateSchema), async (req, res, next) => {
+  try {
+    const existing = await certService.findById(req.body.certId);
+    if (existing) { res.status(409).json({ error: `Certificate '${req.body.certId}' already exists` }); return; }
+    const cert = await certService.create({
+      certId:            req.body.certId,
+      commonName:        req.body.commonName,
+      subjectAltNames:   JSON.stringify(req.body.subjectAltNames ?? []),
+      issuer:            req.body.issuer,
+      serialNumber:      req.body.serialNumber,
+      fingerprintSha256: req.body.fingerprintSha256,
+      notBefore:         req.body.notBefore,
+      notAfter:          req.body.notAfter,
+      environment:       req.body.environment,
+      platformId:        req.body.platformId ?? '',
+      appId:             req.body.appId ?? '',
+      squadId:           req.body.squadId,
+      status:            req.body.status,
+      autoRenewal:       req.body.autoRenewal ? 'true' : 'false',
+      tags:              JSON.stringify(req.body.tags ?? {}),
+    });
+    res.status(201).json(cert);
+  } catch (e) { next(e); }
+});
+
+router.patch('/:certId', authorize('TribeLead'), validate(updateCertificateSchema), async (req, res, next) => {
+  try {
+    const data: Record<string, unknown> = { ...req.body };
+    if (Array.isArray(data.subjectAltNames)) data.subjectAltNames = JSON.stringify(data.subjectAltNames);
+    if (data.tags && typeof data.tags === 'object') data.tags = JSON.stringify(data.tags);
+    if (typeof data.autoRenewal === 'boolean')      data.autoRenewal = data.autoRenewal ? 'true' : 'false';
+    const updated = await certService.update(req.params.certId, data as never);
+    res.json(updated);
+  } catch (e) { next(e); }
+});
+
+router.delete('/:certId', authorize('Admin'), async (req, res, next) => {
+  try { await certService.remove(req.params.certId); res.status(204).send(); } catch (e) { next(e); }
+});
+
+export default router;

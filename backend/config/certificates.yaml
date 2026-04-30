@@ -1,0 +1,109 @@
+# TLS / X.509 certificate registry — used for expiry monitoring.
+# Issuance is out of scope; this catalogue answers "what certs exist, when do
+# they expire, who renews them?" Squads are referenced by `squad` key (resolved
+# at seed time) so the file does not need to know UUIDs.
+
+# Healthy — well into the future
+- certId: api-prd-platform-2027
+  commonName: api.scaledaiops.example.com
+  subjectAltNames: [api.scaledaiops.example.com, www.api.scaledaiops.example.com]
+  issuer: "C=US, O=Let's Encrypt, CN=R3"
+  serialNumber: "04:9d:8b:11:6a:7c:ff:7a:3a:5b:1b:ad:c0:de:01"
+  fingerprintSha256: "AA:BB:CC:DD:EE:FF:00:11:22:33:44:55:66:77:88:99:AA:BB:CC:DD:EE:FF:00:11:22:33:44:55:66:77:88:99"
+  notBefore: 2026-02-15T00:00:00.000Z
+  notAfter: 2027-02-15T00:00:00.000Z
+  environment: prd
+  platformId: backend-prd-cluster
+  appId: gateway
+  squad: platform
+  status: active
+  autoRenewal: true
+  tags:
+    criticality: high
+    owner: platform-ops
+
+- certId: web-prd-frontend-2027
+  commonName: app.scaledaiops.example.com
+  subjectAltNames: [app.scaledaiops.example.com, scaledaiops.example.com]
+  issuer: "C=US, O=Let's Encrypt, CN=R3"
+  serialNumber: "04:9d:8b:11:6a:7c:ff:7a:3a:5b:1b:ad:c0:de:02"
+  fingerprintSha256: "11:22:33:44:55:66:77:88:99:AA:BB:CC:DD:EE:FF:00:11:22:33:44:55:66:77:88:99:AA:BB:CC:DD:EE:FF:00"
+  notBefore: 2026-04-01T00:00:00.000Z
+  notAfter: 2027-04-01T00:00:00.000Z
+  environment: prd
+  platformId: frontend-prd-cluster
+  squad: web
+  status: active
+  autoRenewal: true
+  tags:
+    criticality: high
+
+# Expiring in ~90 days — amber zone
+- certId: api-uat-gateway
+  commonName: api.uat.scaledaiops.example.com
+  subjectAltNames: [api.uat.scaledaiops.example.com]
+  issuer: "C=DE, O=DigiCert Inc, CN=DigiCert TLS RSA SHA256 2020 CA1"
+  serialNumber: "0a:1b:2c:3d:4e:5f:60:71:82:93:a4:b5:c6:d7:e8:f9"
+  fingerprintSha256: "DE:AD:BE:EF:11:22:33:44:55:66:77:88:99:AA:BB:CC:DD:EE:FF:00:11:22:33:44:55:66:77:88:99:AA:BB:CC"
+  notBefore: 2025-07-29T00:00:00.000Z
+  notAfter: 2026-07-29T00:00:00.000Z
+  environment: uat
+  platformId: backend-uat-cluster
+  squad: platform
+  status: active
+  autoRenewal: false
+  tags:
+    criticality: medium
+
+# Expiring in ~30 days — red zone, action required
+- certId: data-int-pipeline
+  commonName: data.int.scaledaiops.example.com
+  subjectAltNames: [data.int.scaledaiops.example.com, etl.int.scaledaiops.example.com]
+  issuer: "Internal Corp Root CA"
+  serialNumber: "01:23:45:67:89:ab:cd:ef:01:23:45:67:89:ab:cd:ef"
+  fingerprintSha256: "AB:CD:EF:01:23:45:67:89:AB:CD:EF:01:23:45:67:89:AB:CD:EF:01:23:45:67:89:AB:CD:EF:01:23:45:67:89"
+  notBefore: 2025-05-30T00:00:00.000Z
+  notAfter: 2026-05-30T00:00:00.000Z
+  environment: int
+  platformId: data-pipeline-int
+  squad: data-platform
+  status: pending-renewal
+  autoRenewal: false
+  tags:
+    criticality: medium
+    renewalTicket: SEC-1042
+
+# Already expired — should surface loudly
+- certId: legacy-dev-shim
+  commonName: legacy.dev.scaledaiops.example.com
+  subjectAltNames: [legacy.dev.scaledaiops.example.com]
+  issuer: "Internal Corp Root CA"
+  serialNumber: "ff:ee:dd:cc:bb:aa:99:88:77:66:55:44:33:22:11:00"
+  fingerprintSha256: "00:00:11:22:33:44:55:66:77:88:99:AA:BB:CC:DD:EE:FF:00:11:22:33:44:55:66:77:88:99:AA:BB:CC:DD:EE"
+  notBefore: 2025-03-15T00:00:00.000Z
+  notAfter: 2026-03-15T00:00:00.000Z
+  environment: dev
+  platformId: backend-dev-cluster
+  squad: support-tools
+  status: active
+  autoRenewal: false
+  tags:
+    criticality: low
+
+# Revoked — should display with a strikethrough / muted style
+- certId: compromised-2025-q4
+  commonName: old.api.scaledaiops.example.com
+  subjectAltNames: []
+  issuer: "C=US, O=Let's Encrypt, CN=R3"
+  serialNumber: "ba:dc:0f:fe:e0:dd:f0:0d:01:23:45:67:89:ab:cd:ef"
+  fingerprintSha256: "BA:DC:0F:FE:E0:DD:F0:0D:11:22:33:44:55:66:77:88:99:AA:BB:CC:DD:EE:FF:00:11:22:33:44:55:66:77:88"
+  notBefore: 2025-01-01T00:00:00.000Z
+  notAfter: 2026-12-31T00:00:00.000Z
+  environment: prd
+  platformId: backend-prd-cluster
+  squad: platform
+  status: revoked
+  autoRenewal: false
+  tags:
+    criticality: high
+    incident: SEC-INC-2025-87

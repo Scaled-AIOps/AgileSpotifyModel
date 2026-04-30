@@ -121,6 +121,47 @@ export interface InfraCluster {
   createdAt: string;
 }
 
+/**
+ * Certificate lifecycle as set by an operator. The "expired" reading is
+ * derived from `notAfter` at read time, so the persisted enum is intentionally
+ * narrower — operators flag a cert as `revoked` or `pending-renewal`, but
+ * "expired" is whatever the clock says.
+ */
+export type CertificateStatus = 'active' | 'pending-renewal' | 'revoked';
+
+/**
+ * TLS / X.509 certificate registry entry. Stored as a flat Redis hash —
+ * `subjectAltNames` is JSON-encoded on write, decoded on read by the
+ * frontend / API consumers. The point of this entity is *expiry monitoring*,
+ * not issuance: we don't store private keys.
+ */
+export interface Certificate {
+  certId: string;
+  commonName: string;
+  /** JSON-encoded string[] — SAN list. */
+  subjectAltNames: string;
+  issuer: string;
+  serialNumber: string;
+  fingerprintSha256: string;
+  /** ISO-8601 instant when the cert becomes valid. */
+  notBefore: string;
+  /** ISO-8601 instant when the cert expires — the field operators care about. */
+  notAfter: string;
+  environment: string;
+  /** Optional FK to InfraCluster.platformId — empty string if not deployed on a tracked cluster. */
+  platformId: string;
+  /** Optional FK to App.appId — empty string if not tied to a single app. */
+  appId: string;
+  /** Squad that owns renewal. */
+  squadId: string;
+  status: CertificateStatus;
+  /** 'true' / 'false' (string because Redis hashes are string-valued). */
+  autoRenewal: string;
+  /** JSON-encoded Record<string, string>. */
+  tags: string;
+  createdAt: string;
+}
+
 export type AppStatus = 'active' | 'inactive' | 'marked-for-decommissioning' | 'failed';
 
 /**

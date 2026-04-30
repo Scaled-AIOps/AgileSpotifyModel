@@ -1,0 +1,23 @@
+meta {
+  name: Update Certificate
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{baseUrl}}/api/v1/certificates/{{certId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "status":      "pending-renewal",
+    "autoRenewal": false,
+    "tags":        { "renewalTicket": "SEC-9999" }
+  }
+}

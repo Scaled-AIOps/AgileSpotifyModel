@@ -22,6 +22,10 @@ export const appsRoutes: Routes = [
     loadComponent: () => import('./infra-clusters/infra-clusters.component').then((m) => m.InfraClustersComponent),
   },
   {
+    path: 'certificates',
+    loadComponent: () => import('./certificates/certificates.component').then((m) => m.CertificatesComponent),
+  },
+  {
     path: ':appId',
     loadComponent: () => import('./app-detail/app-detail.component').then((m) => m.AppDetailComponent),
   },

@@ -136,6 +136,7 @@
       "title": "Anwendungen",
       "count": "{{ shown }} von {{ total }} Anwendungen",
       "infra_clusters": "Infrastruktur-Cluster",
+      "certificates": "Zertifikate",
       "register": "+ Anwendung anlegen",
       "search_placeholder": "Anwendungen, Squad, Tags suchen…",
       "filter": {
@@ -272,6 +273,33 @@
       "github": "GitHub",
       "mailing_list": "Verteilerliste",
       "links": "Links"
+    },
+    "certs": {
+      "title": "Zertifikate",
+      "count": "{{ shown }} von {{ total }} Zertifikaten",
+      "applications": "← Anwendungen",
+      "search_placeholder": "Common Name, Aussteller, SANs suchen…",
+      "expiry": "Ablauf",
+      "status": "Status",
+      "issuer": "Aussteller",
+      "sans": "SANs",
+      "serial": "Seriennr.",
+      "fingerprint": "Fingerabdruck",
+      "tags": "Tags",
+      "auto_renewal": "auto",
+      "no_match": "Keine Zertifikate entsprechen den Filtern",
+      "kpi": {
+        "total": "Gesamt",
+        "expired": "Abgelaufen",
+        "critical": "≤ 30 Tage",
+        "warning": "≤ 90 Tage",
+        "ok": "Gesund"
+      },
+      "status_opt": {
+        "active": "Aktiv",
+        "pending": "Erneuerung steht aus",
+        "revoked": "Widerrufen"
+      }
     },
     "infra": {
       "title": "Infrastruktur-Cluster",
