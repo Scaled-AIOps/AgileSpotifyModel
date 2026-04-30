@@ -95,8 +95,9 @@ Copy `.env.example` to `backend/config/.env` and edit.
 | `REDIS_AUTH` | *(unset)* | Redis AUTH credential. Spliced into `REDIS_URL` at boot so the URL itself can stay credential-free. |
 | `FRONTEND_URL` | `http://localhost:4200` | OAuth redirect base URL |
 | `BACKEND_URL` | `http://localhost:3000` | OAuth callback base URL |
+| `INGEST_API_KEY` | *(auto in dev)* | Bearer token for automated jobs that POST/PATCH apps and deploy events, plus all certificate read + validate routes. Required in production; auto-generated and logged once on dev/test boot. |
 
-> CORS is **not** handled by this app — it must be configured at your platform layer (ingress / reverse proxy / CDN).
+> **CORS is not handled by this app** — it must be configured at your platform layer (ingress / reverse proxy / CDN). Local dev still works because the Angular dev server proxies `/api/*` to the backend (see [`frontend/proxy.conf.json`](frontend/proxy.conf.json)).
 
 ### Authentication
 
@@ -218,6 +219,32 @@ curl -X PATCH -H "Authorization: Bearer $TOKEN" -H 'Content-Type: application/js
   }' | jq
 ```
 
+### TLS certificate registry
+
+The catalogue tracks TLS/X.509 certificates used by registered apps and infra clusters so renewal lead time isn't a surprise. Issuance is **not** part of the system — we never store private keys.
+
+| Method | Path | Auth | Description |
+|---|---|---|---|
+| `GET` | `/certificates` | Bearer or Ingest | List all registered certs |
+| `GET` | `/certificates/:certId` | Bearer or Ingest | Single record (CN, SANs, issuer, serial, fingerprint, notBefore/notAfter, owning squad, etc.) |
+| `POST` | `/certificates` | TribeLead+ | Register a cert |
+| `PATCH` | `/certificates/:certId` | TribeLead+ | Update mutable fields (status, autoRenewal, tags, …) |
+| `DELETE` | `/certificates/:certId` | Admin | Remove |
+| `POST` | `/certificates/:certId/validate` | Bearer or Ingest | Live TLS probe — opens a connection to the cert's host (CN → first non-wildcard SAN, or `{ host, port, timeoutMs }` override), fetches the live peer cert, and compares it to the registry record. Result is cached for 7 days |
+| `GET` | `/certificates/:certId/validation` | Bearer or Ingest | Read the cached probe result without re-probing |
+
+The `/validate` response includes:
+
+- `reachable`, `chainValid`, `hostnameValid`
+- `liveCommonName`, `liveSubjectAltNames`, `liveIssuer`, `liveSerialNumber`, `liveFingerprintSha256`, `liveNotBefore`, `liveNotAfter`
+- `expiresInDays` — days until the **live** cert expires (negative = past)
+- `matches` — per-field comparison (`commonName`, `serialNumber`, `fingerprintSha256`, `notAfter`) for drift detection
+- `validatedAt`, `error`
+
+**Frontend:** `/apps/certificates` lists every cert with KPI tiles per expiry bucket (Healthy / ≤90 days / ≤30 days / Expired), env + status filters, and a per-card `↻ Validate` button. Cached probe results render automatically.
+
+**Scheduled sweep:** [`scripts/validate-certs.sh`](scripts/validate-certs.sh) is a self-contained bash + curl + jq script designed for TeamCity (or any other CI runner). It lists every registered cert, probes each via `/validate`, prints a coloured per-cert line plus a bucket summary, and exits **0** when everything is healthy or **1** if any cert is unreachable / chain-invalid / drifting / inside `CRITICAL_DAYS` / expired — turning the build red automatically. Configure via env: `API_BASE_URL`, `INGEST_API_KEY` (required), `CRITICAL_DAYS` (default `30`), `WARN_DAYS` (default `90`), `PROBE_TIMEOUT_MS` (default `5000`), `REPORT_FILE` (optional JSON aggregate path).
+
 ### Bruno collection
 
 The repo ships a Bruno collection under [`backend/bruno/`](backend/bruno/) covering every route. Open it in Bruno (https://usebruno.com) and select the `local` environment to run requests against `http://localhost:3000` with whichever access token you paste in.
@@ -241,6 +268,9 @@ AgileSpotifyModel/
 ├── .gitignore
 ├── README.md
 │
+├── scripts/
+│   └── validate-certs.sh       ← CI-friendly cert sweep (TeamCity)
+│
 ├── backend/
 │   ├── config/                ← injected by deploy pipeline next to dist/
 │   │   ├── .env               (not committed)
@@ -249,6 +279,7 @@ AgileSpotifyModel/
 │   │   ├── tribes.yaml        ← `name` is short code, `tribeName` is long form
 │   │   ├── squads.yaml
 │   │   ├── infra.yaml
+│   │   ├── certificates.yaml   ← TLS cert registry seed
 │   │   ├── appinfo.yaml
 │   │   └── appstatus.yaml
 │   ├── webpack.config.js      ← bundles api/ → dist/server.{js,jsc}
@@ -283,7 +314,7 @@ AgileSpotifyModel/
         └── features/
             ├── auth/          login page, OAuth callback
             ├── dashboard/     role-aware fleet/tribe/squad health
-            ├── apps/          application list (CSV/JSON/YAML export), detail, registration form, infra clusters
+            ├── apps/          application list (CSV/JSON/YAML export), detail, registration form, infra clusters, TLS certificate registry + live validator
             ├── org-directory/ D3 collapsible tree, domain/tribe/squad views
             └── admin/         member CRUD, headcount chart, feature flags
 ```
