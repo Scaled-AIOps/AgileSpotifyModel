@@ -1,0 +1,23 @@
+meta {
+  name: Validate Certificate (live TLS probe)
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}/api/v1/certificates/{{certId}}/validate
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "host": "letsencrypt.org",
+    "port": 443,
+    "timeoutMs": 5000
+  }
+}

@@ -6,7 +6,7 @@
  */
 import { Injectable, inject } from '@angular/core';
 import { ApiService } from './api.service';
-import type { App, AppWithDeploys, AppDeployment, InfraCluster, Certificate, AuditEntry } from '../models/index';
+import type { App, AppWithDeploys, AppDeployment, InfraCluster, Certificate, CertificateValidation, AuditEntry } from '../models/index';
 
 @Injectable({ providedIn: 'root' })
 export class AppsApi {
@@ -25,4 +25,10 @@ export class AppsApi {
 
   getAllCertificates()                            { return this.api.get<Certificate[]>('/certificates'); }
   getCertificate(certId: string)                  { return this.api.get<Certificate>(`/certificates/${certId}`); }
+  validateCertificate(certId: string, body: { host?: string; port?: number; timeoutMs?: number } = {}) {
+    return this.api.post<CertificateValidation>(`/certificates/${certId}/validate`, body);
+  }
+  getLastValidation(certId: string) {
+    return this.api.get<CertificateValidation>(`/certificates/${certId}/validation`);
+  }
 }

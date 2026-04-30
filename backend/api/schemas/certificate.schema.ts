@@ -31,6 +31,13 @@ export const createCertificateSchema = z.object({
   path: ['notAfter'],
 });
 
+export const validateCertificateSchema = z.object({
+  /** Override probe target — defaults to the cert's commonName / first non-wildcard SAN. */
+  host:      z.string().min(1).optional(),
+  port:      z.number().int().min(1).max(65535).optional(),
+  timeoutMs: z.number().int().min(500).max(15_000).optional(),
+});
+
 export const updateCertificateSchema = z.object({
   commonName:        z.string().min(1).max(253).optional(),
   subjectAltNames:   z.array(z.string().min(1)).optional(),

@@ -220,6 +220,32 @@ export interface Certificate {
   createdAt: string;
 }
 
+/** Live-probe result returned by POST /certificates/:certId/validate. */
+export interface CertificateValidation {
+  certId: string;
+  host: string;
+  port: number;
+  reachable: boolean;
+  chainValid: boolean;
+  hostnameValid: boolean;
+  liveCommonName: string;
+  liveSubjectAltNames: string[];
+  liveIssuer: string;
+  liveSerialNumber: string;
+  liveFingerprintSha256: string;
+  liveNotBefore: string;
+  liveNotAfter: string;
+  expiresInDays: number;
+  matches: {
+    commonName: boolean;
+    serialNumber: boolean;
+    fingerprintSha256: boolean;
+    notAfter: boolean;
+  };
+  validatedAt: string;
+  error: string;
+}
+
 // ── Org tree node shape returned by GET /org/tree ─────────────────────────────
 export interface OrgTreeSquad extends Squad {
   memberCount: number;

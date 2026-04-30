@@ -9,7 +9,7 @@ import { Router } from 'express';
 import { authenticate } from '../middleware/auth';
 import { authorize } from '../middleware/authorize';
 import { validate } from '../middleware/validate';
-import { createCertificateSchema, updateCertificateSchema } from '../schemas/certificate.schema';
+import { createCertificateSchema, updateCertificateSchema, validateCertificateSchema } from '../schemas/certificate.schema';
 import * as certService from '../services/certificate.service';
 
 const router = Router();
@@ -65,6 +65,25 @@ router.patch('/:certId', authorize('TribeLead'), validate(updateCertificateSchem
 
 router.delete('/:certId', authorize('Admin'), async (req, res, next) => {
   try { await certService.remove(req.params.certId); res.status(204).send(); } catch (e) { next(e); }
+});
+
+// Live TLS probe — opens a connection to the cert's host (or an override host),
+// fetches the actual cert chain, and reports drift between the registered
+// metadata and what the server is presenting today. Result is cached for 7 days
+// so the UI can display "last checked at …" without re-probing every page load.
+router.post('/:certId/validate', validate(validateCertificateSchema), async (req, res, next) => {
+  try {
+    const result = await certService.validate(req.params.certId, req.body ?? {});
+    res.json(result);
+  } catch (e) { next(e); }
+});
+
+router.get('/:certId/validation', async (req, res, next) => {
+  try {
+    const result = await certService.getLastValidation(req.params.certId);
+    if (!result) { res.status(404).json({ error: 'No validation result on file' }); return; }
+    res.json(result);
+  } catch (e) { next(e); }
 });
 
 export default router;
