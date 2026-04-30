@@ -19,18 +19,25 @@ if (useMock && env.NODE_ENV === 'production') {
   process.exit(1);
 }
 
+// All keys are namespaced under this prefix so we can safely share a Redis
+// instance with other apps. ioredis applies the prefix transparently to
+// every command (including pipeline/multi), so service code keeps using
+// bare key names like `user:<id>` and `app:<appId>`.
+export const KEY_PREFIX = env.REDIS_KEY_PREFIX || 'scaledaiops:';
+
 let redis: RedisType;
 
 if (useMock) {
   // Lazy-load so production bundles don't pay the cost.
   const RedisMock = require('ioredis-mock');
-  redis = new RedisMock() as RedisType;
-  console.log('[Redis] Using in-memory mock (ioredis-mock)');
+  redis = new RedisMock({ keyPrefix: KEY_PREFIX }) as RedisType;
+  console.log(`[Redis] Using in-memory mock (ioredis-mock) — keyPrefix='${KEY_PREFIX}'`);
 } else {
   redis = new Redis(env.REDIS_URL, {
     lazyConnect: true,
     maxRetriesPerRequest: 3,
     enableReadyCheck: true,
+    keyPrefix: KEY_PREFIX,
   });
 
   redis.on('error', (err: Error) => {
@@ -38,7 +45,7 @@ if (useMock) {
   });
 
   redis.on('connect', () => {
-    console.log('[Redis] Connected');
+    console.log(`[Redis] Connected — keyPrefix='${KEY_PREFIX}'`);
   });
 }
 

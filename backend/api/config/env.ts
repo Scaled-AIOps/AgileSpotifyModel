@@ -13,6 +13,10 @@ const schema = z.object({
   /** Set REDIS_MOCK=true (or REDIS_URL=mock) for an in-memory ioredis-mock instance —
    *  handy for local dev / demos without a running Redis. Production rejects this. */
   REDIS_MOCK: z.string().optional(),
+  /** Prefix prepended to every Redis key — lets us share one Redis with other
+   *  apps. Defaults to `scaledaiops:`; override only if you really want a
+   *  different namespace (e.g. per-tenant deployments). */
+  REDIS_KEY_PREFIX: z.string().default('scaledaiops:'),
   JWT_SIGNING_KEY: z.string().min(16),
   JWT_REFRESH_KEY: z.string().min(16),
   JWT_EXPIRES_IN: z.string().default('15m'),
