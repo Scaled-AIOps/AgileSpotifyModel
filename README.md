@@ -91,6 +91,8 @@ Copy `.env.example` to `backend/config/.env` and edit.
 | `REDIS_URL` | `redis://localhost:6379` | Redis connection string. Set to `mock` to use an in-memory ioredis-mock (local dev only — production refuses). |
 | `REDIS_MOCK` | `false` | Alternative toggle: `REDIS_MOCK=true` selects the in-memory mock without touching `REDIS_URL`. |
 | `REDIS_KEY_PREFIX` | `scaledaiops:` | Namespace prepended to every Redis key — change only if you share Redis with other deployments. |
+| `REDIS_USERNAME` | *(unset)* | Redis ACL username (Redis 6+). Leave unset for the default user. |
+| `REDIS_AUTH` | *(unset)* | Redis AUTH credential. Spliced into `REDIS_URL` at boot so the URL itself can stay credential-free. |
 | `FRONTEND_URL` | `http://localhost:4200` | OAuth redirect base URL |
 | `BACKEND_URL` | `http://localhost:3000` | OAuth callback base URL |
 

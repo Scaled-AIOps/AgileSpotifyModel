@@ -27,13 +27,31 @@ export const KEY_PREFIX = env.REDIS_KEY_PREFIX || 'scaledaiops:';
 
 let redis: RedisType;
 
+// Splice REDIS_USERNAME / REDIS_AUTH into the connection URL so the auth
+// credential never has to appear in REDIS_URL itself. Existing inline
+// credentials in REDIS_URL (`redis://user:cred@host`) take precedence — we
+// only inject when the URL has no userinfo segment.
+function applyAuthToUrl(rawUrl: string): string {
+  if (!env.REDIS_AUTH && !env.REDIS_USERNAME) return rawUrl;
+  try {
+    const u = new URL(rawUrl);
+    if (u.username || u.password) return rawUrl;
+    if (env.REDIS_USERNAME) u.username = encodeURIComponent(env.REDIS_USERNAME);
+    if (env.REDIS_AUTH)     u.password = encodeURIComponent(env.REDIS_AUTH);
+    return u.toString();
+  } catch {
+    // REDIS_URL isn't a parseable URL (rare; e.g. unix socket) — leave as-is.
+    return rawUrl;
+  }
+}
+
 if (useMock) {
   // Lazy-load so production bundles don't pay the cost.
   const RedisMock = require('ioredis-mock');
   redis = new RedisMock({ keyPrefix: KEY_PREFIX }) as RedisType;
   console.log(`[Redis] Using in-memory mock (ioredis-mock) — keyPrefix='${KEY_PREFIX}'`);
 } else {
-  redis = new Redis(env.REDIS_URL, {
+  redis = new Redis(applyAuthToUrl(env.REDIS_URL), {
     lazyConnect: true,
     maxRetriesPerRequest: 3,
     enableReadyCheck: true,

@@ -13,6 +13,12 @@ const schema = z.object({
   /** Set REDIS_MOCK=true (or REDIS_URL=mock) for an in-memory ioredis-mock instance —
    *  handy for local dev / demos without a running Redis. Production rejects this. */
   REDIS_MOCK: z.string().optional(),
+  /** Optional Redis ACL username (Redis 6+). Leave unset for the implicit
+   *  `default` user. */
+  REDIS_USERNAME: z.string().optional(),
+  /** Redis AUTH credential. Spliced into REDIS_URL at boot so the connection
+   *  string in env can stay credential-free. Treat as a credential. */
+  REDIS_AUTH: z.string().optional(),
   /** Prefix prepended to every Redis key — lets us share one Redis with other
    *  apps. Defaults to `scaledaiops:`; override only if you really want a
    *  different namespace (e.g. per-tenant deployments). */
