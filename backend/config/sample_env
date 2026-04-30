@@ -23,9 +23,8 @@ REDIS_URL=redis://localhost:6379
 #REDIS_KEY_PREFIX=scaledaiops:
 NODE_ENV=development
 
-# URL the browser hits for API calls
-# CORS_ORIGIN is also the fallback FRONTEND_URL for OAuth redirects
-CORS_ORIGIN=http://localhost:4200
+# Browser-facing URL for OAuth redirects. CORS itself is handled by the
+# platform (ingress / reverse proxy), not this app.
 FRONTEND_URL=http://localhost:4200
 BACKEND_URL=http://localhost:3000
 

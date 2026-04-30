@@ -90,9 +90,11 @@ Copy `.env.example` to `backend/config/.env` and edit.
 | `PORT` | `3000` | Backend port |
 | `REDIS_URL` | `redis://localhost:6379` | Redis connection string. Set to `mock` to use an in-memory ioredis-mock (local dev only — production refuses). |
 | `REDIS_MOCK` | `false` | Alternative toggle: `REDIS_MOCK=true` selects the in-memory mock without touching `REDIS_URL`. |
-| `CORS_ORIGIN` | `http://localhost:4200` | Frontend origin for CORS |
-| `FRONTEND_URL` | *(falls back to `CORS_ORIGIN`)* | OAuth redirect base URL |
+| `REDIS_KEY_PREFIX` | `scaledaiops:` | Namespace prepended to every Redis key — change only if you share Redis with other deployments. |
+| `FRONTEND_URL` | `http://localhost:4200` | OAuth redirect base URL |
 | `BACKEND_URL` | `http://localhost:3000` | OAuth callback base URL |
+
+> CORS is **not** handled by this app — it must be configured at your platform layer (ingress / reverse proxy / CDN).
 
 ### Authentication
 

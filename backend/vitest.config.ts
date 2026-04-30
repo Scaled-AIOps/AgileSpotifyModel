@@ -25,7 +25,6 @@ export default defineConfig({
       JWT_EXPIRES_IN: '15m',
       JWT_REFRESH_EXPIRES_IN: '7d',
       REDIS_URL: 'redis://localhost:6379',
-      CORS_ORIGIN: 'http://localhost:4200',
       AUTH_METHOD: 'basic',
     },
     coverage: {

@@ -17,7 +17,7 @@ const router = Router();
 const REFRESH_COOKIE = 'refreshToken';
 const COOKIE_OPTS = { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' as const, maxAge: 7 * 24 * 60 * 60 * 1000 };
 
-const FRONTEND_URL = env.FRONTEND_URL ?? env.CORS_ORIGIN;
+const FRONTEND_URL = env.FRONTEND_URL ?? `http://localhost:4200`;
 const BACKEND_URL  = env.BACKEND_URL  ?? `http://localhost:${env.PORT}`;
 
 // OAuth wire-format field names required by upstream providers.

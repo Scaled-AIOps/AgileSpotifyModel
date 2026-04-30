@@ -1,11 +1,10 @@
 /**
  * Purpose: Express application factory.
- * Usage:   Wires global middleware (helmet, cors, compression, morgan, rate limit, auth-route rate limit) and mounts the /api/v1 router. Imported by index.ts.
+ * Usage:   Wires global middleware (helmet, compression, morgan, rate limit, auth-route rate limit) and mounts the /api/v1 router. Imported by index.ts.
  * Goal:    Keep transport / cross-cutting concerns separate from the bootstrap so the same `app` object can be re-used by supertest in unit tests.
  * ToDo:    Tighten Helmet HSTS (max-age >= 63072000, includeSubDomains, preload).
  */
 import express from 'express';
-import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import compression from 'compression';
@@ -20,10 +19,7 @@ import { errorHandler, notFound } from './middleware/errorHandler';
 const app = express();
 
 app.use(helmet());
-app.use(cors({
-  origin: env.CORS_ORIGIN,
-  credentials: true,
-}));
+// CORS is handled by the platform (ingress / reverse proxy / CDN), not the app.
 app.use(compression());
 app.use(morgan(env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 app.use(express.json());

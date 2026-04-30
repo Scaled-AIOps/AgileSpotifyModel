@@ -21,7 +21,6 @@ const schema = z.object({
   JWT_REFRESH_KEY: z.string().min(16),
   JWT_EXPIRES_IN: z.string().default('15m'),
   JWT_REFRESH_EXPIRES_IN: z.string().default('7d'),
-  CORS_ORIGIN: z.string().default('http://localhost:4200'),
   FRONTEND_URL: z.string().optional(),
   BACKEND_URL: z.string().optional(),
   // Explicit toggles (default: basic on, SSO off unless credentials are present)
